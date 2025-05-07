@@ -1,0 +1,132 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f9fafb;
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1e3a8a;
+    padding: 20px 50px;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  
+  .logo {
+    font-size: 30px;
+    font-weight: bold;
+  }
+  
+  .logo span {
+    color: #a5f3fc;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+  }
+  
+  .nav-links a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    transition: color 0.3s;
+  }
+  
+  .nav-links a:hover {
+    color: #93c5fd;
+  }
+  
+  .right-nav {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+  
+  .btn-login {
+    background: #3b82f6;
+    padding: 10px 20px;
+    border-radius: 20px;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background 0.3s;
+  }
+  
+  .btn-login:hover {
+    background: #2563eb;
+  }
+  
+  .titulo-seccion {
+    text-align: center;
+    font-size: 2.5rem;
+    margin: 60px 0 30px;
+    color: #111827;
+  }
+  
+  .habitaciones {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 40px;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+  
+  .habitacion-card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .habitacion-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .habitacion-imagen {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 0;
+  }
+  
+  .habitacion-card h2 {
+    font-size: 20px;
+    color: #1d4ed8;
+    margin: 15px;
+  }
+  
+  .habitacion-card p {
+    margin: 0 15px 10px;
+    font-size: 15px;
+    color: #555;
+  }
+  
+  .precio {
+    font-weight: bold;
+    color: #111;
+  }
+  
+  .footer {
+    background: #1e3a8a;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    margin-top: 40px;
+    font-size: 14px;
+  }
+  
