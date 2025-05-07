@@ -1,0 +1,158 @@
+-- Tabla: Hotel
+CREATE TABLE Hotel (
+    ID_Hotel SERIAL PRIMARY KEY,
+    Nombre VARCHAR(100),
+    Direccion VARCHAR(200),
+    Telefono VARCHAR(20)
+);
+
+-- Tabla: Habitacion
+CREATE TABLE Habitacion (
+    ID_Habitacion SERIAL PRIMARY KEY,
+    Precio NUMERIC(10, 2),
+    Estado VARCHAR(20),
+    Tipo VARCHAR(50),
+    ID_Hotel INT,
+    imagen VARCHAR(255),
+    FOREIGN KEY (ID_Hotel) REFERENCES Hotel(ID_Hotel)
+);
+
+-- Tabla: usuario
+CREATE TABLE usuario (
+    id_usuario SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    clave TEXT NOT NULL,
+    rol VARCHAR(20) NOT NULL CHECK (rol IN ('admin', 'huesped'))
+);
+
+-- Tabla: huesped
+CREATE TABLE huesped (
+    id_huesped SERIAL PRIMARY KEY,
+    id_usuario INTEGER NOT NULL UNIQUE,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100),
+    telefono VARCHAR(20),
+
+
+    CONSTRAINT fk_usuario_huesped FOREIGN KEY (id_usuario)
+        REFERENCES usuario(id_usuario) ON DELETE CASCADE
+);
+
+-- Tabla: administrador
+CREATE TABLE administrador (
+    id_admin SERIAL PRIMARY KEY,
+    id_usuario INTEGER NOT NULL UNIQUE,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100),
+
+    CONSTRAINT fk_usuario_admin FOREIGN KEY (id_usuario)
+        REFERENCES usuario(id_usuario) ON DELETE CASCADE
+);
+
+-- Tabla: Reserva
+CREATE TABLE Reserva (
+    ID_Reserva SERIAL PRIMARY KEY,
+    Fecha_Entrada DATE,
+    Fecha_Salida DATE,
+    Estado VARCHAR(50),
+    ID_Huesped INT,
+    ID_Habitacion INT,
+    FOREIGN KEY (ID_Huesped) REFERENCES Huesped(ID_Huesped),
+    FOREIGN KEY (ID_Habitacion) REFERENCES Habitacion(ID_Habitacion)
+);
+
+-- Tabla: Pago
+CREATE TABLE Pago (
+    ID_Pago SERIAL PRIMARY KEY,
+    Monto NUMERIC(10, 2),
+    Fecha_Pago DATE,
+    ID_Reserva INT,
+    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva)
+);
+
+-- Tabla: Factura
+CREATE TABLE Factura (
+    ID_Factura SERIAL PRIMARY KEY,
+    Fecha_Emision DATE,
+    Numero VARCHAR(50),
+    ID_Pago INT,
+    FOREIGN KEY (ID_Pago) REFERENCES Pago(ID_Pago)
+);
+
+-- Tabla: Opinion
+CREATE TABLE Opinion (
+    ID_Opinion SERIAL PRIMARY KEY,
+    Comentario TEXT,
+    Clasificacion INT,
+    Fecha DATE,
+    ID_Reserva INT,
+    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva)
+);
+
+-- Tabla: Servicio_Transporte
+CREATE TABLE Servicio_Transporte (
+    ID_Servicio_Transporte SERIAL PRIMARY KEY,
+    Tipo_Servicio VARCHAR(50),
+    Destino VARCHAR(100),
+    Costo NUMERIC(10, 2),
+    Fecha DATE,
+    ID_Reserva INT,
+    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva)
+);
+
+-- Tabla: Servicio_Lavanderia
+CREATE TABLE Servicio_Lavanderia (
+    ID_Servicio_Lavanderia SERIAL PRIMARY KEY,
+    Tipo_Prenda VARCHAR(100),
+    Costo NUMERIC(10, 2),
+    Fecha_Entrega DATE,
+    ID_Reserva INT,
+    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva)
+);
+
+-- Tabla: Servicio_Habitacion
+CREATE TABLE Servicio_Habitacion (
+    ID_Servicio_Habitacion SERIAL PRIMARY KEY,
+    Descripcion TEXT,
+    Costo NUMERIC(10, 2),
+    Fecha_Hora TIMESTAMP,
+    ID_Reserva INT,
+    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva)
+);
+
+--INSERCION DE DATOS EN TABLAS
+
+-- Usuarios
+INSERT INTO usuario (username, clave, rol) VALUES 
+('lucia', md5('admin123'), 'admin'),
+('juan', md5('admin456'), 'admin'),
+('maria', md5('huesped123'), 'huesped'),
+('carlos', md5('huesped456'), 'huesped');
+
+
+-- Administradores
+INSERT INTO administrador (id_usuario, nombre, email) VALUES 
+(1, 'Lucia', 'lucia@admin.com'),
+(2, 'Juan', 'juan@admin.com');
+
+-- Huéspedes
+INSERT INTO huesped (id_usuario, nombre, email, telefono) VALUES 
+(3, 'Maria', 'maria@husped.com', '900123001'),
+(4, 'Carlos', 'carlos@huesped.com', '900123002');
+
+-- Hotel
+INSERT INTO Hotel (nombre, direccion, Telefono) VALUES
+('Rambagh Palace', 'Jaipur, India', '979722277'),
+('Hotel Colline de France', 'Isla Bolifushi, Maldivas', '979722288'),
+('JW Marriott Marquis Hotel', 'Dubai, Emiratos Árabes Unidos', '979722299');
+
+-- Habitacion
+INSERT INTO Habitacion (Precio, Estado, Tipo, ID_Hotel,imagen) VALUES
+(90.00,  'Disponible', 'Económica', 1,'habitacion_economica.jpg'),
+(120.00, 'Disponible', 'Individual', 1,'habitacion_individual_1.jpg'),
+(110.00, 'Disponible', 'Individual', 2,'habitacion_individual_2.jpg'),
+(150.00, 'Ocupada', 'Doble', 1,'habitacion_doble.jpg'),
+(160.00, 'Disponible', 'Doble', 3,'habitacion_doble_2.jpg'),
+(180.00, 'Mantenimiento', 'Matrimonial', 2,'habitacion_matrimonial.jpg'),
+(200.00, 'Disponible', 'Suite', 1,'habitacion_suite.jpg'),
+(250.00, 'Ocupada', 'Suite Lujo', 3,'habitacion_suite_lujo.jpg');
