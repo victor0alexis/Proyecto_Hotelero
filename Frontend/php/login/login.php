@@ -1,61 +1,82 @@
 <?php
-include("../conexion.php");     // Incluir conexion
-session_start();               // Iniciar seccion para manejar variables "$_SESSION"
+include("../conexion.php");         //conexion BD.
+session_start();                   // Iniciar seccion para manejar variables "$_SESSION".
 
 $mensaje = "";
 
-//Validar Nombre de Usuario de las tablas admin y huesped, con la obtenida en el formulario
+if (!empty($_POST["btningresar"])) {                              // Si se envió el formulario.
+    $nombre = trim($_POST["user"] ?? '');                //  Obtiene los valores enviados por el formulario.
+    $pass = $_POST["pass"] ?? '';
 
-if (!empty($_POST["btningresar"])) {                  //cuando se preciona el boton
-    $nombre = trim($_POST["user"] ?? '');    // guardamos datos en variable $nombre
-    $pass = $_POST["pass"] ?? '';                   // guardamos datos en variable $pass
-
+    //Si alguno de los campos está vacío, se genera un mensaje de error.
     if (empty($nombre) || empty($pass)) {
-        $mensaje = "Todos los campos son obligatorios.";       //en el caso de que esten vacios
+        $mensaje = "Todos los campos son obligatorios.";
     } else {
-        // Buscar primero en administrador (si "nombre" esta asociado a un "id_usuario")
+        // Verificamos en tabla administrador, los datos
         $query_admin = pg_query_params($conn, "SELECT id_usuario FROM administrador WHERE nombre = $1", array($nombre));
-        
-        //si se encuentra un admistrador se toma su "$id_usuario"
-        if (pg_num_rows($query_admin) > 0) {
+
+          if (pg_num_rows($query_admin) > 0) {                   // Si se encuentra un administrador en la tabla.
             $admin = pg_fetch_assoc($query_admin);
-            $id_usuario = $admin["id_usuario"];
-        
-        // si no, se busca en la tabla huesped
+            $id_usuario = $admin["id_usuario"];               // Obtenemos el id de usuario.
+            $rol = "admin";                                  // Obtenemos el rol de usuario.
         } else {
-            // Si "nombre" esta asociado a un "id_usuario"
-            $query_huesped = pg_query_params($conn, "SELECT id_usuario FROM huesped WHERE nombre = $1", array($nombre));
-            
-            //si se encuentra un huesped se toma su "$id_usuario"
-            if (pg_num_rows($query_huesped) > 0) {
-                $huesped = pg_fetch_assoc($query_huesped);
-                $id_usuario = $huesped["id_usuario"];
-            //En el caso de que no encuentre niun nombre asociado a "id_usuario"
-            } else {
-                $mensaje = "El nombre no está registrado como administrador ni como huésped.";
-                $id_usuario = null;
-            }
+            // Verificamos en tabla huesped
+          $query_huesped = pg_query_params($conn, "SELECT id_usuario FROM huesped WHERE nombre = $1", array($nombre));
+
+          if (pg_num_rows($query_huesped) > 0) {                 // Si se encuentra un huesped en la tabla.
+              $huesped = pg_fetch_assoc($query_huesped);       
+              $id_usuario = $huesped["id_usuario"];            // Obtenemos el id de usuario.
+              $rol = "huesped";                               // Obtenemos el rol de usuario.
+          } else {
+
+            // Si no está en ninguna tabla, se muestra mensaje de error y se cancela la búsqueda.
+              $mensaje = "El nombre no está registrado como administrador ni como huésped.";
+              $id_usuario = null;
+          }
         }
 
-        // Validar CLAVE en tabla usuario, con "id_usuario" ya obtenido.
+        //Verificamos en Tabla "USUARIO", si coincide el ID_USUARIO con Clave
         if ($id_usuario) {
-            $query_usuario = pg_query_params
-            ($conn, "SELECT * FROM usuario WHERE id_usuario = $1 AND clave = md5($2)", array($id_usuario, $pass));
+            $query_usuario = pg_query_params($conn, "SELECT * FROM usuario WHERE id_usuario = $1 AND clave = md5($2)", array($id_usuario, $pass));
 
-            //Se guarda seccion, en variables "id_usuario", "username", "rol".
+            //Si la consulta devuelve resultados, entonces la contraseña es correcta.
             if (pg_num_rows($query_usuario) > 0) {
-                $usuario = pg_fetch_assoc($query_usuario);  //varible que contiene todos los datos que conciden 
+
+                // Verificar si el usuario está verificado
+                if ($rol === "admin") {
+                    $check_verif = pg_query_params($conn, "SELECT email, verificado, codigo_verificacion FROM administrador WHERE id_usuario = $1", array($id_usuario));
+                } else {
+                    $check_verif = pg_query_params($conn, "SELECT email, verificado, codigo_verificacion FROM huesped WHERE id_usuario = $1", array($id_usuario));
+                }
+
+                //Validación de cuenta verificada:
+                if ($check_verif && $datos = pg_fetch_assoc($check_verif)) {
+                  // Debug temporal
+                  error_log("Valor verificado: " . var_export($datos['verificado'], true));
+
+                  if ($datos['verificado'] !== 't' && $datos['verificado'] !== true) {
+                        include("mail/enviar_codigo.php");
+                        enviarCodigoVerificacion($datos['email'], $datos['codigo_verificacion']);
+                        echo "<script>
+                                alert('Tu cuenta aún no está verificada. Se ha reenviado el código a tu correo.');
+                                window.location.href = 'mail/verificar.php?rol=$rol&email=" . urlencode($datos['email']) . "';
+                              </script>";
+                        exit();
+                    }
+                }
+
+                // Usuario verificado: guardar sesión y redirigir
+                $usuario = pg_fetch_assoc($query_usuario);
                 $_SESSION["id_usuario"] = $usuario["id_usuario"];
                 $_SESSION["username"] = $usuario["username"];
                 $_SESSION["rol"] = $usuario["rol"];
 
-                // Redireccionar según el rol
-                if ($usuario["rol"] === "admin") {
+                if ($rol === "admin") {
                     header("Location: ../admin/panel_admin.php");
-                } elseif($usuario["rol"] === "huesped") {
+                } elseif ($rol === "huesped") {
                     header("Location: ../huesped/panel_huesped.php");
-                } else{
-                  $menasje = "Rol no reconocido";
+                } else {
+                    $mensaje = "Rol no reconocido.";
                 }
                 exit();
             } else {

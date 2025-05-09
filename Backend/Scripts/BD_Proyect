@@ -32,10 +32,11 @@ CREATE TABLE huesped (
     nombre VARCHAR(100) NOT NULL,
     email VARCHAR(100),
     telefono VARCHAR(20),
-
+    verificado BOOLEAN Default False,
+    codigo_verificacion VARCHAR(10),
 
     CONSTRAINT fk_usuario_huesped FOREIGN KEY (id_usuario)
-        REFERENCES usuario(id_usuario) ON DELETE CASCADE
+    REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
 
 -- Tabla: administrador
@@ -44,9 +45,11 @@ CREATE TABLE administrador (
     id_usuario INTEGER NOT NULL UNIQUE,
     nombre VARCHAR(100) NOT NULL,
     email VARCHAR(100),
+    verificado BOOLEAN Default False,
+    codigo_verificacion VARCHAR(10),
 
     CONSTRAINT fk_usuario_admin FOREIGN KEY (id_usuario)
-        REFERENCES usuario(id_usuario) ON DELETE CASCADE
+    REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
 
 -- Tabla: Reserva
@@ -124,21 +127,21 @@ CREATE TABLE Servicio_Habitacion (
 
 -- Usuarios
 INSERT INTO usuario (username, clave, rol) VALUES 
-('lucia', md5('admin123'), 'admin'),
-('juan', md5('admin456'), 'admin'),
-('maria', md5('huesped123'), 'huesped'),
-('carlos', md5('huesped456'), 'huesped');
+('usuario_admin1', md5('admin123'), 'admin'),
+('usuario_admin2', md5('admin456'), 'admin'),
+('usuario_huesped1', md5('huesped123'), 'huesped'),
+('usuario_huesped2', md5('huesped456'), 'huesped');
 
 
 -- Administradores
-INSERT INTO administrador (id_usuario, nombre, email) VALUES 
-(1, 'Lucia', 'lucia@admin.com'),
-(2, 'Juan', 'juan@admin.com');
+INSERT INTO administrador (id_usuario, nombre, email,verificado,codigo_verificacion) VALUES 
+(1, 'admin1', 'huesped@admin.com','true',0000),
+(2, 'admin2', 'huesped@admin.com','false',0000);
 
 -- Huéspedes
-INSERT INTO huesped (id_usuario, nombre, email, telefono) VALUES 
-(3, 'Maria', 'maria@husped.com', '900123001'),
-(4, 'Carlos', 'carlos@huesped.com', '900123002');
+INSERT INTO huesped (id_usuario, nombre, email, telefono,verificado,codigo_verificacion) VALUES 
+(3, 'huesped1', 'huesped@husped.com', '900123001','true','0000'),
+(4, 'huesped2', 'huesped@huesped.com', '900123002','false','0000');
 
 -- Hotel
 INSERT INTO Hotel (nombre, direccion, Telefono) VALUES

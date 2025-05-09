@@ -1,55 +1,78 @@
 <?php
-include("../conexion.php");     // Incluir conexion
-session_start();               // inicio de seccion
+include("../conexion.php");      //conexion BD.
+session_start();                // Iniciar seccion para manejar variables "$_SESSION".
 
-$mensaje = "";               // guarder posibles mensajes de error o confirmacion
+$mensaje = "";                     // Variable para mostrar errores al usuario.
+$mensaje_exito = "";              // Variable para mensajes exitosos (registro correcto).
 
+// Si se recibe ?rol=huesped o ?rol=admin, se guarda el valor. Si no, queda null.
+$rol = isset($_GET['rol']) ? $_GET['rol'] : null;
 
-$rol = isset($_GET['rol']) ? $_GET['rol'] : null; // Obtener rol desde la URL, si no se envia "null"
-
-// Procesar formulario de registro
-if (!empty($_POST["btnregistrar"])) {       //si se envio el formulario
+if (!empty($_POST["btnregistrar"])) {      // Si se envió el formulario
     if (
         empty($_POST["nombre"]) ||
-        empty($_POST["email"]) ||        //verificacion de campos
+        empty($_POST["email"]) ||
         empty($_POST["clave"])
     ) {
         $mensaje = "Error: Todos los campos son obligatorios.";
     } else {
-        //se asignan los valores ingresados en variables PHP
-        $nombre = $_POST["nombre"];
-        $email = $_POST["email"];               
-        $clave = $_POST["clave"];
-        $rol = $_POST["rol"];  // desde campo oculto
+        $nombre = $_POST["nombre"];        // Obtiene el nombre ingresado.
+        $email = $_POST["email"];         // Obtiene el email ingresado.
+        $clave = $_POST["clave"];        // Obtiene la clave ingresado. 
+        $rol = $_POST["rol"];           // Obtiene el rol oculto en el formulario.
 
-        // Insertar en tabla usuario
-        $insert_usuario = pg_query_params($conn,
-            "INSERT INTO usuario (username, clave, rol) VALUES ($1, md5($2), $3) RETURNING id_usuario",
-            array($nombre, $clave, $rol)
-        );
-        //Si la inserción fue exitosa, se extrae el id_usuario retornado y se guarda en una variable.
-        if ($insert_usuario && $row = pg_fetch_assoc($insert_usuario)) {
-            $id_usuario = $row["id_usuario"];
-            
-            //Si el usuario es huésped, se inserta su información adicional en la tabla huesped, usando el id_usuario como clave foránea.
-            if ($rol === 'huesped') {
-                pg_query_params($conn,
-                    "INSERT INTO huesped (id_usuario, nombre, email, telefono) VALUES ($1, $2, $3, $4)",
-                    array($id_usuario, $nombre, $email, $_POST["telefono"])
-                );
-            //Si el usuario es admin, se inserta en la tabla administrador.
-            } elseif ($rol === 'admin') {
-                pg_query_params($conn,
-                    "INSERT INTO administrador (id_usuario, nombre, email) VALUES ($1, $2, $3)",
-                    array($id_usuario, $nombre, $email)
-                );
-            }
+        //verificar si el nombre esta registrado en la Base de Datos
+        $check_user = pg_query_params($conn, "SELECT 1 FROM usuario WHERE username = $1", array($nombre));
+        if (pg_num_rows($check_user) > 0) {
 
-            //Después del registro, redirige al usuario a la página de login
-            header("Location: login.php");
-            exit();
+            //checkear si el usuario esta registrado.
+            $mensaje = "Error: El nombre de usuario ya está registrado.";   
+
+            // Valida que el email tenga formato correcto.             
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $mensaje = "Error: La dirección de correo no es válida.";                  
         } else {
-            $mensaje = "Error: No se pudo registrar el usuario.";
+
+            //INSERT en tabla Usuario.
+            $insert_usuario = pg_query_params($conn,
+                "INSERT INTO usuario (username, clave, rol) VALUES ($1, md5($2), $3) RETURNING id_usuario",
+                array($nombre, $clave, $rol)
+            );
+            
+            //Obtener ID_USUARIO de Usuario.
+            if ($insert_usuario && $row = pg_fetch_assoc($insert_usuario)) {
+                $id_usuario = $row["id_usuario"];
+                //Generar codigo aleatorio.
+                $codigo = rand(100000, 999999);
+
+                //INSERT en tabla Usuario.
+                if ($rol === 'huesped') {
+                    pg_query_params($conn,
+                        "INSERT INTO huesped (id_usuario, nombre, email, telefono, codigo_verificacion) VALUES ($1, $2, $3, $4, $5)",
+                        array($id_usuario, $nombre, $email, $_POST["telefono"], $codigo)
+                    );
+                //INSERT en tabla Administrador.
+                } elseif ($rol === 'admin') {
+                    pg_query_params($conn,
+                        "INSERT INTO administrador (id_usuario, nombre, email, codigo_verificacion) VALUES ($1, $2, $3, $4)",
+                        array($id_usuario, $nombre, $email, $codigo)
+                    );
+                }
+
+                // Envíamos el correo con código de verificación.
+                include("mail/enviar_codigo.php");
+                enviarCodigoVerificacion($email, $codigo);
+
+                //Registro añadido a la BD, a la espera de  la validacion del codigo.
+                $mensaje_exito = "¡Registro exitoso! Redirigiendo a verificación de correo...";
+                echo "<script>
+                        setTimeout(function() {
+                            window.location.href = 'mail/verificar.php?rol=$rol&email=$email';
+                        }, 5000);
+                    </script>";
+            } else {
+                $mensaje = "Error: No se pudo registrar el usuario.";
+            }
         }
     }
 }
@@ -57,82 +80,62 @@ if (!empty($_POST["btnregistrar"])) {       //si se envio el formulario
 
 <!DOCTYPE html>
 <html lang="es">
-
-<!-------HEAD---------->
-
 <head>
-<meta charset="UTF-8">
-<title>Registro</title>
-<link rel="stylesheet" href="../../css/style_login.css">
+    <meta charset="UTF-8">
+    <title>Registro</title>
+    <link rel="stylesheet" href="../../css/style_login.css">
 </head>
-
-<!-------BODY---------->
-
 <body>
-
-<!-------FORMULARIO REGISTRO---------->
-
 <section class="login-section">
-
     <div class="formulario animate">
 
-    <!-------Tipo de Registro que se mostrara segun "rol"---------->
-    <?php if (!$rol): ?>
-        <h1>¿Qué tipo de cuenta deseas crear?</h1>
-        <div style="display: flex; gap: 20px; justify-content: center;">
-            <a href="registro.php?rol=huesped" class="btn-login">Registrarse como Huésped</a>
-            <a href="registro.php?rol=admin" class="btn-login">Registrarse como Administrador</a>
-        </div>
-    <?php else: ?>
+        <?php if (!$rol): ?>
+            <h1>¿Qué tipo de cuenta deseas crear?</h1>
+            <div style="display: flex; gap: 20px; justify-content: center;">
+                <a href="registro.php?rol=huesped" class="btn-login">Registrarse como Huésped</a>
+                <a href="registro.php?rol=admin" class="btn-login">Registrarse como Administrador</a>
+            </div>
+        <?php else: ?>
+            <h1>Registro de <?= ucfirst($rol) ?></h1>
 
-        <!-------TituloRegistro---------->
-        <h1>Registro de <?= ucfirst($rol) ?></h1>
+            <?php if (!empty($mensaje)): ?>
+                <div class="alert"><?= $mensaje ?></div>
+            <?php elseif (!empty($mensaje_exito)): ?>
+                <div class="alert" style="background-color: #d1e7dd; color: #0f5132;"><?= $mensaje_exito ?></div>
+            <?php endif; ?>
 
-    <?php if (!empty($mensaje)): ?>
-        <div class="alert"><?= $mensaje ?></div>
-    <?php endif; ?>
+            <form method="post">
+                <input type="hidden" name="rol" value="<?= $rol ?>">
 
-    <form method="post">
-        <input type="hidden" name="rol" value="<?= $rol ?>">
+                <div class="input-group">
+                    <input type="text" name="nombre" pattern=".*\S.*" required>
+                    <label>Nombre de Usuario</label>
+                </div>
 
-    <!-------username---------->
-    <div class="input-group">
-        <input type="text" name="nombre" required>
-        <label>Nombre de Usuario</label>
+                <div class="input-group">
+                    <input type="text" name="email" pattern=".*\S.*" required>
+                    <label>Email</label>
+                </div>
+
+                <?php if ($rol === "huesped"): ?>
+                    <div class="input-group">
+                        <input type="text" name="telefono" pattern=".*\S.*" required>
+                        <label>Teléfono</label>
+                    </div>
+                <?php endif; ?>
+
+                <div class="input-group">
+                    <input type="password" name="clave" pattern=".*\S.*" required>
+                    <label>Contraseña</label>
+                </div>
+
+                <input name="btnregistrar" type="submit" value="Registrarse">
+                <div class="registrarse">
+                    <a href="registro.php">Volver</a>
+                </div>
+            </form>
+        <?php endif; ?>
     </div>
-
-    <!-------email---------->
-    <div class="input-group">
-        <input type="text" name="email" required>
-        <label>Email</label>
-    </div>
-
-    <!-------si es "Huesped", campo para telefono---------->
-    <?php if ($rol === "huesped"): ?>
-        <div class="input-group">
-            <input type="text" name="telefono" required>
-            <label>Teléfono</label>
-        </div>
-    <?php endif; ?>
-
-    <!-------password---------->
-    <div class="input-group">
-        <input type="password" name="clave" required>
-        <label>Contraseña</label>
-    </div>
-
-    <!-------boton registrado---------->
-    <input name="btnregistrar" type="submit" value="Registrarse">
-        <div class="registrarse">
-        <a href="registro.php">Volver</a>
-        </div>
-
-    </form>
-    <?php endif; ?>
-</div>
-
 </section>
-
 </body>
-
 </html>
