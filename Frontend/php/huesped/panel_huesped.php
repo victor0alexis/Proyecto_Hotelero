@@ -24,8 +24,8 @@ if ($rol === 'huesped' && !empty($username)) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Página Principal</title>
-<link rel="stylesheet" href="../../css/style_huesped.css">
+<title>Hotel H | Taller Icinf</title>
+<link rel="stylesheet" href="../../css/style_principal.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -35,67 +35,53 @@ if ($rol === 'huesped' && !empty($username)) {
 
 <header class="header">
         <!-- MENU HORIZONTAL, PREDETERMINADO -->
-    <div class="logo">Y <span>Hotel</span></div>
+    <div class="logo"> <span>HOTEL H</span></div>
     <nav>
-        <ul class="nav-links">
-            <li><a href="panel_huesped.php">Inicio</a></li>
-            <li><a href="habitaciones.php">Habitaciones</a></li>
-            <li><a href="servicios.html">Servicios</a></li>
-            <li><a href="blog.html">Blog</a></li>
-            <li><a href="contacto.html">Contactos</a></li>
-        </ul>
+      <ul class="nav-links">
+        <li><a href="index.html">INICIO</a></li>
+        <li><a href="habitaciones.php">HABITACIONES</a></li>
+        <li><a href="servicios.html">SERVICIOS</a></li>
+        <li><a href="blog.html">BLOG</a></li>
+        <li><a href="contacto.html">CONTACTO</a></li>
+      </ul>
     </nav>
 
         <!-- BOTON DATOS DE USUARIOS -->
-    <div class="right-nav">
-
-        <?php if ($rol === 'huesped' && $huesped_data): ?>
-            <div class="user-dropdown">
-                <button class="user-btn"> <span> Bienvenido </span><?= htmlspecialchars($huesped_data['nombre']) ?> </button>
-                <div class="dropdown-content">
-                    <a href="funcionalidades/misdatos.php">Mis Datos</a>
-                    <a href="reservas.php">Reservas Hechas</a>
-                    <a href="cambiar_contrasena.php">Cambiar Contraseña</a>
-                    <a href="../login/logout.php">Cerrar Sesión</a>
-                </div>
+        <div class="right-nav">
+    <?php if ($rol === 'huesped' && $huesped_data): ?>
+        <div class="user-dropdown">
+            <button class="user-btn">
+                <span class="user-avatar">👤</span>
+                <?= htmlspecialchars($huesped_data['nombre']) ?>
+            </button>
+            <div class="dropdown-content">
+                <a href="funcionalidades/misdatos.php">Mis Datos</a>
+                <a href="reservas.php">Reservas Hechas</a>
+                <a href="cambiar_contrasena.php">Cambiar Contraseña</a>
+                <a href="../login/logout.php">Cerrar Sesión</a>
             </div>
-        <?php elseif ($rol === 'publico'): ?>
-            <a href="../php/login/login.php" class="btn-login">Login ➜</a>
-        <?php else: ?>
-            <a href="../login/logout.php" class="btn-login">Cerrar sesión</a>
-        <?php endif; ?>
-
-    </div>
-
+        </div>
+    <?php elseif ($rol === 'publico'): ?>
+        <a href="../php/login/login.php" class="btn-login">LOGIN ➜</a>
+    <?php else: ?>
+        <a href="../login/logout.php" class="btn-login">Cerrar sesión</a>
+    <?php endif; ?>
+</div>
 </header>
 
-<section class="slider">
-    <!-- Fondo 1 -->
-    <div class="slide active" style="background-image: url('../../img/fondo1.jpg')">
-        <div class="info">
-            <h1>Habitación 1</h1>
-            <p>Escapada Simple</p>
-            <a href="#" class="btn">Ver Detalle</a>
+<section>
+    <div class="slider">
+      <div class="slide active">
+        <div class="video-background">
+          <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover;">
+              <source src="../../img/fondo1.mp4" type="video/mp4">
+              <source src="../../img/fondo1.webm" type="video/webm">
+              Tu navegador no soporta videos HTML5.
+          </video>
         </div>
+      </div>
     </div>
-    <!-- Fondo 2 -->
-    <div class="slide" style="background-image: url('../../img/fondo2.jpg')">
-        <div class="info">
-            <h1>Habitación 2</h1>
-            <p>Escapada de lujo</p>
-            <a href="#" class="btn">Ver Detalle</a>
-        </div>
-    </div>
-    <!-- Fondo 3 -->
-    <div class="slide" style="background-image: url('../../img/fondo3.jpg')">
-        <div class="info">
-            <h1>Habitación 3</h1>
-            <p>Estancia inolvidable</p>
-            <a href="#" class="btn">Ver Detalle</a>
-        </div>
-    </div>
-</section>
-
+  </section>
 
 <script>
     let slides = document.querySelectorAll('.slide');
@@ -109,28 +95,35 @@ if ($rol === 'huesped' && !empty($username)) {
 </script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const userBtn = document.querySelector(".user-btn");
-        const dropdown = document.querySelector(".dropdown-content");
-
-        if (userBtn && dropdown) {
-            userBtn.addEventListener("click", function (e) {
-                e.stopPropagation();
-                dropdown.classList.toggle("show-dropdown");
-            });
-
-            document.addEventListener("click", function () {
-                dropdown.classList.remove("show-dropdown");
-            });
-        }
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    const userBtn = document.querySelector('.user-btn');
+    const dropdown = document.querySelector('.dropdown-content');
+    
+    if(userBtn && dropdown) {
+        // Mostrar/ocultar al hacer clic
+        userBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdown.classList.toggle('show-dropdown');
+        });
+        
+        // Ocultar al hacer clic fuera
+        document.addEventListener('click', function() {
+            dropdown.classList.remove('show-dropdown');
+        });
+        
+        // Ocultar al presionar Escape
+        document.addEventListener('keydown', function(e) {
+            if(e.key === 'Escape') {
+                dropdown.classList.remove('show-dropdown');
+            }
+        });
+    }
+});
 </script>
 
-
-
 <footer class="footer">
-    <p>&copy; 2025 Y Hotel. Todos los derechos reservados.</p>
-</footer>
+    <p>&copy; Copyright © 2025 Hotel H derechos reservados.</p>
+  </footer>
 
 </body>
 </html>

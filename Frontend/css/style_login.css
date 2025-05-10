@@ -7,47 +7,55 @@
 
 body {
   font-family: 'Montserrat', sans-serif;
-  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
               url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
   height: 100vh;  
   overflow: hidden;
+  color: #333;
 }
 
 /* Header */
 
 .header {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.6);
   display: flex;
-  justify-content: center;
+  justify-content: space-between; /* Distribuye logo, menú y botón */
   align-items: center;
-  gap: 100px;
-  padding: 20px 50px;
-  z-index: 10;
+  background: rgba(0, 0, 0, 0.7); /* Fondo negro semitransparente */
+  padding: 20px 5%; /* Padding relativo */
+  position: fixed; /* Fijo en la parte superior */
+  width: 100%;
+  z-index: 1000;
   color: white;
+  font-family: 'Montserrat', sans-serif; /* Tipografía similar */
+  transition: background 0.3s; /* Efecto al hacer scroll */
 }
 
+/* Logo más estilizado */
 .logo {
-  font-size: 30px;
-  font-weight: bold;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
 .logo span {
-  color: #ebeff0;
+  color: white;
 }
 
 .nav-links {
   list-style: none;
   display: flex;
-  gap: 50px;
+  gap: 40px;
+  margin: 0 auto; /* Centra el menú */
 }
 
 .nav-links a {
   text-decoration: none;
-  color: rgb(232, 219, 219);
-  font-weight: bold;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase; /* Texto en mayúsculas */
+  transition: color 0.3s;
 }
 
 .right-nav {
@@ -59,16 +67,7 @@ body {
 .telefono {
   background: #2563eb;
   padding: 8px 14px;
-  border-radius: 20px;
-}
-
-.btn-login {
-  background: #3b82f6;
-  padding: 10px 20px;
-  border-radius: 20px;
-  color: white;
-  font-weight: bold;
-  text-decoration: none;
+  border-radius: 4px;
 }
 
 /* Login Section */
@@ -82,17 +81,17 @@ body {
 
 .formulario {
   background-color: #ffffff;
-  border-radius: 20px;
+  border-radius: 4px;
   padding: 40px 30px;
-  width: 90%;
-  max-width: 420px;
+  width: 100%;
+  max-width: 600px;
   box-shadow: 0 15px 30px rgba(0,0,0,0.2);
   animation: fadeIn 1.2s ease-in-out;
 }
 
 .formulario h1 {
   text-align: center;
-  color: #1f2937;
+  color: #040404;
   margin-bottom: 30px;
 }
 
@@ -105,7 +104,7 @@ body {
   width: 100%;
   padding: 12px 10px;
   border: 1px solid #ccc;
-  border-radius: 10px;
+  border-radius: 4px;
   outline: none;
   background-color: #f9f9f9;
 }
@@ -126,24 +125,27 @@ body {
   top: -10px;
   left: 10px;
   font-size: 12px;
-  color: #2563eb;
+  color: #000000;
 }
 
 input[type="submit"] {
   width: 100%;
   padding: 12px;
   border: none;
-  border-radius: 10px;
-  background-color: #2563eb;
-  color: white;
+  border-radius: 4px;
+  background-color: rgb(0, 0, 0);
+  color: #ffffff;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease; /* Transición para todos los cambios */
+  border: 1px solid #000000; /* Borde negro para mantener consistencia */
 }
 
 input[type="submit"]:hover {
-  background-color: #1d4ed8;
+  background-color: #ffffff; /* Fondo blanco al pasar el mouse */
+  color: #000000; /* Texto negro al pasar el mouse */
+  border-color: #000000; /* O usa #cccccc para un borde más suave */
 }
 
 .registrarse {
@@ -153,7 +155,7 @@ input[type="submit"]:hover {
 }
 
 .registrarse a {
-  color: #2563eb;
+  color: #000;
   font-weight: bold;
   text-decoration: none;
 }
@@ -162,12 +164,58 @@ input[type="submit"]:hover {
   background-color: #f8d7da;
   color: #842029;
   padding: 10px;
-  border-radius: 5px;
+  border-radius: 4px;
   margin-bottom: 15px;
   font-size: 14px;
   text-align: center;
 }
+/* Contenedor de botones de rol */
+.role-buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin: 30px 0;
+  align-items: center;
+}
 
+/* Estilo para los botones de selección de rol */
+.role-button {
+  display: inline-block;
+  width: 100%;
+  max-width: 350px;
+  padding: 16px 20px;
+  background-color: #000;
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  border: 2px solid #000;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+
+}
+
+.role-button:hover {
+  background-color: transparent;
+  color: #000;
+  background-color: #fff;
+  border-color: #000;
+}
+
+/* Versión responsive para pantallas más grandes */
+@media (min-width: 768px) {
+  .role-buttons-container {
+      flex-direction: row;
+      justify-content: center;
+  }
+  
+  .role-button {
+      width: auto;
+      min-width: 250px;
+  }
+}
 /* Animación */
 @keyframes fadeIn {
   0% {

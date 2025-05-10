@@ -18,51 +18,63 @@ body {
 
 .header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between; /* Distribuye logo, menú y botón */
   align-items: center;
-  gap: 100px;
-  background: transparent;
-  padding: 20px 50px;
-  position: absolute;
+  background: rgba(0, 0, 0, 0.7); /* Fondo negro semitransparente */
+  padding: 20px 5%; /* Padding relativo */
+  position: fixed; /* Fijo en la parte superior */
   width: 100%;
-  z-index: 10;
+  z-index: 1000;
   color: white;
+  font-family: 'Montserrat', sans-serif; /* Tipografía similar */
+  transition: background 0.3s; /* Efecto al hacer scroll */
 }
 
+/* Logo más estilizado */
 .logo {
-  font-size: 30px;
-  font-weight: bold;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
 .logo span {
-  color: #ebeff0;
+  color: white; 
 }
 
+/* Menú centralizado */
 .nav-links {
   list-style: none;
   display: flex;
-  gap: 50px;
+  gap: 40px;
+  margin: 0 auto; /* Centra el menú */
 }
 
 .nav-links a {
   text-decoration: none;
-  color: rgb(232, 219, 219);
-  font-weight: bold;
-}
-
-.right-nav {
-  display: flex;
-  gap: 25px;
-  align-items: center;
-}
-
-.btn-login {
-  background: #3b82f6;
-  padding: 10px 20px;
-  border-radius: 20px;
   color: white;
-  font-weight: bold;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase; /* Texto en mayúsculas */
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: white 
+}
+
+/* Botón de reserva estilo Hayden */
+.btn-login {
+  background: #000; /* Negro*/
+  padding: 12px 25px;
+  border-radius: 4px; /* Bordes menos redondeados */
+  color: white !important; /* Texto blanco */
+  font-weight: 600;
   text-decoration: none;
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 1px;
+  transition: background 0.3s;
 }
 
 /* Slider */
@@ -82,29 +94,47 @@ body {
   background-size: cover;
   background-position: center;
   opacity: 0;
-  transition: opacity 1s ease-in-out;
+  transition: opacity 1.5s ease-in-out;
+}
+.slide::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3); /* Más claro para mostrar mejor el fondo */
 }
 
 .slide.active {
   opacity: 1;
 }
 
+/* Contenido del slide - Estilo minimalista */
 .slide .info {
   position: absolute;
-  bottom: 20%;
+  bottom: 25%;
   left: 10%;
   color: #fff;
-  text-shadow: 1px 1px 10px rgba(0,0,0,0.6);
+  max-width: 600px;
 }
 
+
 .btn {
-  background-color: #2d78f3;
-  padding: 10px 20px;
-  color: white;
+  background-color: #c8a97e; /* Dorado característico */
+  padding: 12px 30px;
+  color: #000 !important;
   text-decoration: none;
-  border-radius: 25px;
+  border-radius: 4px; /* Bordes menos redondeados */
   margin-top: 15px;
   display: inline-block;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  border: none;
 }
 
 .slide::after {
@@ -117,7 +147,7 @@ body {
 /* Sección perfil huésped */
 
 .perfil {
-  padding: 60px 20px;
+  padding: 100px 20px;
   background-color: #f3f4f6;
   display: flex;
   justify-content: center;
@@ -147,14 +177,122 @@ body {
 /* Footer */
 
 .footer {
-  background: #1e3a8a;
+  background: #000;
   color: white;
-  padding: 15px;
-  text-align: center;
-  margin-top: 40px;
-  font-size: 14px;
+  padding: 60px 20px 30px;
+  font-family: 'Montserrat', sans-serif;
 }
 
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+}
 
+.footer-logo {
+  margin-bottom: 20px;
+}
 
+.footer-logo img {
+  height: 40px;
+}
 
+.footer h3 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  color: #c8a97e;
+}
+
+.footer p, .footer a {
+  color: #ccc;
+  line-height: 1.8;
+  font-size: 0.9rem;
+}
+
+.footer a:hover {
+  color: #c8a97e;
+}
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 40px;
+  margin-top: 40px;
+  border-top: 1px solid #333;
+  font-size: 0.8rem;
+  color: #999;
+}
+/* ESTILOS PARA EL MENÚ DESPLEGABLE DEL USUARIO */
+.right-nav {
+  position: relative;
+}
+
+.user-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.user-btn {
+  background-color: transparent;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 8px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Montserrat', sans-serif;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.user-btn:hover {
+  background-color: rgba(255,255,255,0.1);
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: white;
+  min-width: 200px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  z-index: 1000;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.dropdown-content a {
+  color: #333;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  font-size: 14px;
+  transition: all 0.3s;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-content a:hover {
+  background-color: #f5f5f5;
+  color: #000;
+}
+
+.dropdown-content a:last-child {
+  border-bottom: none;
+  color: #e74c3c;
+}
+
+.show-dropdown {
+  display: block;
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
