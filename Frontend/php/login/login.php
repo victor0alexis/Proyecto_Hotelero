@@ -92,10 +92,12 @@ if (!empty($_POST["btningresar"])) {                              // Si se envi�
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Iniciar Sesión - Y Hotel</title>
+  <title>Iniciar Sesión - HOTEL H</title>
+  
   <link rel="stylesheet" href="../../css/style_login.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  
 </head>
 <body>
 
@@ -103,18 +105,18 @@ if (!empty($_POST["btningresar"])) {                              // Si se envi�
 
 <header class="header">
 
-  <div class="logo">Y <span>Hotel</span></div>
+  <div class="logo">HOTEL <span>H</span></div>
   <nav>
     <ul class="nav-links">
-      <li><a href="../../pages/index.html">Inicio</a></li>
-      <li><a href="../../pages/habitaciones.html">Habitaciones</a></li>
-      <li><a href="../../pages/servicios.html">Servicios</a></li>
-      <li><a href="../../pages/blog.html">Blog</a></li>
-      <li><a href="../../pages/contacto.html">Contactos</a></li>
+      <li><a href="../../pages/index.html">INICIO</a></li>
+      <li><a href="../../pages/habitaciones.html">HABITACIONES</a></li>
+      <li><a href="../../pages/servicios.html">SERVICIOS</a></li>
+      <li><a href="../../pages/blog.html">BLOG</a></li>
+      <li><a href="../../pages/contacto.html">CONTACTO</a></li>
     </ul>
   </nav>
   <div class="right-nav">
-    <a href="login.php" class="btn-login">Login ➜</a>
+  
   </div>
 
 </header>
@@ -134,15 +136,15 @@ if (!empty($_POST["btningresar"])) {                              // Si se envi�
       <!-------usuario---------->
       <div class="input-group">
         <input type="text" name="user" required>
-        <label>Nombre de Usuario</label>
+        <label>Nombre</label>
       </div>
       <!-------password---------->
       <div class="input-group">
         <input type="password" name="pass" required>
-        <label>Clave Usuario</label>
+        <label>Contraseña</label>
       </div>
       <!-------boton Iniciar secion---------->
-      <input name="btningresar" type="submit" value="Iniciar sesión">
+      <input name="btningresar" type="submit" value="Iniciar Sesión">
       <!-------Link Registrarse---------->
       <div class="registrarse">
         ¿No tienes cuenta? <a href="registro.php">Regístrate aquí</a>

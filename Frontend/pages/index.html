@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pagina Principal</title>
+  <title>Hotel H | Taller Icinf</title>
   <link rel="stylesheet" href="../css/style_principal.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
@@ -11,49 +11,36 @@
 <body>
 
   <header class="header">
-    <div class="logo"> <span>Hotel</span></div>
+    <div class="logo"> <span>HOTEL H</span></div>
     <nav>
       <ul class="nav-links">
-        <li><a href="index.html">Inicio</a></li>
-        <li><a href="habitaciones.php">Habitaciones</a></li>
-        <li><a href="servicios.html">Servicios</a></li>
-        <li><a href="blog.html">Blog</a></li>
-        <li><a href="contacto.html">Contactos</a></li>
+        <li><a href="index.html">INICIO</a></li>
+        <li><a href="habitaciones.php">HABITACIONES</a></li>
+        <li><a href="servicios.html">SERVICIOS</a></li>
+        <li><a href="blog.html">BLOG</a></li>
+        <li><a href="contacto.html">CONTACTO</a></li>
       </ul>
     </nav>
     <div class="right-nav">
-      <a href="../php/login/login.php" class="btn-login">Login ➜</a>
+      <a href="../php/login/login.php" class="btn-login">LOGIN ➜</a>
     </div>
   </header>
 
   <section>
     <!-- Fondo 1 -->
-    <div class="slider">
-        <div class="slide active" style="background-image: url('../img/fondo1.jpg')">
-        <div class="info">
-            <h1>Habitacion 1</h1>
-            <p>Escapada Simple</p>
-            <a href="#" class="btn">Ver Detalle</a>
-        </div>
-        </div>
-    <!-- Fondo 2 -->
-        <div class="slide" style="background-image: url('../img/fondo2.jpg')">
-        <div class="info">
-            <h1>Habitacion 2</h1>
-            <p>Escapada de lujo</p>
-            <a href="#" class="btn">Ver Detalle</a>
-        </div>
-        </div>
-    <!-- Fondo 3 -->
-    <div class="slide" style="background-image: url('../img/fondo3.jpg')">
-        <div class="info">
-          <h1>Habitacion 2</h1>
-          <p>Escapada de lujo</p>
-          <a href="#" class="btn">Ver Detalle</a>
-        </div>
-    </div>
-    </div>
-      
+  <div class="slider">
+    <div class="slide active">
+     <div class="video-background">
+          <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover;">
+              <source src="../img/fondo1.mp4" type="video/mp4">
+              <!-- Opcional: Añadir formato WebM para mejor compatibilidad -->
+              <source src="../img/fondo1.mp4" type="video/webm">
+              <!-- Mensaje alternativo si el navegador no soporta video -->
+              Tu navegador no soporta videos HTML5.
+          </video>
+      </div>
+  </div>
+   
 </section>
 
 <script>
@@ -70,7 +57,7 @@
 
 
 <footer class="footer">
-  <p>&copy; 2025 Y Hotel. Todos los derechos reservados.</p>
+  <p>&copy; Copyright © 2025 Hotel H derechos reservados.</p>
 </footer>
 
 </body>
