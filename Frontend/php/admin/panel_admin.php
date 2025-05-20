@@ -23,51 +23,37 @@ $admin = pg_fetch_assoc($consulta);
 
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel Administrativo</title>
-<link rel="stylesheet" href="../../css/style_admin.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo</title>
+    <link rel="stylesheet" href="../../css/style_admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
-<header>
-    <h1>Bienvenido Administrador</h1>
-    <p>Usuario: <strong><?= htmlspecialchars($nombre_usuario) ?></strong></p>
-    <p>Nombre completo: <strong><?= htmlspecialchars($admin['nombre']) ?></strong></p>
-    <p>Email: <strong><?= htmlspecialchars($admin['email']) ?></strong></p>
-</header>
+    <header>
+        <h1>Bienvenido, Administrador</h1>
+        <p>Usuario: <strong><?= htmlspecialchars($nombre_usuario) ?></strong></p>
+        <p>Nombre: <strong><?= htmlspecialchars($admin['nombre']) ?></strong></p>
+        <p>Email: <strong><?= htmlspecialchars($admin['email']) ?></strong></p>
+    </header>
 
-
-<center>
-
-<main>
-    <div class="logo"> Panel Administrativo </div>
+    <main>
+        <div class="logo">Panel de Control</div>
         <ul>
-            <li><a href="funcionalidades/huespedes.php">Ver Huéspedes Registrados</a></li>
-            <li><a href="gestionar_reservas.php">Gestionar Reservas</a></li>
-            <li><a href="habitaciones.php">Gestionar Habitaciones</a></li>
-            <li><a href="servicios.php">Servicios del Hotel</a></li>
+            <center>
+            <li><a href="CRUD/huesped/index.php">Gestionar Huespedes</a></li>
+            <li><a href="CRUD/reservas.php">Gestionar Reservas</a></li>
+            <li><a href="CRUD/habitaciones.php">Gestionar Habitaciones</a></li>
+            <li><a href="CRUD/servicios.php">Gestionar Servicios del Hotel</a></li>
+            </center>
         </ul>
-</main>
+    </main>
 
-</center>
-
-<footer>
-    <a href="../login/logout.php">Cerrar sesión</a>
-</footer>
+    <footer>
+        <a href="../login/logout.php">Cerrar sesión</a>
+    </footer>
 
 </body>
 </html>
-
-
-
-
-
-
