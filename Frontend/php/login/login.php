@@ -1,60 +1,40 @@
 <?php
-include("../conexion.php");         //conexion BD.
-session_start();                   // Iniciar seccion para manejar variables "$_SESSION".
+include("../conexion.php");
+session_start();
 
 $mensaje = "";
+$redirect_url = $_GET['redirect'] ?? '';
 
-if (!empty($_POST["btningresar"])) {                              // Si se envió el formulario.
-    $nombre = trim($_POST["user"] ?? '');                //  Obtiene los valores enviados por el formulario.
+if (!empty($_POST["btningresar"])) {
+    $nombre = trim($_POST["user"] ?? '');
     $pass = $_POST["pass"] ?? '';
 
-    //Si alguno de los campos está vacío, se genera un mensaje de error.
     if (empty($nombre) || empty($pass)) {
         $mensaje = "Todos los campos son obligatorios.";
     } else {
-        // Verificamos en tabla administrador, los datos
         $query_admin = pg_query_params($conn, "SELECT id_usuario FROM administrador WHERE nombre = $1", array($nombre));
-
-          if (pg_num_rows($query_admin) > 0) {                   // Si se encuentra un administrador en la tabla.
+        if (pg_num_rows($query_admin) > 0) {
             $admin = pg_fetch_assoc($query_admin);
-            $id_usuario = $admin["id_usuario"];               // Obtenemos el id de usuario.
-            $rol = "admin";                                  // Obtenemos el rol de usuario.
+            $id_usuario = $admin["id_usuario"];
+            $rol = "admin";
         } else {
-            // Verificamos en tabla huesped
-          $query_huesped = pg_query_params($conn, "SELECT id_usuario FROM huesped WHERE nombre = $1", array($nombre));
-
-          if (pg_num_rows($query_huesped) > 0) {                 // Si se encuentra un huesped en la tabla.
-              $huesped = pg_fetch_assoc($query_huesped);       
-              $id_usuario = $huesped["id_usuario"];            // Obtenemos el id de usuario.
-              $rol = "huesped";                               // Obtenemos el rol de usuario.
-          } else {
-
-            // Si no está en ninguna tabla, se muestra mensaje de error y se cancela la búsqueda.
-              $mensaje = "El nombre no está registrado como administrador ni como huésped.";
-              $id_usuario = null;
-          }
+            $query_huesped = pg_query_params($conn, "SELECT id_usuario FROM huesped WHERE nombre = $1", array($nombre));
+            if (pg_num_rows($query_huesped) > 0) {
+                $huesped = pg_fetch_assoc($query_huesped);
+                $id_usuario = $huesped["id_usuario"];
+                $rol = "huesped";
+            } else {
+                $mensaje = "El nombre no está registrado.";
+                $id_usuario = null;
+            }
         }
 
-        //Verificamos en Tabla "USUARIO", si coincide el ID_USUARIO con Clave
         if ($id_usuario) {
             $query_usuario = pg_query_params($conn, "SELECT * FROM usuario WHERE id_usuario = $1 AND clave = md5($2)", array($id_usuario, $pass));
-
-            //Si la consulta devuelve resultados, entonces la contraseña es correcta.
             if (pg_num_rows($query_usuario) > 0) {
-
-                // Verificar si el usuario está verificado
-                if ($rol === "admin") {
-                    $check_verif = pg_query_params($conn, "SELECT email, verificado, codigo_verificacion FROM administrador WHERE id_usuario = $1", array($id_usuario));
-                } else {
-                    $check_verif = pg_query_params($conn, "SELECT email, verificado, codigo_verificacion FROM huesped WHERE id_usuario = $1", array($id_usuario));
-                }
-
-                //Validación de cuenta verificada:
+                $check_verif = pg_query_params($conn, "SELECT email, verificado, codigo_verificacion FROM " . $rol . " WHERE id_usuario = $1", array($id_usuario));
                 if ($check_verif && $datos = pg_fetch_assoc($check_verif)) {
-                  // Debug temporal
-                  error_log("Valor verificado: " . var_export($datos['verificado'], true));
-
-                  if ($datos['verificado'] !== 't' && $datos['verificado'] !== true) {
+                    if ($datos['verificado'] !== 't' && $datos['verificado'] !== true) {
                         include("mail/enviar_codigo.php");
                         enviarCodigoVerificacion($datos['email'], $datos['codigo_verificacion']);
                         echo "<script>
@@ -65,7 +45,6 @@ if (!empty($_POST["btningresar"])) {                              // Si se envi�
                     }
                 }
 
-                // Usuario verificado: guardar sesión y redirigir
                 $usuario = pg_fetch_assoc($query_usuario);
                 $_SESSION["id_usuario"] = $usuario["id_usuario"];
                 $_SESSION["username"] = $usuario["username"];
@@ -73,12 +52,19 @@ if (!empty($_POST["btningresar"])) {                              // Si se envi�
 
                 if ($rol === "admin") {
                     header("Location: ../admin/panel_admin.php");
+                    exit();
                 } elseif ($rol === "huesped") {
-                    header("Location: ../huesped/panel_huesped.php");
-                } else {
-                    $mensaje = "Rol no reconocido.";
+                    if ($redirect_url && strpos($redirect_url, 'http://') === false && strpos($redirect_url, 'https://') === false) {
+                        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
+                        $host = $_SERVER['HTTP_HOST'];
+                        $redirect_path = ltrim($redirect_url, '/');
+                        header("Location: $protocol://$host/$redirect_path");
+                        exit();
+                    } else {
+                        header("Location: ../../pages/index.php");
+                        exit();
+                    }
                 }
-                exit();
             } else {
                 $mensaje = "Contraseña incorrecta.";
             }
@@ -87,72 +73,55 @@ if (!empty($_POST["btningresar"])) {                              // Si se envi�
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Iniciar Sesión - HOTEL H</title>
-  
   <link rel="stylesheet" href="../../css/style_login.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-  
 </head>
 <body>
 
-  <!-------Encabezado---------->
-
 <header class="header">
-
   <div class="logo">HOTEL <span>H</span></div>
   <nav>
     <ul class="nav-links">
-      <li><a href="../../pages/index.html">INICIO</a></li>
-      <li><a href="../../pages/habitaciones.html">HABITACIONES</a></li>
+      <li><a href="../../pages/index.php">INICIO</a></li>
+      <li><a href="../../pages/habitacion/habitaciones.php">HABITACIONES</a></li>
       <li><a href="../../pages/servicios.html">SERVICIOS</a></li>
       <li><a href="../../pages/blog.html">BLOG</a></li>
       <li><a href="../../pages/contacto.html">CONTACTO</a></li>
     </ul>
   </nav>
-  <div class="right-nav">
-  
-  </div>
-
+  <div class="right-nav"></div>
 </header>
 
-  <!-------Formulario Login---------->
-
 <section class="login-section">
-
   <div class="formulario animate">
     <h1>Inicio de Sesión</h1>
-      <!-------incluimos mensaje, segun sea necesario---------->
     <?php if (!empty($mensaje)) : ?>
-      <div class="alert"><?= $mensaje ?></div>
+      <div class="alert"><?= htmlspecialchars($mensaje) ?></div>
     <?php endif; ?>
 
     <form method="post">
-      <!-------usuario---------->
       <div class="input-group">
         <input type="text" name="user" required>
         <label>Nombre</label>
       </div>
-      <!-------password---------->
       <div class="input-group">
         <input type="password" name="pass" required>
         <label>Contraseña</label>
       </div>
-      <!-------boton Iniciar secion---------->
       <input name="btningresar" type="submit" value="Iniciar Sesión">
-      <!-------Link Registrarse---------->
       <div class="registrarse">
         ¿No tienes cuenta? <a href="registro.php">Regístrate aquí</a>
       </div>
     </form>
-
   </div>
-  
 </section>
 
 </body>

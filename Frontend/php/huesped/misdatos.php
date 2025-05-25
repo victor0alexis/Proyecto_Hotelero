@@ -1,5 +1,5 @@
 <?php
-include("../../conexion.php");
+include("../conexion.php");
 session_start();
 
 // Verifica si está autenticado como huésped
@@ -77,7 +77,7 @@ if (!$huesped) {
 <head>
   <meta charset="UTF-8">
   <title>Mis Datos</title>
-  <link rel="stylesheet" href="../../../css/style_huesped.css">
+  <link rel="stylesheet" href="../../css/style_huesped.css">
 </head>
 <body>
 
@@ -111,7 +111,7 @@ if (!$huesped) {
 
     <div class="form-buttons">
       <button type="submit">Guardar Cambios</button>
-      <a href="../panel_huesped.php" class="btn-volver">Volver</a>
+      <a href="../../pages/index.php" class="btn-volver">Volver</a>
     </div>
   </form>
 </div>

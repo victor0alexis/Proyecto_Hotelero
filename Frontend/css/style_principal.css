@@ -1,5 +1,4 @@
 /* Estilo General */
-
 * {
   margin: 0;
   padding: 0; 
@@ -14,39 +13,34 @@ body {
   color: #333;
 }
 
-/* Header */
+/* === HEADER === */
 
 .header {
   display: flex;
-  justify-content: space-between; /* Distribuye logo, menú y botón */
+  justify-content: space-between;
   align-items: center;
-  background: rgba(0, 0, 0, 0.7); /* Fondo negro semitransparente */
-  padding: 20px 5%; /* Padding relativo */
-  position: fixed; /* Fijo en la parte superior */
+  background: rgba(0, 0, 0, 0.7);
+  padding: 20px 5%;
+  position: fixed;
   width: 100%;
   z-index: 1000;
   color: white;
-  font-family: 'Montserrat', sans-serif; /* Tipografía similar */
-  transition: background 0.3s; /* Efecto al hacer scroll */
+  transition: background 0.3s;
 }
 
-/* Logo más estilizado */
 .logo {
   font-size: 28px;
   font-weight: 600;
   letter-spacing: 1px;
 }
 
-.logo span {
-  color: white; 
-}
+/* === MENÚ DE NAVEGACIÓN === */
 
-/* Menú centralizado */
 .nav-links {
   list-style: none;
   display: flex;
   gap: 40px;
-  margin: 0 auto; /* Centra el menú */
+  margin: 0 auto;
 }
 
 .nav-links a {
@@ -55,20 +49,20 @@ body {
   font-weight: 500;
   font-size: 14px;
   letter-spacing: 1px;
-  text-transform: uppercase; /* Texto en mayúsculas */
+  text-transform: uppercase;
   transition: color 0.3s;
 }
 
 .nav-links a:hover {
-  color: white 
+  color: white;
 }
 
-/* Botón de reserva estilo Hayden */
+/* Botón Login */
 .btn-login {
-  background: #000; /* Negro*/
+  background: #000;
   padding: 12px 25px;
-  border-radius: 4px; /* Bordes menos redondeados */
-  color: white !important; /* Texto blanco */
+  border-radius: 4px;
+  color: white !important;
   font-weight: 600;
   text-decoration: none;
   text-transform: uppercase;
@@ -78,7 +72,6 @@ body {
 }
 
 /* Slider */
-
 .slider {
   position: relative;
   width: 100%;
@@ -96,46 +89,6 @@ body {
   opacity: 0;
   transition: opacity 1.5s ease-in-out;
 }
-.slide::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.3); /* Más claro para mostrar mejor el fondo */
-}
-
-.slide.active {
-  opacity: 1;
-}
-
-/* Contenido del slide - Estilo minimalista */
-.slide .info {
-  position: absolute;
-  bottom: 25%;
-  left: 10%;
-  color: #fff;
-  max-width: 600px;
-}
-
-
-.btn {
-  background-color: #c8a97e; /* Dorado característico */
-  padding: 12px 30px;
-  color: #000 !important;
-  text-decoration: none;
-  border-radius: 4px; /* Bordes menos redondeados */
-  margin-top: 15px;
-  display: inline-block;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-  border: none;
-}
 
 .slide::after {
   content: "";
@@ -144,43 +97,39 @@ body {
   background: rgba(0, 0, 0, 0.4);
 }
 
-/* Sección perfil huésped */
-
-.perfil {
-  padding: 100px 20px;
-  background-color: #f3f4f6;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.slide.active {
+  opacity: 1;
 }
 
-.perfil-container {
-  background: white;
-  border-radius: 15px;
-  padding: 30px 50px;
-  max-width: 700px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  text-align: center;
+.slide .info {
+  position: absolute;
+  bottom: 25%;
+  left: 10%;
+  color: #fff;
+  max-width: 600px;
 }
 
-.perfil-container h2 {
-  font-size: 28px;
-  margin-bottom: 10px;
-  color: #1e3a8a;
-}
-
-.perfil-container p {
-  font-size: 16px;
-  margin: 8px 0;
+.btn {
+  background-color: #c8a97e;
+  padding: 12px 30px;
+  color: #000 !important;
+  text-decoration: none;
+  border-radius: 4px;
+  margin-top: 15px;
+  display: inline-block;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  border: none;
 }
 
 /* Footer */
-
 .footer {
   background: #000;
   color: white;
   padding: 60px 20px 30px;
-  font-family: 'Montserrat', sans-serif;
 }
 
 .footer-container {
@@ -189,14 +138,6 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 40px;
-}
-
-.footer-logo {
-  margin-bottom: 20px;
-}
-
-.footer-logo img {
-  height: 40px;
 }
 
 .footer h3 {
@@ -225,7 +166,8 @@ body {
   font-size: 0.8rem;
   color: #999;
 }
-/* ESTILOS PARA EL MENÚ DESPLEGABLE DEL USUARIO */
+
+/* Menú desplegable de usuario */
 .right-nav {
   position: relative;
 }
@@ -245,9 +187,9 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Montserrat', sans-serif;
   border-radius: 20px;
   transition: all 0.3s ease;
+  font-weight: 600;
 }
 
 .user-btn:hover {
