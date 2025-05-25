@@ -1,147 +1,153 @@
 -- Tabla: Hotel
 CREATE TABLE Hotel (
     ID_Hotel SERIAL PRIMARY KEY,
-    Nombre VARCHAR(100),
-    Direccion VARCHAR(200),
+    Nombre VARCHAR(100) NOT NULL,
+    Direccion VARCHAR(200) NOT NULL,
     Telefono VARCHAR(20)
 );
 
 -- Tabla: Habitacion
 CREATE TABLE Habitacion (
     ID_Habitacion SERIAL PRIMARY KEY,
-    Precio NUMERIC(10, 2),
-    Estado VARCHAR(20),
-    Tipo VARCHAR(50),
-    ID_Hotel INT,
-    imagen VARCHAR(255),
+    Precio NUMERIC(10, 3) NOT NULL,
+    Estado VARCHAR(20) NOT NULL,
+    Tipo VARCHAR(50) NOT NULL,
+    Descripcion VARCHAR(200),
+    Imagen VARCHAR(255),
+    ID_Hotel INT NOT NULL,
     FOREIGN KEY (ID_Hotel) REFERENCES Hotel(ID_Hotel)
 );
 
--- Tabla: usuario
-CREATE TABLE usuario (
-    id_usuario SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    clave TEXT NOT NULL,
-    rol VARCHAR(20) NOT NULL CHECK (rol IN ('admin', 'huesped'))
+-- Tabla: Usuario
+CREATE TABLE Usuario (
+    ID_Usuario SERIAL PRIMARY KEY,
+    Username VARCHAR(50) UNIQUE NOT NULL,
+    Clave TEXT NOT NULL,
+    Rol VARCHAR(20) NOT NULL CHECK (Rol IN ('admin', 'huesped'))
 );
 
--- Tabla: huesped
-CREATE TABLE huesped (
-    id_huesped SERIAL PRIMARY KEY,
-    id_usuario INTEGER NOT NULL UNIQUE,
-    nombre VARCHAR(100) NOT NULL,
-    email VARCHAR(100),
-    telefono VARCHAR(20),
-    verificado BOOLEAN Default False,
-    codigo_verificacion VARCHAR(10),
-
-    CONSTRAINT fk_usuario_huesped FOREIGN KEY (id_usuario)
-    REFERENCES usuario(id_usuario) ON DELETE CASCADE
+-- Tabla: Huesped
+CREATE TABLE Huesped (
+    ID_Huesped SERIAL PRIMARY KEY,
+    ID_Usuario INTEGER NOT NULL UNIQUE,
+    Nombre VARCHAR(100) NOT NULL,
+    Email VARCHAR(100),
+    Telefono VARCHAR(20),
+    Verificado BOOLEAN DEFAULT FALSE,
+    Codigo_Verificacion VARCHAR(10),
+    FOREIGN KEY (ID_Usuario) REFERENCES Usuario(ID_Usuario) ON DELETE CASCADE
 );
 
--- Tabla: administrador
-CREATE TABLE administrador (
-    id_admin SERIAL PRIMARY KEY,
-    id_usuario INTEGER NOT NULL UNIQUE,
-    nombre VARCHAR(100) NOT NULL,
-    email VARCHAR(100),
-    verificado BOOLEAN Default False,
-    codigo_verificacion VARCHAR(10),
-
-    CONSTRAINT fk_usuario_admin FOREIGN KEY (id_usuario)
-    REFERENCES usuario(id_usuario) ON DELETE CASCADE
+-- Tabla: Administrador
+CREATE TABLE Administrador (
+    ID_Admin SERIAL PRIMARY KEY,
+    ID_Usuario INTEGER NOT NULL UNIQUE,
+    Nombre VARCHAR(100) NOT NULL,
+    Email VARCHAR(100),
+    Verificado BOOLEAN DEFAULT FALSE,
+    Codigo_Verificacion VARCHAR(10),
+    FOREIGN KEY (ID_Usuario) REFERENCES Usuario(ID_Usuario) ON DELETE CASCADE
 );
 
 -- Tabla: Reserva
 CREATE TABLE Reserva (
     ID_Reserva SERIAL PRIMARY KEY,
-    Fecha_Entrada DATE,
-    Fecha_Salida DATE,
-    Estado VARCHAR(50),
-    ID_Huesped INT,
-    ID_Habitacion INT,
+    Fecha_Entrada DATE NOT NULL,
+    Fecha_Salida DATE NOT NULL,
+    Estado VARCHAR(50) NOT NULL,
+    ID_Huesped INT NOT NULL,
+    ID_Habitacion INT NOT NULL,
     FOREIGN KEY (ID_Huesped) REFERENCES Huesped(ID_Huesped),
     FOREIGN KEY (ID_Habitacion) REFERENCES Habitacion(ID_Habitacion)
-);
-
--- Tabla: Pago
-CREATE TABLE Pago (
-    ID_Pago SERIAL PRIMARY KEY,
-    Monto NUMERIC(10, 2),
-    Fecha_Pago DATE,
-    ID_Reserva INT,
-    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva)
-);
-
--- Tabla: Factura
-CREATE TABLE Factura (
-    ID_Factura SERIAL PRIMARY KEY,
-    Fecha_Emision DATE,
-    Numero VARCHAR(50),
-    ID_Pago INT,
-    FOREIGN KEY (ID_Pago) REFERENCES Pago(ID_Pago)
 );
 
 -- Tabla: Opinion
 CREATE TABLE Opinion (
     ID_Opinion SERIAL PRIMARY KEY,
-    Comentario TEXT,
-    Clasificacion INT,
-    Fecha DATE,
-    ID_Reserva INT,
+    Comentario TEXT NOT NULL,
+    Clasificacion INT CHECK (Clasificacion BETWEEN 1 AND 5),
+    Fecha DATE NOT NULL,
+    ID_Reserva INT NOT NULL,
     FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva)
+);
+
+-- Tabla: Servicio_Incluido
+CREATE TABLE Servicio_Incluido (
+    ID_Servicio_Incluido SERIAL PRIMARY KEY,
+    ID_Servicio INT NOT NULL,
+    Tipo_Servicio VARCHAR(50) NOT NULL,
+    Personal_Encargado VARCHAR(50) NOT NULL,
+    ID_Habitacion INT NOT NULL,
+    ID_Reserva INT NOT NULL,
+    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva),
+    FOREIGN KEY (ID_Habitacion) REFERENCES Habitacion(ID_Habitacion)
+);
+
+-- Tabla: Boleta
+CREATE TABLE Boleta (
+    ID_Boleta SERIAL PRIMARY KEY,
+    Monto NUMERIC(10, 2) NOT NULL,
+    Fecha_Pago DATE NOT NULL,
+    Estado_Pago VARCHAR(50) NOT NULL,
+    ID_Reserva INT NOT NULL,
+    ID_Servicio_Incluido INT,
+    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva),
+    FOREIGN KEY (ID_Servicio_Incluido) REFERENCES Servicio_Incluido(ID_Servicio_Incluido)
+);
+
+-- Tabla: Metodo_Pago
+CREATE TABLE Metodo_Pago (
+    ID_Metodo_Pago SERIAL PRIMARY KEY,
+    Metodo_Pago VARCHAR(50) NOT NULL,
+    ID_Boleta INT NOT NULL,
+    FOREIGN KEY (ID_Boleta) REFERENCES Boleta(ID_Boleta)
 );
 
 -- Tabla: Servicio_Transporte
 CREATE TABLE Servicio_Transporte (
     ID_Servicio_Transporte SERIAL PRIMARY KEY,
-    Tipo_Servicio VARCHAR(50),
-    Destino VARCHAR(100),
-    Costo NUMERIC(10, 2),
-    Fecha DATE,
-    ID_Reserva INT,
-    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva)
+    Descripcion VARCHAR(100) NOT NULL,
+    Costo NUMERIC(10, 2) NOT NULL,
+    Fecha_Servicio DATE NOT NULL
 );
 
 -- Tabla: Servicio_Lavanderia
 CREATE TABLE Servicio_Lavanderia (
     ID_Servicio_Lavanderia SERIAL PRIMARY KEY,
-    Tipo_Prenda VARCHAR(100),
-    Costo NUMERIC(10, 2),
-    Fecha_Entrega DATE,
-    ID_Reserva INT,
-    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva)
+    Descripcion VARCHAR(100) NOT NULL,
+    Costo NUMERIC(10, 2) NOT NULL,
+    Fecha_Servicio DATE NOT NULL
 );
 
 -- Tabla: Servicio_Habitacion
 CREATE TABLE Servicio_Habitacion (
     ID_Servicio_Habitacion SERIAL PRIMARY KEY,
-    Descripcion TEXT,
-    Costo NUMERIC(10, 2),
-    Fecha_Hora TIMESTAMP,
-    ID_Reserva INT,
-    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva)
+    Descripcion VARCHAR(100) NOT NULL,
+    Costo NUMERIC(10, 2) NOT NULL,
+    Fecha_Servicio DATE NOT NULL
 );
 
---INSERCION DE DATOS EN TABLAS
+
+-- ===================
+-- INSERCION DE DATOS
+-- ===================
 
 -- Usuarios
-INSERT INTO usuario (username, clave, rol) VALUES 
+INSERT INTO Usuario (username, clave, rol) VALUES 
 ('usuario_admin1', md5('admin'), 'admin'),
 ('usuario_admin2', md5('admin'), 'admin'),
 ('usuario_huesped1', md5('huesped'), 'huesped'),
 ('usuario_huesped2', md5('huesped'), 'huesped');
 
-
 -- Administradores
-INSERT INTO administrador (id_usuario, nombre, email,verificado,codigo_verificacion) VALUES 
-(1, 'admin1', 'admin1@admin.com','true',0000),
-(2, 'admin2', 'admin2@admin.com','false',0000);
+INSERT INTO Administrador (id_usuario, nombre, email, verificado, codigo_verificacion) VALUES 
+(1, 'admin1', 'admin1@admin.com', TRUE, '0000'),
+(2, 'admin2', 'admin2@admin.com', FALSE, '0000');
 
 -- Huéspedes
-INSERT INTO huesped (id_usuario, nombre, email, telefono,verificado,codigo_verificacion) VALUES 
-(3, 'huesped1', 'huesped1@husped.com', '900123001','true','0000'),
-(4, 'huesped2', 'huesped2@huesped.com', '900123002','false','0000');
+INSERT INTO Huesped (id_usuario, nombre, email, telefono, verificado, codigo_verificacion) VALUES 
+(3, 'huesped1', 'huesped1@huesped.com', '900123001', TRUE, '0000'),
+(4, 'huesped2', 'huesped2@huesped.com', '900123002', FALSE, '0000');
 
 -- Hotel
 INSERT INTO Hotel (nombre, direccion, Telefono) VALUES
@@ -149,13 +155,57 @@ INSERT INTO Hotel (nombre, direccion, Telefono) VALUES
 ('Hotel Colline de France', 'Isla Bolifushi, Maldivas', '979722288'),
 ('JW Marriott Marquis Hotel', 'Dubai, Emiratos Árabes Unidos', '979722299');
 
--- Habitacion
-INSERT INTO Habitacion (Precio, Estado, Tipo, ID_Hotel,imagen) VALUES
-(90.00,  'Disponible', 'Económica', 1,'habitacion_economica.jpg'),
-(120.00, 'Disponible', 'Individual', 1,'habitacion_individual_1.jpg'),
-(110.00, 'Disponible', 'Individual', 2,'habitacion_individual_2.jpg'),
-(150.00, 'Ocupada', 'Doble', 1,'habitacion_doble.jpg'),
-(160.00, 'Disponible', 'Doble', 3,'habitacion_doble_2.jpg'),
-(180.00, 'Mantenimiento', 'Matrimonial', 2,'habitacion_matrimonial.jpg'),
-(200.00, 'Disponible', 'Suite', 1,'habitacion_suite.jpg'),
-(250.00, 'Ocupada', 'Suite Lujo', 3,'habitacion_suite_lujo.jpg');
+-- Habitaciones
+INSERT INTO Habitacion (Precio, Estado, Tipo, Descripcion, ID_Hotel, Imagen) VALUES
+(90.000, 'Disponible', 'Económica','descripcion 1', 1,'habitacion_economica.jpg'),
+(120.000, 'Disponible', 'Individual','descripcion 2', 1,'habitacion_individual_1.jpg'),
+(110.000, 'Disponible', 'Individual','descripcion 3', 2,'habitacion_individual_2.jpg'),
+(150.000, 'Ocupada', 'Doble','descripcion 4', 1,'habitacion_doble.jpg'),
+(160.000, 'Disponible', 'Doble','descripcion 5', 3,'habitacion_doble_2.jpg'),
+(180.000, 'Mantenimiento', 'Matrimonial','descripcion 6', 2,'habitacion_matrimonial.jpg'),
+(200.000, 'Disponible', 'Suite','descripcion 7', 1,'habitacion_suite.jpg'),
+(250.000, 'Ocupada', 'Suite Lujo','descripcion 8', 3,'habitacion_suite_lujo.jpg');
+
+-- Reservas (deben ir antes de Servicio_Incluido)
+INSERT INTO Reserva (Fecha_Entrada, Fecha_Salida, Estado, ID_Huesped, ID_Habitacion) VALUES
+('2025-06-01', '2025-06-05', 'Confirmada', 1, 1),
+('2025-06-10', '2025-06-15', 'Pendiente', 2, 3);
+
+-- Servicios Incluidos (solo se insertan 2, porque hay 2 reservas)
+INSERT INTO Servicio_Incluido (ID_Servicio, Tipo_Servicio, Personal_Encargado, ID_Habitacion, ID_Reserva) VALUES
+(1, 'Transporte', 'Personal Transporte', 1, 1),
+(2, 'Lavandería','Personal Lavandería', 3, 2);
+
+-- Opiniones
+INSERT INTO Opinion (Comentario, Clasificacion, Fecha, ID_Reserva)
+VALUES
+('Muy buen servicio y limpieza.', 5, '2025-06-06', 1),
+('El desayuno podría mejorar.', 3, '2025-06-16', 2);
+
+-- Boletas
+INSERT INTO Boleta (Monto, Fecha_Pago, Estado_Pago, ID_Reserva, ID_Servicio_Incluido) VALUES
+(600, '2025-06-05', 'Pagado', 1, 1),
+(300, '2025-06-15', 'Pendiente', 2, 2);
+
+-- Métodos de Pago
+INSERT INTO Metodo_Pago (Metodo_Pago, ID_Boleta) VALUES
+('Tarjeta de Crédito', 1),
+('Efectivo', 2);
+
+-- Servicios Transporte
+INSERT INTO Servicio_Transporte (Descripcion, Costo, Fecha_Servicio) VALUES
+('Traslado aeropuerto-hotel', 20000.00, '2025-06-01'),
+('Traslado aeropuerto-hotel', 10000.00, '2025-10-01'),
+('Traslado aeropuerto-hotel', 30000.00, '2025-11-02');
+
+-- Servicios Lavandería
+INSERT INTO Servicio_Lavanderia (Descripcion, Costo, Fecha_Servicio) VALUES
+('Lavado de ropa blanca', 12000.00, '2025-06-12'),
+('Lavado de ropa negra', 12000.00, '2025-06-12'),
+('Lavado de ropa a color', 22000.00, '2025-06-12');
+
+-- Servicios Habitación
+INSERT INTO Servicio_Habitacion (Descripcion, Costo, Fecha_Servicio) VALUES
+('Desayuno a la habitación', 25000.00, '2025-06-03'),
+('Almuerzo', 12000.00, '2025-06-12'),
+('Cena', 12000.00, '2025-06-12');
