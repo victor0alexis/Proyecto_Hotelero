@@ -37,9 +37,8 @@ $consulta = pg_query($conn, "
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Habitaciones</title>
-  <link rel="stylesheet" href="../../css/Habitaciones/style_habitaciones.css">
+  <link rel="stylesheet" href="../../css/Habitacion/style_habitaciones.css">
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 
@@ -53,9 +52,8 @@ $consulta = pg_query($conn, "
         <ul class="nav-links">
         <li><a href="../index.php" class="active">Inicio</a></li>
         <li><a href="habitaciones.php" class="active">Habitaciones</a></li>
-        <li><a href="servicios.html">Servicios</a></li>
-        <li><a href="blog.html">Blog</a></li>
-        <li><a href="contacto.html">Contacto</a></li>
+        <li><a href="../servicios/servicios.php">Servicios</a></li>
+        <li><a href="../contacto.html">Contacto</a></li>
         </ul>
     </nav>
 
@@ -66,9 +64,16 @@ $consulta = pg_query($conn, "
     <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'huesped') : ?>
 
       <!-- Si el usuario está logueado como huésped: Mostrar Datos-->
-      <div class="usuario-info">
-          <span>👤 <?= htmlspecialchars($_SESSION['username']) ?></span>
-          <a href="../../php/login/logout.php" class="btn-cerrar">Cerrar sesión</a>
+      <div class="user-dropdown">
+        <!-- se crea boton con datos con los datos de usuario.-->
+        <button class="user-btn" onclick="toggleDropdown()">👤 <?= htmlspecialchars($_SESSION['username']) ?></button>
+        <!-- opciones disponibles para el huesped-->
+        <div id="userDropdown" class="dropdown-content">
+          <a href="../../php/huesped/datos_huesped.php">Datos</a>
+          <a href="../../php/huesped/reservas_hechas.php">Reservas hechas</a>
+          <a href="../../php/cambiar_password.php">Cambio de contraseña</a>
+          <a href="../../php/login/logout.php">Cerrar sesión</a>
+        </div>
       </div>
 
     <!-- Si el usuario no ha iniciado sesion.-->
@@ -96,7 +101,7 @@ $consulta = pg_query($conn, "
       <div class="habitacion-card">
         <img src="../../img/habitaciones/<?= htmlspecialchars($imagen) ?>" alt="Habitación <?= htmlspecialchars($habitacion['tipo']) ?>" class="habitacion-imagen">
         <h2><?= htmlspecialchars($habitacion['tipo']) ?></h2>
-        <p><strong>Precio:</strong> $<?= number_format($habitacion['precio'], 2) ?></p>
+        <p><strong>Precio:</strong> $<?= number_format($habitacion['precio'], 3) ?></p>
         <p><strong>Estado:</strong> <?= htmlspecialchars($habitacion['estado']) ?></p>
         <p><strong>Hotel:</strong> <?= htmlspecialchars($habitacion['nombre_hotel']) ?></p>
       </div>
@@ -104,12 +109,9 @@ $consulta = pg_query($conn, "
   <?php endwhile; ?>
 </section>
 
-<!-- ======= PIE DE PÁGINA ======= -->
-<footer class="footer">
-  <p>&copy; 2025 Hotel H. Todos los derechos reservados.</p>
-</footer>
 
-<!-- Script para mostrar/ocultar menú desplegable -->
+
+<!-- MOSTRAR/OCULTAR MENU DESPLEGABLE -->
 <script>
 function toggleDropdown() {
   const dropdown = document.getElementById("userDropdown");
@@ -125,6 +127,11 @@ window.onclick = function(event) {
   }
 };
 </script>
+
+<!-- ======= PIE DE PÁGINA ======= -->
+<footer class="footer">
+  <p>&copy; 2025 Hotel H. Todos los derechos reservados.</p>
+</footer>
 
 </body>
 </html>

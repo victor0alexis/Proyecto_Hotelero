@@ -67,7 +67,7 @@ $consulta = pg_query_params($conn,
 $huesped = pg_fetch_assoc($consulta);
 
 if (!$huesped) {
-    header("Location: ../index.php");
+    header("Location: datos_huesped.php");
     exit();
 }
 ?>

@@ -14,6 +14,7 @@ CREATE TABLE Habitacion (
     Tipo VARCHAR(50) NOT NULL,
     Descripcion VARCHAR(200),
     Imagen VARCHAR(255),
+    Capacidad INT NOT NULL DEFAULT 1,
     ID_Hotel INT NOT NULL,
     FOREIGN KEY (ID_Hotel) REFERENCES Hotel(ID_Hotel)
 );
@@ -54,7 +55,7 @@ CREATE TABLE Reserva (
     ID_Reserva SERIAL PRIMARY KEY,
     Fecha_Entrada DATE NOT NULL,
     Fecha_Salida DATE NOT NULL,
-    Estado VARCHAR(50) NOT NULL,
+    Estado VARCHAR(50) DEFAULT 'pendiente',
     ID_Huesped INT NOT NULL,
     ID_Habitacion INT NOT NULL,
     FOREIGN KEY (ID_Huesped) REFERENCES Huesped(ID_Huesped),
@@ -75,10 +76,10 @@ CREATE TABLE Opinion (
 CREATE TABLE Servicio_Incluido (
     ID_Servicio_Incluido SERIAL PRIMARY KEY,
     ID_Servicio INT NOT NULL,
-    Tipo_Servicio VARCHAR(50) NOT NULL,
+    Tipo_Servicio VARCHAR(50) NOT NULL CHECK (Tipo_Servicio IN ('transporte', 'lavanderia', 'habitacion')),
     Personal_Encargado VARCHAR(50) NOT NULL,
     ID_Habitacion INT NOT NULL,
-    ID_Reserva INT NOT NULL,
+    ID_Reserva INT DEFAULT NULL ,
     FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva),
     FOREIGN KEY (ID_Habitacion) REFERENCES Habitacion(ID_Habitacion)
 );
@@ -86,45 +87,53 @@ CREATE TABLE Servicio_Incluido (
 -- Tabla: Boleta
 CREATE TABLE Boleta (
     ID_Boleta SERIAL PRIMARY KEY,
-    Monto NUMERIC(10, 2) NOT NULL,
+    Monto NUMERIC(10, 2) NOT NULL CHECK (Monto > 0),
     Fecha_Pago DATE NOT NULL,
-    Estado_Pago VARCHAR(50) NOT NULL,
-    ID_Reserva INT NOT NULL,
-    ID_Servicio_Incluido INT,
-    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva),
+    Estado_Pago VARCHAR(50) NOT NULL CHECK (Estado_Pago IN ('pagado', 'pendiente', 'cancelado')),
+    ID_Reserva INT DEFAULT NULL,
+    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva)
+);
+
+CREATE TABLE Boleta_Servicio (
+    ID_Boleta INT NOT NULL,
+    ID_Servicio_Incluido INT NOT NULL,
+    PRIMARY KEY (ID_Boleta, ID_Servicio_Incluido),
+    FOREIGN KEY (ID_Boleta) REFERENCES Boleta(ID_Boleta),
     FOREIGN KEY (ID_Servicio_Incluido) REFERENCES Servicio_Incluido(ID_Servicio_Incluido)
 );
+
 
 -- Tabla: Metodo_Pago
 CREATE TABLE Metodo_Pago (
     ID_Metodo_Pago SERIAL PRIMARY KEY,
-    Metodo_Pago VARCHAR(50) NOT NULL,
+    Nombre_Metodo VARCHAR(50) NOT NULL,
+    Numero_Operacion VARCHAR(100),
     ID_Boleta INT NOT NULL,
     FOREIGN KEY (ID_Boleta) REFERENCES Boleta(ID_Boleta)
 );
 
 -- Tabla: Servicio_Transporte
 CREATE TABLE Servicio_Transporte (
-    ID_Servicio_Transporte SERIAL PRIMARY KEY,
+    ID_Servicio_Transporte  INT,
     Descripcion VARCHAR(100) NOT NULL,
-    Costo NUMERIC(10, 2) NOT NULL,
-    Fecha_Servicio DATE NOT NULL
+    Costo NUMERIC(10, 3) NOT NULL,
+    Fecha_Servicio DATE DEFAULT NULL 
 );
 
 -- Tabla: Servicio_Lavanderia
 CREATE TABLE Servicio_Lavanderia (
-    ID_Servicio_Lavanderia SERIAL PRIMARY KEY,
+    ID_Servicio_Lavanderia INT,
     Descripcion VARCHAR(100) NOT NULL,
-    Costo NUMERIC(10, 2) NOT NULL,
-    Fecha_Servicio DATE NOT NULL
+    Costo NUMERIC(10, 3) NOT NULL,
+    Fecha_Servicio DATE DEFAULT NULL
 );
 
 -- Tabla: Servicio_Habitacion
 CREATE TABLE Servicio_Habitacion (
-    ID_Servicio_Habitacion SERIAL PRIMARY KEY,
+    ID_Servicio_Habitacion  INT,
     Descripcion VARCHAR(100) NOT NULL,
-    Costo NUMERIC(10, 2) NOT NULL,
-    Fecha_Servicio DATE NOT NULL
+    Costo NUMERIC(10, 3) NOT NULL,
+    Fecha_Servicio DATE DEFAULT NULL
 );
 
 
@@ -142,70 +151,107 @@ INSERT INTO Usuario (username, clave, rol) VALUES
 -- Administradores
 INSERT INTO Administrador (id_usuario, nombre, email, verificado, codigo_verificacion) VALUES 
 (1, 'admin1', 'admin1@admin.com', TRUE, '0000'),
-(2, 'admin2', 'admin2@admin.com', FALSE, '0000');
+(2, 'admin2', 'admin2@admin.com', TRUE, '0000');
 
 -- Huéspedes
 INSERT INTO Huesped (id_usuario, nombre, email, telefono, verificado, codigo_verificacion) VALUES 
 (3, 'huesped1', 'huesped1@huesped.com', '900123001', TRUE, '0000'),
-(4, 'huesped2', 'huesped2@huesped.com', '900123002', FALSE, '0000');
+(4, 'huesped2', 'huesped2@huesped.com', '900123002', TRUE, '0000');
 
 -- Hotel
 INSERT INTO Hotel (nombre, direccion, Telefono) VALUES
-('Rambagh Palace', 'Jaipur, India', '979722277'),
-('Hotel Colline de France', 'Isla Bolifushi, Maldivas', '979722288'),
-('JW Marriott Marquis Hotel', 'Dubai, Emiratos Árabes Unidos', '979722299');
+('Rambagh Palace', 'Bhawani Singh Rd, Jaipur 302005, India', '0141-2385700'),
+('Hotel Colline de France', 'Rua Vigilante, 400, Gramado, Brasil', '+55-54-3286-3030'),
+('JW Marriott Marquis Hotel', 'Sheikh Zayed Rd, Business Bay, Dubai, UAE', '+971-4-4140000');
 
 -- Habitaciones
-INSERT INTO Habitacion (Precio, Estado, Tipo, Descripcion, ID_Hotel, Imagen) VALUES
-(90.000, 'Disponible', 'Económica','descripcion 1', 1,'habitacion_economica.jpg'),
-(120.000, 'Disponible', 'Individual','descripcion 2', 1,'habitacion_individual_1.jpg'),
-(110.000, 'Disponible', 'Individual','descripcion 3', 2,'habitacion_individual_2.jpg'),
-(150.000, 'Ocupada', 'Doble','descripcion 4', 1,'habitacion_doble.jpg'),
-(160.000, 'Disponible', 'Doble','descripcion 5', 3,'habitacion_doble_2.jpg'),
-(180.000, 'Mantenimiento', 'Matrimonial','descripcion 6', 2,'habitacion_matrimonial.jpg'),
-(200.000, 'Disponible', 'Suite','descripcion 7', 1,'habitacion_suite.jpg'),
-(250.000, 'Ocupada', 'Suite Lujo','descripcion 8', 3,'habitacion_suite_lujo.jpg');
+INSERT INTO Habitacion (Precio, Estado, Tipo, Descripcion, ID_Hotel, Imagen, Capacidad) VALUES
+(90.000, 'Disponible', 'Económica','Habitación económica equipada con cama individual, escritorio, ventilador de techo y baño privado. Ideal para viajeros solos.', 1, 'habitacion_economica.jpg', 1),
+(120.000, 'Disponible', 'Individual','Habitación individual con cama twin, aire acondicionado, televisión LED, baño privado y decoración tradicional.', 1, 'habitacion_individual_1.jpg', 1),
+(110.000, 'Disponible', 'Individual','Moderna habitación con cama queen, escritorio ergonómico, WiFi de alta velocidad y desayuno buffet incluido.', 2, 'habitacion_individual_2.jpg', 1),
+(150.000, 'Disponible', 'Doble','Habitación doble con dos camas twin, iluminación ambiental, TV satelital, minibar y amplio armario.', 1, 'habitacion_doble.jpg', 2),
+(160.000, 'Disponible', 'Doble','Habitación doble estilo europeo, con cama king, zona de estar, calefacción, y vistas al jardín central.', 3, 'habitacion_doble_2.jpg', 2),
+(180.000, 'Disponible', 'Matrimonial','Elegante habitación matrimonial con cama king-size, jacuzzi privado, balcón con vista a los Alpes y atención personalizada.', 2, 'habitacion_matrimonial.jpg', 2),
+(200.000, 'Mantenimiento', 'Suite','Lujosa suite con sala de estar independiente, baño de mármol, cafetera Nespresso y mayordomo disponible las 24h.', 1, 'habitacion_suite.jpg', 4),
+(250.000, 'Ocupada', 'Suite Lujo','Suite de lujo con comedor privado, terraza panorámica, spa personal, bar exclusivo y decoración vanguardista.', 3, 'habitacion_suite_lujo.jpg', 5);
 
--- Reservas (deben ir antes de Servicio_Incluido)
+-- Reservas
 INSERT INTO Reserva (Fecha_Entrada, Fecha_Salida, Estado, ID_Huesped, ID_Habitacion) VALUES
-('2025-06-01', '2025-06-05', 'Confirmada', 1, 1),
-('2025-06-10', '2025-06-15', 'Pendiente', 2, 3);
+('2025-07-10', '2025-07-15', 'pendiente', 1, 1);
 
--- Servicios Incluidos (solo se insertan 2, porque hay 2 reservas)
-INSERT INTO Servicio_Incluido (ID_Servicio, Tipo_Servicio, Personal_Encargado, ID_Habitacion, ID_Reserva) VALUES
-(1, 'Transporte', 'Personal Transporte', 1, 1),
-(2, 'Lavandería','Personal Lavandería', 3, 2);
+-- Servicios Incluidos
+INSERT INTO Servicio_Incluido (ID_Servicio, Tipo_Servicio, Personal_Encargado, ID_Habitacion) VALUES
+-- Transporte
+(1, 'transporte', 'Chofer Designado - Jaipur', 1),
+(2, 'transporte', 'Servicio Shuttle - Colline', 2),
+(3, 'transporte', 'Traslados Ejecutivos - Dubai', 3),
+(4, 'transporte', 'Servicio Privado - Rambagh', 4),
+(5, 'transporte', 'Transporte Premium - Marriott', 5),
+(6, 'transporte', 'Limusina Ejecutiva - Colline', 6),
+(7, 'transporte', 'SUV Ejecutivo - Jaipur', 7),
+(8, 'transporte', 'Transporte VIP - Marriott', 8),
+
+-- Lavandería
+(9, 'lavanderia', 'Lavandería Ecológica - Jaipur', 1),
+(10, 'lavanderia', 'Servicio Rápido - Colline', 2),
+(11, 'lavanderia', 'Servicio Premium - Dubai', 3),
+(12, 'lavanderia', 'Lavado Delicado - Jaipur', 4),
+(13, 'lavanderia', 'Lavado Ejecutivo - Marriott', 5),
+(14, 'lavanderia', 'Lavado y Planchado - Colline', 6),
+(15, 'lavanderia', 'Planchado Especial - Jaipur', 7),
+(16, 'lavanderia', 'Lavado Seda y Lino - Dubai', 8),
+
+-- Habitación
+(17, 'habitacion', 'Room Service 24h - Jaipur', 1),
+(18, 'habitacion', 'Room Service Gourmet - Colline', 2),
+(19, 'habitacion', 'Servicio Ejecutivo - Dubai', 3),
+(20, 'habitacion', 'Atención personalizada - Jaipur', 4),
+(21, 'habitacion', 'Room Service Especial - Marriott', 5),
+(22, 'habitacion', 'Gourmet + Spa - Colline', 6),
+(23, 'habitacion', 'Atención Elite - Jaipur', 7),
+(24, 'habitacion', 'Servicio VIP Suite - Marriott', 8);
 
 -- Opiniones
-INSERT INTO Opinion (Comentario, Clasificacion, Fecha, ID_Reserva)
-VALUES
-('Muy buen servicio y limpieza.', 5, '2025-06-06', 1),
-('El desayuno podría mejorar.', 3, '2025-06-16', 2);
+INSERT INTO Opinion (Comentario, Clasificacion, Fecha, ID_Reserva) VALUES
+('Una experiencia magnífica. La atención, limpieza y decoración fueron impecables.', 5, '2025-07-16', 1);
 
 -- Boletas
-INSERT INTO Boleta (Monto, Fecha_Pago, Estado_Pago, ID_Reserva, ID_Servicio_Incluido) VALUES
-(600, '2025-06-05', 'Pagado', 1, 1),
-(300, '2025-06-15', 'Pendiente', 2, 2);
+INSERT INTO Boleta (Monto, Fecha_Pago, Estado_Pago, ID_Reserva) VALUES
+(395000, '2025-07-15', 'pagado', 1);
 
 -- Métodos de Pago
-INSERT INTO Metodo_Pago (Metodo_Pago, ID_Boleta) VALUES
-('Tarjeta de Crédito', 1),
-('Efectivo', 2);
+INSERT INTO Metodo_Pago (Nombre_Metodo, Numero_Operacion, ID_Boleta) VALUES
+('Tarjeta de Crédito Visa', 'TXN789456', 1);
 
 -- Servicios Transporte
-INSERT INTO Servicio_Transporte (Descripcion, Costo, Fecha_Servicio) VALUES
-('Traslado aeropuerto-hotel', 20000.00, '2025-06-01'),
-('Traslado aeropuerto-hotel', 10000.00, '2025-10-01'),
-('Traslado aeropuerto-hotel', 30000.00, '2025-11-02');
+INSERT INTO Servicio_Transporte (ID_Servicio_Transporte,Descripcion, Costo) VALUES
+(1,'Traslado privado desde aeropuerto', 25.000),
+(2,'Transporte al centro histórico', 15.000),
+(3,'Servicio de limusina ejecutiva', 50.000),
+(4,'Traslado VIP desde terminal de lujo', 40.000),
+(5,'Van grupal con guía turístico', 20.000),
+(6,'Taxi privado con aire acondicionado', 12.000),
+(7,'Transporte ecológico (eléctrico)', 18.000),
+(8,'Servicio express puerta a puerta', 22.000);
 
 -- Servicios Lavandería
-INSERT INTO Servicio_Lavanderia (Descripcion, Costo, Fecha_Servicio) VALUES
-('Lavado de ropa blanca', 12000.00, '2025-06-12'),
-('Lavado de ropa negra', 12000.00, '2025-06-12'),
-('Lavado de ropa a color', 22000.00, '2025-06-12');
+INSERT INTO Servicio_Lavanderia (ID_Servicio_Lavanderia, Descripcion, Costo) VALUES
+(9,'Lavado y planchado express', 18.000),
+(10,'Lavado delicado para seda y lino', 20.000),
+(11,'Planchado profesional de trajes', 22.000),
+(12,'Lavado estándar con fragancia premium', 15.000),
+(13,'Limpieza de prendas delicadas', 19.000),
+(14,'Lavado a vapor y desinfección', 21.000),
+(15,'Servicio nocturno exprés', 25.000),
+(16,'Lavandería ecológica', 17.000);
 
 -- Servicios Habitación
-INSERT INTO Servicio_Habitacion (Descripcion, Costo, Fecha_Servicio) VALUES
-('Desayuno a la habitación', 25000.00, '2025-06-03'),
-('Almuerzo', 12000.00, '2025-06-12'),
-('Cena', 12000.00, '2025-06-12');
+INSERT INTO Servicio_Habitacion (ID_Servicio_Habitacion, Descripcion, Costo) VALUES
+(17,'Desayuno gourmet en la habitación', 30.000),
+(18,'Cena romántica privada', 40.000),
+(19,'Minibar surtido', 15.000),
+(20,'Decoración especial por aniversario', 35.000),
+(21,'Almuerzo ejecutivo', 22.000),
+(22,'Cena internacional', 28.000),
+(23,'Servicio personalizado de café y té', 12.000),
+(24,'Atención 24h multilingüe', 18.000);

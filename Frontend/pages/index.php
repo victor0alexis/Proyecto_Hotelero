@@ -16,7 +16,6 @@ session_start();               //iniciamos sesion.
 
 
 <!-- ======= HEADER ======= -->
-
 <header class="header">
   <div class="logo"><span>Hotel</span></div>
 
@@ -24,7 +23,7 @@ session_start();               //iniciamos sesion.
   <ul class="nav-links">
     <li><a href="index.php">Inicio</a></li>
     <li><a href="habitacion/habitaciones.php">Habitaciones</a></li>
-    <li><a href="servicios.php">Servicios</a></li>
+    <li><a href="servicios/servicios.php">Servicios</a></li>
     <li><a href="contacto.php">Contacto</a></li>
   </ul>
 
@@ -39,9 +38,9 @@ session_start();               //iniciamos sesion.
         <button class="user-btn" onclick="toggleDropdown()">👤 <?= htmlspecialchars($_SESSION['username']) ?></button>
         <!-- opciones disponibles para el huesped-->
         <div id="userDropdown" class="dropdown-content">
-          <a href="../php/huesped/misdatos.php">Datos</a>
-          <a href="reservas.php">Reservas hechas</a>
-          <a href="cambiar_password.php">Cambio de contraseña</a>
+          <a href="../php/huesped/datos_huesped.php">Datos</a>
+          <a href="../php/huesped/reservas_hechas.php">Reservas hechas</a>
+          <a href="../php/cambiar_password.php">Cambio de contraseña</a>
           <a href="../php/login/logout.php">Cerrar sesión</a>
         </div>
       </div>

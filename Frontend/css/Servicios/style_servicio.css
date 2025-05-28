@@ -1,0 +1,305 @@
+/* === SECCION PRINCIPAL: Servicios === */
+
+
+/* Estilo General */
+* {
+  margin: 0;
+  padding: 0; 
+  box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #e8ecf4, #fdfdfd);
+    color: #333;
+    margin: 0;
+    padding: 0;
+    padding-top: 1px;
+}
+
+
+
+/* === HEADER === */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 5%;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+  color: white;
+  transition: background 0.3s;
+  backdrop-filter: blur(5px);
+  background: rgba(0, 0, 0, 0.7);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3); /* Opcional para sombra */
+}
+
+.logo {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+/* === MENÚ DE NAVEGACIÓN === */
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 40px;
+  margin: 0 auto;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: white;
+}
+
+/* Botón Login */
+.btn-login {
+  background: #000;
+  padding: 12px 25px;
+  border-radius: 4px;
+  color: white !important;
+  font-weight: 600;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 1px;
+  transition: background 0.3s;
+}
+
+
+/* Menú desplegable de usuario */
+
+.right-nav {
+  position: relative;
+}
+
+.user-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.user-btn {
+  background-color: transparent;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 8px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.user-btn:hover {
+  background-color: rgba(255,255,255,0.1);
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: white;
+  min-width: 200px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  z-index: 1000;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.dropdown-content a {
+  color: #333;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  font-size: 14px;
+  transition: all 0.3s;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-content a:hover {
+  background-color: #f5f5f5;
+  color: #000;
+}
+
+.dropdown-content a:last-child {
+  border-bottom: none;
+  color: #e74c3c;
+}
+
+.show-dropdown {
+  display: block;
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+
+
+/* Títulos principales */
+.servicios-container {
+    padding: 3rem 2rem;
+    max-width: 1200px;
+    margin: 100px auto 50px; /* Para respetar el header fijo */
+}
+
+.servicios-container h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 3rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Categorías */
+.servicio-categoria {
+    margin-bottom: 4rem;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.servicio-categoria:hover {
+    transform: translateY(-5px);
+}
+
+.servicio-categoria h2 {
+    font-size: 1.8rem;
+    color: #4e54c8;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.servicio-categoria h2 i {
+    color: #4e54c8;
+    font-size: 1.5rem;
+}
+
+/* Tarjetas */
+.servicios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+.servicio-card {
+    background: linear-gradient(135deg, #ffffff, #f6f9fc);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.servicio-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 5px;
+    background: linear-gradient(90deg, #4e54c8, #8f94fb);
+}
+
+.servicio-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.servicio-card h3 {
+    font-size: 1.3rem;
+    color: #34495e;
+    margin-bottom: 0.8rem;
+}
+
+.servicio-card p {
+    margin: 0.4rem 0;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.servicio-card p i {
+    margin-right: 8px;
+    color: #4e54c8;
+    font-size: 1rem;
+}
+
+/* Íconos grandes en cada categoría */
+.servicio-categoria h2 i {
+    font-size: 1.8rem;
+}
+
+/* Fondo para cada categoría */
+.servicio-categoria:nth-child(odd) {
+    background: #f9fbff;
+}
+
+/* Colores para diferentes íconos dentro de p */
+.servicio-card p i.fa-dollar-sign {
+    color: #27ae60;
+}
+
+.servicio-card p i.fa-calendar {
+    color: #e67e22;
+}
+
+.servicio-card p i.fa-car {
+    color: #2980b9;
+}
+
+.servicio-card p i.fa-shirt {
+    color: #8e44ad;
+}
+
+.servicio-card p i.fa-bell-concierge {
+    color: #f39c12;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .servicios-container {
+        padding: 2rem 1rem;
+    }
+
+    .servicio-card {
+        padding: 1rem;
+    }
+
+    .servicio-categoria h2 {
+        font-size: 1.4rem;
+    }
+}
+
+
+/* === PIE DE PÁGINA === */
+.footer {
+  margin-top: 100px;
+  background: #000;
+  color: #ccc;
+  padding: 20px ;
+  text-align: center;
+  font-size: 0.9rem;
+}

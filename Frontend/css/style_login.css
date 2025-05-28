@@ -227,3 +227,15 @@ input[type="submit"]:hover {
     transform: translateY(0);
   }
 }
+
+
+
+/* === PIE DE PÁGINA === */
+.footer {
+  margin-top: 100px;
+  background: #000;
+  color: #ccc;
+  padding: 20px ;
+  text-align: center;
+  font-size: 0.9rem;
+}

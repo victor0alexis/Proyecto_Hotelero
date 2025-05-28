@@ -1,0 +1,125 @@
+/* ======= Reset y Base ======= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #e0eafc, #cfdef3);
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+}
+
+/* ======= Boleta Container ======= */
+.boleta-container {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    max-width: 600px;
+    width: 100%;
+    padding: 30px;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.boleta-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.boleta-header h1 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.boleta-header p {
+    font-size: 0.95rem;
+    color: #7f8c8d;
+}
+
+.boleta-section {
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    border-left: 5px solid #3498db;
+    background: #f9fbfd;
+    border-radius: 10px;
+}
+
+.boleta-section h2 {
+    font-size: 1.1rem;
+    color: #2980b9;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.boleta-section p {
+    font-size: 0.95rem;
+    color: #34495e;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.boleta-section p strong {
+    min-width: 130px;
+    font-weight: 600;
+}
+
+.icon {
+    color: #2980b9;
+    font-size: 1.1rem;
+}
+
+.boleta-total {
+    background: #ecf6fd;
+    border-left: 5px solid #27ae60;
+    padding: 15px 20px;
+    border-radius: 10px;
+}
+
+.boleta-total p {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-regresar {
+    display: block;
+    width: fit-content;
+    margin: 25px auto 0;
+    padding: 10px 25px;
+    background: #2980b9;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: 600;
+    text-align: center;
+    transition: background 0.3s ease;
+}
+
+.btn-regresar:hover {
+    background: #3498db;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+    .boleta-container {
+        padding: 20px;
+    }
+}

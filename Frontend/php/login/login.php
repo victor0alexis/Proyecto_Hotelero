@@ -45,10 +45,29 @@ if (!empty($_POST["btningresar"])) {
                     }
                 }
 
-                $usuario = pg_fetch_assoc($query_usuario);
-                $_SESSION["id_usuario"] = $usuario["id_usuario"];
-                $_SESSION["username"] = $usuario["username"];
-                $_SESSION["rol"] = $usuario["rol"];
+$usuario = pg_fetch_assoc($query_usuario);
+
+// Datos generales
+$_SESSION["id_usuario"] = $usuario["id_usuario"];
+$_SESSION["rol"] = $rol;
+$_SESSION["username"] = $usuario["username"];
+
+
+
+// Cargar datos específicos según el rol
+if ($rol === "huesped") {
+    $datos_huesped = pg_fetch_assoc(pg_query_params($conn, "SELECT id_huesped, nombre FROM huesped WHERE id_usuario = $1", [$usuario["id_usuario"]]));
+    $_SESSION["id_huesped"] = $datos_huesped["id_huesped"];
+    $_SESSION["username"] = $datos_huesped["nombre"];
+
+} elseif ($rol === "admin") {
+    $datos_admin = pg_fetch_assoc(pg_query_params($conn, "SELECT nombre, email FROM administrador WHERE id_usuario = $1", [$usuario["id_usuario"]]));
+    $_SESSION["nombre"] = $datos_admin["nombre"];
+    $_SESSION["email"] = $datos_admin["email"];
+
+
+}
+
 
                 if ($rol === "admin") {
                     header("Location: ../admin/panel_admin.php");
@@ -92,8 +111,7 @@ if (!empty($_POST["btningresar"])) {
     <ul class="nav-links">
       <li><a href="../../pages/index.php">INICIO</a></li>
       <li><a href="../../pages/habitacion/habitaciones.php">HABITACIONES</a></li>
-      <li><a href="../../pages/servicios.html">SERVICIOS</a></li>
-      <li><a href="../../pages/blog.html">BLOG</a></li>
+      <li><a href="../../pages/servicios/servicios.php">SERVICIOS</a></li>
       <li><a href="../../pages/contacto.html">CONTACTO</a></li>
     </ul>
   </nav>
@@ -124,5 +142,11 @@ if (!empty($_POST["btningresar"])) {
   </div>
 </section>
 
+<!-- ======= PIE DE PÁGINA ======= -->
+<footer class="footer">
+    <p>&copy; 2025  Hotel. Todos los derechos reservados.</p>
+</footer>
+
 </body>
+
 </html>

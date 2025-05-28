@@ -9,16 +9,11 @@ if (!isset($_SESSION['username']) || $_SESSION['rol'] !== 'admin') {
 }
 
 // Obtener información del administrador
-$nombre_usuario = $_SESSION['username'];
-$consulta = pg_query_params($conn, 
-    "SELECT a.nombre, a.email 
-     FROM administrador a
-     JOIN usuario u ON a.id_usuario = u.id_usuario
-     WHERE u.username = $1", 
-    array($nombre_usuario)
-);
+$username = $_SESSION['username'] ?? 'Desconocido';
+$nombre = $_SESSION['nombre'] ?? 'No disponible';
+$email = $_SESSION['email'] ?? 'No disponible';
 
-$admin = pg_fetch_assoc($consulta);
+
 ?>
 
 <!DOCTYPE html>
@@ -32,12 +27,12 @@ $admin = pg_fetch_assoc($consulta);
 </head>
 <body>
 
-    <header>
-        <h1>Bienvenido, Administrador</h1>
-        <p>Usuario: <strong><?= htmlspecialchars($nombre_usuario) ?></strong></p>
-        <p>Nombre: <strong><?= htmlspecialchars($admin['nombre']) ?></strong></p>
-        <p>Email: <strong><?= htmlspecialchars($admin['email']) ?></strong></p>
-    </header>
+<header>
+    <h1>Bienvenido, Administrador</h1>
+    <p>Usuario: <strong><?= htmlspecialchars($username) ?></strong></p>
+    <p>Nombre: <strong><?= htmlspecialchars($nombre) ?></strong></p>
+    <p>Email: <strong><?= htmlspecialchars($email) ?></strong></p>
+</header>
 
     <main>
         <div class="logo">Panel de Control</div>
