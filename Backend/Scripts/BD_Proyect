@@ -62,6 +62,18 @@ CREATE TABLE Reserva (
     FOREIGN KEY (ID_Habitacion) REFERENCES Habitacion(ID_Habitacion)
 );
 
+-- Tabla: Servicio_Incluido
+CREATE TABLE Servicio_Incluido (
+    ID_Servicio_Incluido SERIAL PRIMARY KEY,
+    ID_Servicio INT ,
+    Tipo_Servicio VARCHAR(50) NOT NULL CHECK (Tipo_Servicio IN ('transporte', 'lavanderia', 'habitacion')),
+    Personal_Encargado VARCHAR(50) NOT NULL,
+    ID_Habitacion INT ,
+    ID_Reserva INT DEFAULT NULL ,
+    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva),
+    FOREIGN KEY (ID_Habitacion) REFERENCES Habitacion(ID_Habitacion)
+);
+
 -- Tabla: Opinion
 CREATE TABLE Opinion (
     ID_Opinion SERIAL PRIMARY KEY,
@@ -72,17 +84,6 @@ CREATE TABLE Opinion (
     FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva)
 );
 
--- Tabla: Servicio_Incluido
-CREATE TABLE Servicio_Incluido (
-    ID_Servicio_Incluido SERIAL PRIMARY KEY,
-    ID_Servicio INT NOT NULL,
-    Tipo_Servicio VARCHAR(50) NOT NULL CHECK (Tipo_Servicio IN ('transporte', 'lavanderia', 'habitacion')),
-    Personal_Encargado VARCHAR(50) NOT NULL,
-    ID_Habitacion INT NOT NULL,
-    ID_Reserva INT DEFAULT NULL ,
-    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva),
-    FOREIGN KEY (ID_Habitacion) REFERENCES Habitacion(ID_Habitacion)
-);
 
 -- Tabla: Boleta
 CREATE TABLE Boleta (
@@ -112,9 +113,11 @@ CREATE TABLE Metodo_Pago (
     FOREIGN KEY (ID_Boleta) REFERENCES Boleta(ID_Boleta)
 );
 
+
+
 -- Tabla: Servicio_Transporte
 CREATE TABLE Servicio_Transporte (
-    ID_Servicio_Transporte  INT,
+    ID_Servicio_Transporte SERIAL NOT NULL,
     Descripcion VARCHAR(100) NOT NULL,
     Costo NUMERIC(10, 3) NOT NULL,
     Fecha_Servicio DATE DEFAULT NULL 
@@ -122,7 +125,7 @@ CREATE TABLE Servicio_Transporte (
 
 -- Tabla: Servicio_Lavanderia
 CREATE TABLE Servicio_Lavanderia (
-    ID_Servicio_Lavanderia INT,
+    ID_Servicio_Lavanderia SERIAL NOT NULL,
     Descripcion VARCHAR(100) NOT NULL,
     Costo NUMERIC(10, 3) NOT NULL,
     Fecha_Servicio DATE DEFAULT NULL
@@ -130,7 +133,7 @@ CREATE TABLE Servicio_Lavanderia (
 
 -- Tabla: Servicio_Habitacion
 CREATE TABLE Servicio_Habitacion (
-    ID_Servicio_Habitacion  INT,
+    ID_Servicio_Habitacion  SERIAL NOT NULL,
     Descripcion VARCHAR(100) NOT NULL,
     Costo NUMERIC(10, 3) NOT NULL,
     Fecha_Servicio DATE DEFAULT NULL
@@ -179,37 +182,38 @@ INSERT INTO Habitacion (Precio, Estado, Tipo, Descripcion, ID_Hotel, Imagen, Cap
 INSERT INTO Reserva (Fecha_Entrada, Fecha_Salida, Estado, ID_Huesped, ID_Habitacion) VALUES
 ('2025-07-10', '2025-07-15', 'pendiente', 1, 1);
 
--- Servicios Incluidos
-INSERT INTO Servicio_Incluido (ID_Servicio, Tipo_Servicio, Personal_Encargado, ID_Habitacion) VALUES
--- Transporte
-(1, 'transporte', 'Chofer Designado - Jaipur', 1),
-(2, 'transporte', 'Servicio Shuttle - Colline', 2),
-(3, 'transporte', 'Traslados Ejecutivos - Dubai', 3),
-(4, 'transporte', 'Servicio Privado - Rambagh', 4),
-(5, 'transporte', 'Transporte Premium - Marriott', 5),
-(6, 'transporte', 'Limusina Ejecutiva - Colline', 6),
-(7, 'transporte', 'SUV Ejecutivo - Jaipur', 7),
-(8, 'transporte', 'Transporte VIP - Marriott', 8),
+--Servicio_Incluido: Transporte 
+INSERT INTO Servicio_Incluido (ID_Servicio, Tipo_Servicio, Personal_Encargado) VALUES
+(1, 'transporte', 'Chofer Designado'),
+(2, 'transporte', 'Servicio Shuttle'),
+(3, 'transporte', 'Traslados Ejecutivos'),
+(4, 'transporte', 'Servicio Privado'),
+(5, 'transporte', 'Transporte Premium'),
+(6, 'transporte', 'Limusina Ejecutiva'),
+(7, 'transporte', 'SUV Ejecutivo'),
+(8, 'transporte', 'Transporte VIP');
 
--- Lavandería
-(9, 'lavanderia', 'Lavandería Ecológica - Jaipur', 1),
-(10, 'lavanderia', 'Servicio Rápido - Colline', 2),
-(11, 'lavanderia', 'Servicio Premium - Dubai', 3),
-(12, 'lavanderia', 'Lavado Delicado - Jaipur', 4),
-(13, 'lavanderia', 'Lavado Ejecutivo - Marriott', 5),
-(14, 'lavanderia', 'Lavado y Planchado - Colline', 6),
-(15, 'lavanderia', 'Planchado Especial - Jaipur', 7),
-(16, 'lavanderia', 'Lavado Seda y Lino - Dubai', 8),
+--Servicio_Incluido: Lavandería 
+INSERT INTO Servicio_Incluido (ID_Servicio, Tipo_Servicio, Personal_Encargado) VALUES
+(1, 'lavanderia', 'Lavandería Ecológica'),
+(2, 'lavanderia', 'Servicio Rápido'),
+(3, 'lavanderia', 'Servicio Premium'),
+(4, 'lavanderia', 'Lavado Delicado'),
+(5, 'lavanderia', 'Lavado Ejecutivo'),
+(6, 'lavanderia', 'Lavado y Planchado'),
+(7, 'lavanderia', 'Planchado Especial'),
+(8, 'lavanderia', 'Lavado Seda y Lino');
 
--- Habitación
-(17, 'habitacion', 'Room Service 24h - Jaipur', 1),
-(18, 'habitacion', 'Room Service Gourmet - Colline', 2),
-(19, 'habitacion', 'Servicio Ejecutivo - Dubai', 3),
-(20, 'habitacion', 'Atención personalizada - Jaipur', 4),
-(21, 'habitacion', 'Room Service Especial - Marriott', 5),
-(22, 'habitacion', 'Gourmet + Spa - Colline', 6),
-(23, 'habitacion', 'Atención Elite - Jaipur', 7),
-(24, 'habitacion', 'Servicio VIP Suite - Marriott', 8);
+--Servicio_Incluido: Habitación 
+INSERT INTO Servicio_Incluido (ID_Servicio, Tipo_Servicio, Personal_Encargado) VALUES
+(1, 'habitacion', 'Room Service 24h'),
+(2, 'habitacion', 'Room Service Gourmet'),
+(3, 'habitacion', 'Servicio Ejecutivo'),
+(4, 'habitacion', 'Atención personalizada'),
+(5, 'habitacion', 'Room Service Especial'),
+(6, 'habitacion', 'Gourmet + Spa'),
+(7, 'habitacion', 'Atención Elite'),
+(8, 'habitacion', 'Servicio VIP Suite');
 
 -- Opiniones
 INSERT INTO Opinion (Comentario, Clasificacion, Fecha, ID_Reserva) VALUES
@@ -224,34 +228,39 @@ INSERT INTO Metodo_Pago (Nombre_Metodo, Numero_Operacion, ID_Boleta) VALUES
 ('Tarjeta de Crédito Visa', 'TXN789456', 1);
 
 -- Servicios Transporte
-INSERT INTO Servicio_Transporte (ID_Servicio_Transporte,Descripcion, Costo) VALUES
-(1,'Traslado privado desde aeropuerto', 25.000),
-(2,'Transporte al centro histórico', 15.000),
-(3,'Servicio de limusina ejecutiva', 50.000),
-(4,'Traslado VIP desde terminal de lujo', 40.000),
-(5,'Van grupal con guía turístico', 20.000),
-(6,'Taxi privado con aire acondicionado', 12.000),
-(7,'Transporte ecológico (eléctrico)', 18.000),
-(8,'Servicio express puerta a puerta', 22.000);
+INSERT INTO Servicio_Transporte (Descripcion, Costo) VALUES
+('Traslado privado desde aeropuerto', 25.000),
+('Transporte al centro histórico', 15.000),
+('Servicio de limusina ejecutiva', 50.000),
+('Traslado VIP desde terminal de lujo', 40.000),
+('Van grupal con guía turístico', 20.000),
+('Taxi privado con aire acondicionado', 12.000),
+('Transporte ecológico (eléctrico)', 18.000),
+('Servicio express puerta a puerta', 22.000);
 
 -- Servicios Lavandería
-INSERT INTO Servicio_Lavanderia (ID_Servicio_Lavanderia, Descripcion, Costo) VALUES
-(9,'Lavado y planchado express', 18.000),
-(10,'Lavado delicado para seda y lino', 20.000),
-(11,'Planchado profesional de trajes', 22.000),
-(12,'Lavado estándar con fragancia premium', 15.000),
-(13,'Limpieza de prendas delicadas', 19.000),
-(14,'Lavado a vapor y desinfección', 21.000),
-(15,'Servicio nocturno exprés', 25.000),
-(16,'Lavandería ecológica', 17.000);
+INSERT INTO Servicio_Lavanderia ( Descripcion, Costo) VALUES
+('Lavado y planchado express', 18.000),
+('Lavado delicado para seda y lino', 20.000),
+('Planchado profesional de trajes', 22.000),
+('Lavado estándar con fragancia premium', 15.000),
+('Limpieza de prendas delicadas', 19.000),
+('Lavado a vapor y desinfección', 21.000),
+('Servicio nocturno exprés', 25.000),
+('Lavandería ecológica', 17.000);
 
 -- Servicios Habitación
-INSERT INTO Servicio_Habitacion (ID_Servicio_Habitacion, Descripcion, Costo) VALUES
-(17,'Desayuno gourmet en la habitación', 30.000),
-(18,'Cena romántica privada', 40.000),
-(19,'Minibar surtido', 15.000),
-(20,'Decoración especial por aniversario', 35.000),
-(21,'Almuerzo ejecutivo', 22.000),
-(22,'Cena internacional', 28.000),
-(23,'Servicio personalizado de café y té', 12.000),
-(24,'Atención 24h multilingüe', 18.000);
+INSERT INTO Servicio_Habitacion ( Descripcion, Costo) VALUES
+('Cena romántica privada', 40.000),
+('Desayuno gourmet en la habitación', 30.000),
+('Minibar surtido', 15.000),
+('Decoración especial por aniversario', 35.000),
+('Almuerzo ejecutivo', 22.000),
+('Cena internacional', 28.000),
+('Servicio personalizado de café y té', 12.000),
+('Atención 24h multilingüe', 18.000);
+
+
+
+
+
