@@ -182,14 +182,14 @@ body {
             display: inline-block;
             margin-top: 1.5rem;
             padding: 10px 20px;
-            background-color: #4e54c8;
+            background-color: #85868e;
             color: white;
             text-decoration: none;
             border-radius: 6px;
             transition: background 0.3s;
         }
         .btn-volver:hover {
-            background-color: #3b3f99;
+            background-color: #0b0b0b;
         }
 
 

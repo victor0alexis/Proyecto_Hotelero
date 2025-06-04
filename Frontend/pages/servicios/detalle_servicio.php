@@ -2,52 +2,96 @@
 session_start();
 include("../../php/conexion.php");
 
-// Validar y obtener parámetros
-$tipo = $_GET['tipo'] ?? '';
-$id = $_GET['id'] ?? '';
 
-if (empty($tipo) || empty($id)) {
-    header("Location: servicios.php");
+// Verifica si el usuario está autenticado
+$id_usuario = $_SESSION['id_usuario'] ?? null;
+
+if (!$id_usuario) {
+    echo "<p>Sesión inválida.</p>";
     exit();
 }
 
-// Sanitizar valores
-$tipo = strtolower($tipo);
-$id = intval($id);
+// Verifica los parámetros de la URL
+$id_reserva = $_GET['id_reserva'] ?? null;
+$tipo = $_GET['tipo'] ?? null;
+$id_servicio = $_GET['id_servicio'] ?? null;
 
-// Definir la consulta según el tipo
+
+
+// Definir la tabla según el tipo
 switch ($tipo) {
     case 'transporte':
         $tabla = 'servicio_transporte';
-        $campo_id = 'id_servicio_transporte';
+        $columna_id = 'id_servicio_transporte';
         break;
     case 'lavanderia':
         $tabla = 'servicio_lavanderia';
-        $campo_id = 'id_servicio_lavanderia';
+        $columna_id = 'id_servicio_lavanderia';
         break;
     case 'habitacion':
         $tabla = 'servicio_habitacion';
-        $campo_id = 'id_servicio_habitacion';
+        $columna_id = 'id_servicio_habitacion';
         break;
     default:
-        header("Location: servicios.php");
+        header("Location: servicios.php?id_reserva=" . urlencode($id_reserva));
         exit();
 }
 
-// Ejecutar la consulta
-$result = pg_query_params($conn, "SELECT * FROM $tabla WHERE $campo_id = $1", [$id]);
+// Obtener el servicio específico
+$query = pg_query_params($conn, "SELECT * FROM $tabla WHERE $columna_id = $1", [$id_servicio]);
 
-if (!$result || pg_num_rows($result) === 0) {
-    header("Location: servicios.php");
+if (!$query || pg_num_rows($query) === 0) {
+    echo "No se encontró el servicio seleccionado.";
     exit();
 }
 
-$servicio = pg_fetch_assoc($result);
+$servicio = pg_fetch_assoc($query);
+
+// Obtener servicios temporales actuales (si vienen en GET)
+$servicios_tipo = $_GET['tipo'] ?? [];
+$servicios_id = $_GET['id_servicio'] ?? [];
+
+
+
+if (!is_array($servicios_tipo)) $servicios_tipo = [$servicios_tipo];
+if (!is_array($servicios_id)) $servicios_id = [$servicios_id];
+
+// Evitar agregar repetidos: Solo agregar el servicio actual (pasado por GET tipo e id_servicio) si no está en el array
+$existe = false;
+for ($i = 0; $i < count($servicios_tipo); $i++) {
+    if ($servicios_tipo[$i] === $tipo && $servicios_id[$i] === $id_servicio) {
+        $existe = true;
+        break;
+    }
+}
+if (!$existe) {
+    $servicios_tipo[] = $tipo;
+    $servicios_id[] = $id_servicio;
+}
+
+
+// Construir parámetros para URL con arrays tipo[] e id_servicio[]
+$params = [
+    'id_reserva' => $id_reserva,
+];
+
+// Agregar arrays a URL
+foreach ($servicios_tipo as $i => $t) {
+    $params["tipo[$i]"] = $t;
+}
+foreach ($servicios_id as $i => $idS) {
+    $params["id_servicio[$i]"] = $idS;
+}
+
+$url_anadir = '../reservas/reserva_confirmacion.php?' . http_build_query($params);
+
 ?>
+
+
+
 
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <title>Detalle del Servicio</title>
@@ -86,30 +130,42 @@ $servicio = pg_fetch_assoc($result);
 </div>
 </header>
 
+
+    <!-- ======= SECCION PRINCIPAL======= -->
+
+
+<!-- Detalle servicio -->
 <div class="detalle-container">
     <h1><i class="fa-solid fa-circle-info"></i> Detalle del Servicio</h1>
     <p><i class="fa-solid fa-tags"></i> <strong>Tipo:</strong> <?= ucfirst(htmlspecialchars($tipo)) ?></p>
     <p><i class="fa-solid fa-file-alt"></i> <strong>Descripción:</strong> <?= htmlspecialchars($servicio['descripcion']) ?></p>
     <p><i class="fa-solid fa-dollar-sign"></i> <strong>Costo:</strong> <?= number_format($servicio['costo'], 3) ?></p>
-        
-    <a href="servicios.php" class="btn-volver"><i class="fa-solid fa-arrow-left"></i> Volver</a>
+    
+    <!-- Botón para añadir servicio -->
+    <a href="<?= $url_anadir ?>" class="btn-volver">
+        <i class="fa-solid fa-plus"></i> Añadir a la Reserva
+    </a>
+    <!-- Botón para volver -->
+    <a href="servicios.php?id_reserva=<?= urlencode($id_reserva) ?>" class="btn-volver">
+        <i class="fa-solid fa-arrow-left"></i> Volver
+    </a>
 </div>
 
 
 <!-- MOSTRAR/OCULTAR MENU DESPLEGABLE -->
 <script>
 function toggleDropdown() {
-const dropdown = document.getElementById("userDropdown");
-dropdown.classList.toggle("show-dropdown");
+    const dropdown = document.getElementById("userDropdown");
+    dropdown.classList.toggle("show-dropdown");
 }
 
 window.onclick = function(event) {
-if (!event.target.matches('.user-btn') && !event.target.closest('.user-dropdown')) {
-    const dropdown = document.getElementById("userDropdown");
-    if (dropdown && dropdown.classList.contains('show-dropdown')) {
-    dropdown.classList.remove('show-dropdown');
+    if (!event.target.matches('.user-btn') && !event.target.closest('.user-dropdown')) {
+        const dropdown = document.getElementById("userDropdown");
+        if (dropdown && dropdown.classList.contains('show-dropdown')) {
+            dropdown.classList.remove('show-dropdown');
+        }
     }
-}
 };
 </script>
 
