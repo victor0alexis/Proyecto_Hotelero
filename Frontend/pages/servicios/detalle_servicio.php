@@ -6,10 +6,7 @@ include("../../php/conexion.php");
 // Verifica si el usuario está autenticado
 $id_usuario = $_SESSION['id_usuario'] ?? null;
 
-if (!$id_usuario) {
-    echo "<p>Sesión inválida.</p>";
-    exit();
-}
+
 
 // Verifica los parámetros de la URL
 $id_reserva = $_GET['id_reserva'] ?? null;
@@ -117,9 +114,7 @@ $url_anadir = '../reservas/reserva_confirmacion.php?' . http_build_query($params
     <div class="user-dropdown">
         <button class="user-btn" onclick="toggleDropdown()">👤 <?= htmlspecialchars($_SESSION['username']) ?></button>
         <div id="userDropdown" class="dropdown-content">
-            <a href="../../php/huesped/datos_huesped.php">Datos</a>
             <a href="../../php/huesped/reservas_hechas.php">Reservas hechas</a>
-            <a href="../../cambiar_password.php">Cambio de contraseña</a>
             <a href="../../php/login/logout.php">Cerrar sesión</a>
         </div>
     </div>

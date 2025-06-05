@@ -69,9 +69,7 @@ $consulta = pg_query($conn, "
         <button class="user-btn" onclick="toggleDropdown()">👤 <?= htmlspecialchars($_SESSION['username']) ?></button>
         <!-- opciones disponibles para el huesped-->
         <div id="userDropdown" class="dropdown-content">
-          <a href="../../php/huesped/datos_huesped.php">Datos</a>
           <a href="../../php/huesped/reservas_hechas.php">Reservas hechas</a>
-          <a href="../../php/cambiar_password.php">Cambio de contraseña</a>
           <a href="../../php/login/logout.php">Cerrar sesión</a>
         </div>
       </div>

@@ -3,9 +3,7 @@ session_start();
 include("../../php/conexion.php");
 
 
-echo "<pre>";
-print_r($_SESSION['servicios_temporales']);
-echo "</pre>";
+
 
 // Verifica si el usuario está autenticado como huésped
 if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'huesped') {
