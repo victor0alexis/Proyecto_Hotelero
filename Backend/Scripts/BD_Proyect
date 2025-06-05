@@ -59,7 +59,7 @@ CREATE TABLE Reserva (
     ID_Huesped INT NOT NULL,
     ID_Habitacion INT NOT NULL,
     FOREIGN KEY (ID_Huesped) REFERENCES Huesped(ID_Huesped),
-    FOREIGN KEY (ID_Habitacion) REFERENCES Habitacion(ID_Habitacion)
+    FOREIGN KEY (ID_Habitacion) REFERENCES Habitacion(ID_Habitacion) ON DELETE CASCADE
 );
 
 -- Tabla: Servicio_Incluido
@@ -70,8 +70,8 @@ CREATE TABLE Servicio_Incluido (
     Personal_Encargado VARCHAR(50) NOT NULL,
     ID_Habitacion INT ,
     ID_Reserva INT DEFAULT NULL ,
-    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva),
-    FOREIGN KEY (ID_Habitacion) REFERENCES Habitacion(ID_Habitacion)
+    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva) ON DELETE CASCADE,
+    FOREIGN KEY (ID_Habitacion) REFERENCES Habitacion(ID_Habitacion) ON DELETE CASCADE
 );
 
 -- Tabla: Opinion
@@ -81,7 +81,7 @@ CREATE TABLE Opinion (
     Clasificacion INT CHECK (Clasificacion BETWEEN 1 AND 5),
     Fecha DATE NOT NULL,
     ID_Reserva INT NOT NULL,
-    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva)
+    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva) ON DELETE CASCADE
 );
 
 
@@ -92,15 +92,15 @@ CREATE TABLE Boleta (
     Fecha_Pago DATE NOT NULL,
     Estado_Pago VARCHAR(50) NOT NULL CHECK (Estado_Pago IN ('pagado', 'pendiente', 'cancelado')),
     ID_Reserva INT DEFAULT NULL,
-    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva)
+    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva) ON DELETE CASCADE
 );
 
 CREATE TABLE Boleta_Servicio (
     ID_Boleta INT NOT NULL,
     ID_Servicio_Incluido INT NOT NULL,
     PRIMARY KEY (ID_Boleta, ID_Servicio_Incluido),
-    FOREIGN KEY (ID_Boleta) REFERENCES Boleta(ID_Boleta),
-    FOREIGN KEY (ID_Servicio_Incluido) REFERENCES Servicio_Incluido(ID_Servicio_Incluido)
+    FOREIGN KEY (ID_Boleta) REFERENCES Boleta(ID_Boleta) ON DELETE CASCADE,
+    FOREIGN KEY (ID_Servicio_Incluido) REFERENCES Servicio_Incluido(ID_Servicio_Incluido) ON DELETE CASCADE
 );
 
 
@@ -110,7 +110,7 @@ CREATE TABLE Metodo_Pago (
     Nombre_Metodo VARCHAR(50) NOT NULL,
     Numero_Operacion VARCHAR(100),
     ID_Boleta INT NOT NULL,
-    FOREIGN KEY (ID_Boleta) REFERENCES Boleta(ID_Boleta)
+    FOREIGN KEY (ID_Boleta) REFERENCES Boleta(ID_Boleta) ON DELETE CASCADE
 );
 
 
