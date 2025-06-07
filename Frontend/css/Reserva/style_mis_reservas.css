@@ -313,3 +313,30 @@ h1 {
 
 
 
+/* Estado Ocupación - Diseño por tipo */
+.estado-ocupacion.reserva-en-espera {
+    background-color: #fceabb;
+    color: #c97e00;
+    padding: 5px 10px;
+    border-radius: 8px;
+    display: inline-block;
+    font-weight: bold;
+}
+
+.estado-ocupacion.reserva-en-transcurso {
+    background-color: #d0f0c0;
+    color: #2f7d32;
+    padding: 5px 10px;
+    border-radius: 8px;
+    display: inline-block;
+    font-weight: bold;
+}
+
+.estado-ocupacion.reserva-finalizada {
+    background-color: #e0e0e0;
+    color: #5a5a5a;
+    padding: 5px 10px;
+    border-radius: 8px;
+    display: inline-block;
+    font-weight: bold;
+}

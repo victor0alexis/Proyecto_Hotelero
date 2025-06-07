@@ -11,7 +11,8 @@ CREATE TABLE Habitacion (
     ID_Habitacion SERIAL PRIMARY KEY,
     Precio NUMERIC(10, 3) NOT NULL,
     Estado VARCHAR(20) NOT NULL,
-    Tipo VARCHAR(50) NOT NULL,
+    Estado_Actividad VARCHAR(20) DEFAULT 'activo',
+    Tipo VARCHAR(50) NOT NULL ,
     Descripcion VARCHAR(200),
     Imagen VARCHAR(255),
     Capacidad INT NOT NULL DEFAULT 1,
@@ -56,9 +57,10 @@ CREATE TABLE Reserva (
     Fecha_Entrada DATE NOT NULL,
     Fecha_Salida DATE NOT NULL,
     Estado VARCHAR(50) DEFAULT 'pendiente',
+    Estado_Ocupacion VARCHAR(30)  DEFAULT 'reserva en espera',    -- reserva en espera / reserva en transcurso / reserva finalizada 
     ID_Huesped INT NOT NULL,
     ID_Habitacion INT NOT NULL,
-    FOREIGN KEY (ID_Huesped) REFERENCES Huesped(ID_Huesped),
+    FOREIGN KEY (ID_Huesped) REFERENCES Huesped(ID_Huesped) ON DELETE CASCADE,
     FOREIGN KEY (ID_Habitacion) REFERENCES Habitacion(ID_Habitacion) ON DELETE CASCADE
 );
 
@@ -88,7 +90,7 @@ CREATE TABLE Opinion (
 -- Tabla: Boleta
 CREATE TABLE Boleta (
     ID_Boleta SERIAL PRIMARY KEY,
-    Monto NUMERIC(10, 2) NOT NULL CHECK (Monto > 0),
+    Monto NUMERIC(10, 3) NOT NULL CHECK (Monto > 0),
     Fecha_Pago DATE NOT NULL,
     Estado_Pago VARCHAR(50) NOT NULL CHECK (Estado_Pago IN ('pagado', 'pendiente', 'cancelado')),
     ID_Reserva INT DEFAULT NULL,
@@ -107,6 +109,7 @@ CREATE TABLE Boleta_Servicio (
 -- Tabla: Metodo_Pago
 CREATE TABLE Metodo_Pago (
     ID_Metodo_Pago SERIAL PRIMARY KEY,
+    Nombre_Titular VARCHAR(50) NOT NULL,
     Nombre_Metodo VARCHAR(50) NOT NULL,
     Numero_Operacion VARCHAR(100),
     ID_Boleta INT NOT NULL,
@@ -163,9 +166,9 @@ INSERT INTO Huesped (id_usuario, nombre, email, telefono, verificado, codigo_ver
 
 -- Hotel
 INSERT INTO Hotel (nombre, direccion, Telefono) VALUES
-('Rambagh Palace', 'Bhawani Singh Rd, Jaipur 302005, India', '0141-2385700'),
+('Rambagh Palace', 'Bhawani Singh Rd, Jaipur 302005, India', '+54-55-3286-4040'),
 ('Hotel Colline de France', 'Rua Vigilante, 400, Gramado, Brasil', '+55-54-3286-3030'),
-('JW Marriott Marquis Hotel', 'Sheikh Zayed Rd, Business Bay, Dubai, UAE', '+971-4-4140000');
+('JW Marriott Marquis Hotel', 'Sheikh Zayed Rd, Business Bay, Dubai, UAE', '+56-56-3286-5050');
 
 -- Habitaciones
 INSERT INTO Habitacion (Precio, Estado, Tipo, Descripcion, ID_Hotel, Imagen, Capacidad) VALUES

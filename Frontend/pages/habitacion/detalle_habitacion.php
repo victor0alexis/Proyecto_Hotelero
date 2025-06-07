@@ -100,7 +100,7 @@ while ($row = pg_fetch_assoc($servicios_habitacion)) {
 <!-- ======= HEADER ======= -->
 <header class="header">
 
-<div class="logo"><span>Hotel</span></div>
+<div class="logo"><span>HOTEL</span></div>
 
     <nav>
   <!-- Parte izquierda Barra Navegacion-->
@@ -159,23 +159,7 @@ while ($row = pg_fetch_assoc($servicios_habitacion)) {
             <p><strong>Estado:</strong> <?= htmlspecialchars($habitacion['estado']) ?></p>
             <p><strong>Descripción:</strong> <?= htmlspecialchars($habitacion['descripcion']) ?: 'Sin descripción disponible.' ?></p>
 
-            <?php if (!empty($servicios_incluidos)): ?>
-                <div class="servicios-incluidos">
-                    <h3>Servicios Incluidos:</h3>
-                    <ul>
-                        <?php foreach ($servicios_incluidos as $servicio): ?>
-                            <li>
-                                <strong><?= ucfirst(htmlspecialchars($servicio['tipo_servicio'])) ?>:</strong> 
-                                
-                                Atendido por <?= htmlspecialchars($servicio['personal_encargado']) ?> 
-                                
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            <?php else: ?>
-                <p><em>No hay servicios incluidos registrados para esta habitación.</em></p>
-            <?php endif; ?>
+            
 
             <?php if (strtolower($habitacion['estado']) === 'disponible'): ?>
                 <?php

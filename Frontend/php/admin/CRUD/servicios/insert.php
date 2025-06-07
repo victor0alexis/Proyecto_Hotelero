@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Añadir Servicio</title>
-    <link rel="stylesheet" href="../../../../css/CRUD/style_crud_form.css">
+    <link rel="stylesheet" href="../../../../css/CRUD/style_crud_insert.css">
 </head>
 <body>
 

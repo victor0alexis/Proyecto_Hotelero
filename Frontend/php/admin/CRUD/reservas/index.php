@@ -10,7 +10,7 @@ if (!isset($_SESSION['username']) || $_SESSION['rol'] !== 'admin') {
 
 // Obtener lista de reservas con datos de huésped y habitación
 $query = pg_query($conn, "
-    SELECT r.id_reserva, r.fecha_entrada, r.fecha_salida, r.estado,
+    SELECT r.id_reserva, r.fecha_entrada, r.fecha_salida, r.estado, r.estado_ocupacion,
            h.nombre AS nombre_huesped,
            hab.tipo AS tipo_habitacion
     FROM reserva r
@@ -48,6 +48,7 @@ $query = pg_query($conn, "
                         <th>Entrada</th>
                         <th>Salida</th>
                         <th>Estado</th>
+                        <th>Estado Ocupacion</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -60,6 +61,7 @@ $query = pg_query($conn, "
                             <td><?= htmlspecialchars($reserva['fecha_entrada']) ?></td>
                             <td><?= htmlspecialchars($reserva['fecha_salida']) ?></td>
                             <td><?= ucfirst(htmlspecialchars($reserva['estado'])) ?></td>
+                            <td><?= ucfirst(htmlspecialchars($reserva['estado_ocupacion'])) ?></td>
                             <td>
                                 <a href="update.php?id=<?= $reserva['id_reserva'] ?>" class="btn btn-editar">Editar</a>
                                 <a href="delete.php?id=<?= $reserva['id_reserva'] ?>" class="btn btn-eliminar" onclick="return confirm('¿Estás seguro de eliminar esta reserva?')">Eliminar</a>

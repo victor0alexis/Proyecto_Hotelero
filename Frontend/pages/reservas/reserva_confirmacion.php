@@ -4,14 +4,17 @@ include("../../php/conexion.php");
 
 
 
-
-// Verifica si el usuario está autenticado como huésped
+// ============================
+// Autenticación y validación
+// ============================
 if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'huesped') {
     header("Location: ../../php/login/login.php");
     exit();
 }
 
-// Obtener ID_USUARIO
+// ============================
+// Obtener última reserva
+// ============================
 $id_usuario = $_SESSION['id_usuario'] ?? null;
 
 if (!$id_usuario) {
@@ -39,14 +42,21 @@ $reserva = pg_fetch_assoc($consulta);
 $id_reserva = $reserva['id_reserva'];
 
 
-// Calcular total de noches y valor base
+// ============================
+// Cálculo de noches y totales
+// ============================
 $fecha_inicio = new DateTime($reserva['fecha_entrada']);
 $fecha_salida = new DateTime($reserva['fecha_salida']);
 $noches = $fecha_inicio->diff($fecha_salida)->days;
 $total_base = $reserva['precio'] * $noches;
 
 
-// Obtener servicios explícitos de la reserva (ID_Reserva no es NULL)
+// ============================
+// Obtener servicios añadidos a la reserva (BD)
+// ============================
+$servicios_agregados = [];
+$total_servicios_agregados = 0;
+
 $consulta_servicios_reserva = pg_query_params($conn, "
     SELECT 
         si.Tipo_Servicio AS tipo_servicio,
@@ -62,15 +72,14 @@ $consulta_servicios_reserva = pg_query_params($conn, "
 
 
 
-$servicios_agregados = [];
-$total_servicios_agregados = 0;
-
 while ($row = pg_fetch_assoc($consulta_servicios_reserva)) {
     $servicios_agregados[] = $row;
     $total_servicios_agregados += floatval($row['costo']);
 }
 
-// Inicializa la sesión de servicios temporales si no existe
+// ============================
+// Inicializar y agregar servicios temporales
+// ============================
 if (!isset($_SESSION['servicios_temporales'])) {
     $_SESSION['servicios_temporales'] = [];
 }
@@ -127,12 +136,15 @@ foreach ($tipos as $index => $tipo_nuevo) {
     }
 }
 
-// Eliminar servicios si vienen por parámetro
+// ============================
+// Eliminar servicio temporal por GET
+// ============================o
 if (isset($_GET['eliminar_tipo']) && isset($_GET['eliminar_id'])) {
     $tipo_eliminar = $_GET['eliminar_tipo'];
     $id_eliminar = $_GET['eliminar_id'];
 
-    $_SESSION['servicios_temporales'] = array_filter($_SESSION['servicios_temporales'], function ($s) use ($tipo_eliminar, $id_eliminar) {
+    $_SESSION['servicios_temporales'] = array_filter(
+        $_SESSION['servicios_temporales'], function ($s) use ($tipo_eliminar, $id_eliminar) {
         return !($s['tipo_original'] === $tipo_eliminar && $s['id_original'] == $id_eliminar);
     });
 
@@ -160,7 +172,12 @@ function buildUrlWithoutService($tipoEliminar, $idEliminar) {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+<?php if ($reserva['estado'] === 'pendiente'): ?>
     <title>Confirmación de Reserva</title>
+<?php elseif ($reserva['estado'] === 'confirmada'): ?>
+    <title>Detalle de Reserva</title>
+<?php endif; ?>
+
     <link rel="stylesheet" href="../../css/Reserva/style_reserva_confirmacion.css">
 </head>
 
@@ -182,46 +199,70 @@ function buildUrlWithoutService($tipoEliminar, $idEliminar) {
             <p><?= htmlspecialchars($reserva['descripcion']) ?></p>
         </div>
 
-        <!-- ======= DETALLE DE SERVICIOS AGREGADOS, SI LOS HAY ======= -->
+<!-- ======= DETALLE DE SERVICIOS AGREGADOS (SI ESTADO = PENDIENTE Y HAY SERVICIOS) ======= -->
+<?php if ($reserva['estado'] === 'pendiente'): ?>
     <?php if (!empty($servicios_agregados) || !empty($servicios_temporales)): ?>
-    <div class="seccion detalle-huesped">
-
+        <div class="seccion detalle-huesped">
             <h3>Servicios Añadidos a la Reserva</h3>
-        <ul>
-            <?php foreach ($servicios_agregados as $serv): ?>
-                <li>
-                    <strong><?= ucfirst(htmlspecialchars($serv['tipo_servicio'])) ?>:</strong>
-                    <?= htmlspecialchars($serv['descripcion']) ?> — Atendido por <?= htmlspecialchars($serv['personal_encargado']) ?> — 
-                    <span>Costo: $<?= number_format($serv['costo'], 3) ?></span>
-                </li>
-            <?php endforeach; ?>
+            <ul>
+                <?php foreach ($servicios_agregados as $serv): ?>
+                    <li>
+                        <strong><?= ucfirst(htmlspecialchars($serv['tipo_servicio'])) ?>:</strong>
+                        <?= htmlspecialchars($serv['descripcion']) ?> —  
+                        <span>Costo: $<?= number_format($serv['costo'], 3) ?></span>
+                    </li>
+                <?php endforeach; ?>
 
-            <?php foreach ($servicios_temporales as $serv): ?>
-                <li>
-                    <strong><?= ucfirst(htmlspecialchars($serv['tipo_servicio'])) ?> (Temporal):</strong>
-                    <?= htmlspecialchars($serv['descripcion']) ?> — 
-                    <span>Costo: $<?= number_format($serv['costo'], 3) ?></span>
-                    <a href="<?= buildUrlWithoutService($serv['tipo_original'], $serv['id_original']) ?>" style="color: red; margin-left: 10px;">Eliminar</a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-            
-        <p><strong>Total Servicios:</strong> $<?= number_format($total_servicios, 3) ?></p>
+                <?php foreach ($servicios_temporales as $serv): ?>
+                    <li>
+                        <strong><?= ucfirst(htmlspecialchars($serv['tipo_servicio'])) ?> (Temporal):</strong>
+                        <?= htmlspecialchars($serv['descripcion']) ?> — 
+                        <span>Costo: $<?= number_format($serv['costo'], 3) ?></span>
+                        <a href="<?= buildUrlWithoutService($serv['tipo_original'], $serv['id_original']) ?>" style="color: red; margin-left: 10px;">Eliminar</a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
 
-        <!-- Botón para añadir mas servicio -->
-        <div class="botones">
-            <a href="../servicios/servicios.php?id_reserva=<?= urlencode($id_reserva) ?>">Añadir servicios</a>
+            <p><strong>Total Servicios:</strong> $<?= number_format($total_servicios, 3) ?></p>
+
+            <div class="botones">
+                <a href="../servicios/servicios.php?id_reserva=<?= urlencode($id_reserva) ?>">Añadir servicios</a>
+            </div>
         </div>
-
-    </div>
-
-    <!-- Botón para añadir servicio, si no los hay -->
-    <?php elseif ($reserva['estado'] === 'pendiente'): ?>
+    <?php else: ?>
+        <!-- Estado pendiente y no hay servicios -->
         <div class="botones">
             <p>No has añadido ningún servicio adicional.</p>
             <a href="../servicios/servicios.php?id_reserva=<?= urlencode($id_reserva) ?>">Ver servicios</a>
         </div>
-        <?php endif; ?>
+    <?php endif; ?>
+<?php elseif ($reserva['estado'] === 'confirmada'): ?>
+    <?php if (!empty($servicios_agregados) || !empty($servicios_temporales)): ?>
+        <div class="seccion detalle-huesped">
+            <h3>Servicios Añadidos a la Reserva</h3>
+            <ul>
+                <?php foreach ($servicios_agregados as $serv): ?>
+                    <li>
+                        <strong><?= ucfirst(htmlspecialchars($serv['tipo_servicio'])) ?>:</strong>
+                        <?= htmlspecialchars($serv['descripcion']) ?> —  
+                        <span>Costo: $<?= number_format($serv['costo'], 3) ?></span>
+                    </li>
+                <?php endforeach; ?>
+
+                <?php foreach ($servicios_temporales as $serv): ?>
+                    <li>
+                        <strong><?= ucfirst(htmlspecialchars($serv['tipo_servicio'])) ?> (Temporal):</strong>
+                        <?= htmlspecialchars($serv['descripcion']) ?> — 
+                        <span>Costo: $<?= number_format($serv['costo'], 3) ?></span>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+
+            <p><strong>Total Servicios:</strong> $<?= number_format($total_servicios, 3) ?></p>
+        </div>
+    <?php endif; ?>
+<?php endif; ?>
+
 
         <!-- ======= DETALLE DEL HUESPED ======= -->
         <div class="seccion detalle-huesped">

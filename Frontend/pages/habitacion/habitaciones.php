@@ -45,7 +45,7 @@ $consulta = pg_query($conn, "
 <!-- ======= HEADER ======= -->
 <header class="header">
 
-<div class="logo"><span>Hotel</span></div>
+<div class="logo"><span>HOTEL</span></div>
 
     <nav>
   <!-- Parte izquierda Barra Navegacion-->

@@ -40,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fecha_entrada = $_POST["fecha_entrada"];
     $fecha_salida = $_POST["fecha_salida"];
     $estado = $_POST["estado"];
+    $estado_ocupacion = $_POST["estado_ocupacion"];
     $id_huesped = $_POST["id_huesped"];
     $id_habitacion = $_POST["id_habitacion"];
 
@@ -50,9 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $update = pg_query_params($conn, "
             UPDATE reserva 
-            SET fecha_entrada = $1, fecha_salida = $2, estado = $3, id_huesped = $4, id_habitacion = $5 
-            WHERE id_reserva = $6
-        ", array($fecha_entrada, $fecha_salida, $estado, $id_huesped, $id_habitacion, $id_reserva));
+            SET fecha_entrada = $1, fecha_salida = $2, estado = $3, estado_ocupacion=$4, id_huesped = $5, id_habitacion = $6 
+            WHERE id_reserva = $7
+        ", array($fecha_entrada, $fecha_salida, $estado, $estado_ocupacion, $id_huesped, $id_habitacion, $id_reserva));
 
         if ($update) {
             $mensaje = "Reserva actualizada correctamente.";
@@ -93,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label for="estado">Estado:</label>
             <select name="estado" required>
                 <?php
-                $estados = ["pendiente", "confirmada", "cancelada", "por ocupar", "en transcurso", "finalizada"];
+                $estados = ["pendiente", "confirmada", "cancelada"];
                 foreach ($estados as $estado) {
                     $selected = ($estado === $reserva['estado']) ? 'selected' : '';
                     echo "<option value=\"$estado\" $selected>" . ucfirst($estado) . "</option>";
@@ -101,6 +102,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ?>
             </select>
         </div>
+
+        <div class="form-group">
+            <label for="estado_ocupacion">Estado Ocupación:</label>
+            <select name="estado_ocupacion" required> <!-- ← CORRECTO -->
+                <?php
+                $estados_ocupacion = ['reserva en espera', 'reserva en transcurso', 'reserva finalizada'];
+                foreach ($estados_ocupacion as $estado_ocupacion) {
+                    $selected = ($estado_ocupacion === $reserva['estado_ocupacion']) ? 'selected' : '';
+                    echo "<option value=\"$estado_ocupacion\" $selected>" . ucfirst($estado_ocupacion) . "</option>";
+                }
+                ?>
+            </select>
+        </div>
+
 
         <div class="form-group">
             <label for="id_huesped">Huésped:</label>

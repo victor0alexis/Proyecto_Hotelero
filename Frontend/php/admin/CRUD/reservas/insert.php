@@ -19,6 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $fecha_entrada = $_POST["fecha_entrada"];
     $fecha_salida = $_POST["fecha_salida"];
     $estado = $_POST["estado"];
+    $estado_ocupacion = $_POST["estado_ocupacion"];
     $id_huesped = $_POST["id_huesped"];
     $id_habitacion = $_POST["id_habitacion"];
 
@@ -28,9 +29,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $mensaje = "La fecha de entrada no puede ser posterior a la fecha de salida.";
     } else {
         $insert = pg_query_params($conn, "
-            INSERT INTO reserva (fecha_entrada, fecha_salida, estado, id_huesped, id_habitacion)
-            VALUES ($1, $2, $3, $4, $5)", 
-            array($fecha_entrada, $fecha_salida, $estado, $id_huesped, $id_habitacion)
+            INSERT INTO reserva (fecha_entrada, fecha_salida, estado, estado_ocupacion,  id_huesped, id_habitacion)
+            VALUES ($1, $2, $3, $4, $5, $6)", 
+            array($fecha_entrada, $fecha_salida, $estado, $estado_ocupacion, $id_huesped, $id_habitacion)
         );
 
         if ($insert) {
@@ -75,9 +76,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <option value="pendiente" selected>Pendiente</option>
                 <option value="confirmada">Confirmada</option>
                 <option value="cancelada">Cancelada</option>
-                <option value="por ocupar">Por ocupar</option>
-                <option value="en transcurso">En transcurso</option>
-                <option value="finalizada">Finalizada</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="estado_ocupacion">Estado Ocupacion:</label>
+            <select name="estado_ocupacion" required>
+                <option value="reserva en espera" selected>Reserva en Espera</option>
+                <option value="reserva en transcurso">Reserva en Transcurso</option>
+                <option value="reserva finalizada">Reserva Finalizada</option>
             </select>
         </div>
 

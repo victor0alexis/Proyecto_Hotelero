@@ -17,7 +17,7 @@ session_start();               //iniciamos sesion.
 
 <!-- ======= HEADER ======= -->
 <header class="header">
-  <div class="logo"><span>Hotel</span></div>
+  <div class="logo"><span>HOTEL</span></div>
 
   <!-- Parte izquierda Barra Navegacion-->
   <ul class="nav-links">

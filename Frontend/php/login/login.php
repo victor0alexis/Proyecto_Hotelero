@@ -106,7 +106,7 @@ if ($rol === "huesped") {
 <body>
 
 <header class="header">
-  <div class="logo">HOTEL <span>H</span></div>
+  <div class="logo">HOTEL</div>
   <nav>
     <ul class="nav-links">
       <li><a href="../../pages/index.php">INICIO</a></li>

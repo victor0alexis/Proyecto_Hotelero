@@ -19,13 +19,19 @@ if (!$id_huesped) {
 $reservas = pg_query_params($conn, "
     SELECT r.id_reserva, r.fecha_entrada, r.fecha_salida, r.estado,
         h.tipo AS tipo_habitacion, h.Imagen, h.precio,
-        b.monto, b.estado_pago
+        b.monto, b.estado_pago,
+        CASE
+            WHEN CURRENT_DATE < r.fecha_entrada THEN 'reserva en espera'
+            WHEN CURRENT_DATE BETWEEN r.fecha_entrada AND r.fecha_salida THEN 'reserva en transcurso'
+            ELSE 'reserva finalizada'
+        END AS estado_ocupacion_calculado
     FROM reserva r
     JOIN habitacion h ON r.id_habitacion = h.id_habitacion
     LEFT JOIN boleta b ON b.id_reserva = r.id_reserva
     WHERE r.id_huesped = $1
     ORDER BY r.fecha_entrada DESC
 ", [$id_huesped]);
+
 
 
 
@@ -69,9 +75,7 @@ if (!$reservas) {
         <button class="user-btn" onclick="toggleDropdown()">👤 <?= htmlspecialchars($_SESSION['username']) ?></button>
         <!-- opciones disponibles para el huesped-->
         <div id="userDropdown" class="dropdown-content">
-        <a href="datos_huesped.php">Datos</a>
         <a href="reservas_hechas.php">Reservas hechas</a>
-        <a href="cambiar_password.php">Cambio de contraseña</a>
         <a href="../login/logout.php">Cerrar sesión</a>
         </div>
     </div>
@@ -120,9 +124,24 @@ if (!$reservas) {
             <div>       
                 <div class="reserva-header">
                 <h2>Reserva #<?= htmlspecialchars($row['id_reserva']) ?></h2>
-                <span class="estado estado-<?= htmlspecialchars(strtolower($row['estado'])) ?>">
-                    <?= ucfirst(htmlspecialchars($row['estado'])) ?>
-                </span>
+
+                <?php
+                $estado_ocupacion = strtolower($row['estado_ocupacion_calculado']);
+                $clase_estado_ocupacion = str_replace(' ', '-', $estado_ocupacion); // reemplaza espacios por guiones
+                ?>
+                <p class="estado estado-ocupacion <?= $clase_estado_ocupacion ?>">
+                    <?php if ($estado_ocupacion === 'reserva en espera'): ?>
+                        🕓
+                    <?php elseif ($estado_ocupacion === 'reserva en transcurso'): ?>
+                        🔄
+                    <?php elseif ($estado_ocupacion === 'reserva finalizada'): ?>
+                        ✅
+                    <?php endif; ?>
+                    <strong><?= htmlspecialchars(ucfirst($row['estado_ocupacion_calculado'])) ?></strong>
+                </p>
+
+
+
                 </div>
 
                 <p class="reserva-info"><strong>Habitación:</strong> <?= htmlspecialchars($row['tipo_habitacion']) ?></p>
@@ -135,10 +154,22 @@ if (!$reservas) {
 
 
         <?php if ($row['estado'] === 'pendiente'): ?>
+            <center>
+                <span 
+                class="estado estado-<?= htmlspecialchars(strtolower($row['estado'])) ?>">
+                <?= ucfirst(htmlspecialchars($row['estado'])) ?>
+                </span>
+            </center>
         <a href="../../pages/reservas/pago_reserva.php?id=<?= $row['id_reserva'] ?>" class="btn-boleta">Pagar Ahora</a>
         <?php endif ?>
         
         <?php if ($row['estado'] === 'confirmada'): ?>
+            <center>
+                <span 
+                class="estado estado-<?= htmlspecialchars(strtolower($row['estado'])) ?>">
+                <?= ucfirst(htmlspecialchars($row['estado'])) ?>
+                </span>
+            </center>
         <a href="boleta.php?id_reserva=<?= urlencode($row['id_reserva']) ?>" class="btn-boleta">Obtener Boleta</a>
         <?php endif ?>
         

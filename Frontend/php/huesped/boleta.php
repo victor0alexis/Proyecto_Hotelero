@@ -52,18 +52,41 @@ WHERE r.id_reserva = $1
 
 $datos = pg_fetch_assoc($consulta);
 
+// Calcular cantidad de noches
+$fecha_entrada = new DateTime($datos['fecha_entrada']);
+$fecha_salida = new DateTime($datos['fecha_salida']);
+$noches = $fecha_entrada->diff($fecha_salida)->days;
+if ($noches === 0) $noches = 1; // Para casos de misma fecha
+
+$precio_noche = floatval($datos['precio']);
+$total_habitacion = $precio_noche * $noches;
+
+
+
 // Consultar servicios asociados a la boleta
+// Consultar servicios asociados a la reserva (no por boleta_servicio)
 $servicios = pg_query_params($conn, "
 SELECT si.tipo_servicio, si.personal_encargado, 
     COALESCE(st.descripcion, sl.descripcion, sh.descripcion) AS descripcion,
     COALESCE(st.costo, sl.costo, sh.costo) AS costo
-FROM boleta_servicio bs
-JOIN servicio_incluido si ON si.id_servicio_incluido = bs.id_servicio_incluido
-LEFT JOIN servicio_transporte st ON st.id_servicio_transporte = si.id_servicio
-LEFT JOIN servicio_lavanderia sl ON sl.id_servicio_lavanderia = si.id_servicio
-LEFT JOIN servicio_habitacion sh ON sh.id_servicio_habitacion = si.id_servicio
-WHERE bs.id_boleta = $1
-", [$datos['id_boleta']]);
+FROM servicio_incluido si
+LEFT JOIN servicio_transporte st ON si.id_servicio = st.id_servicio_transporte AND si.tipo_servicio = 'transporte'
+LEFT JOIN servicio_lavanderia sl ON si.id_servicio = sl.id_servicio_lavanderia AND si.tipo_servicio = 'lavanderia'
+LEFT JOIN servicio_habitacion sh ON si.id_servicio = sh.id_servicio_habitacion AND si.tipo_servicio = 'habitacion'
+WHERE si.id_reserva = $1
+", [$id_reserva]);
+
+$lista_servicios = [];
+$total_servicios = 0;
+
+while ($row = pg_fetch_assoc($servicios)) {
+    $lista_servicios[] = $row;
+    $total_servicios += floatval($row['costo']);
+}
+
+$precio_habitacion = floatval($datos['precio']);
+$total_general = $total_habitacion + $total_servicios;
+
 
 ?>
 
@@ -105,26 +128,41 @@ WHERE bs.id_boleta = $1
             <p><i class="fa-solid fa-money-bill-wave icon"></i><strong>Monto Total:</strong> $<?= number_format($datos['monto'], 3) ?></p>
             <p><i class="fa-solid fa-calendar icon"></i><strong>Fecha de Pago:</strong> <?= htmlspecialchars($datos['fecha_pago']) ?></p>
             <p><i class="fa-solid fa-circle-check icon"></i><strong>Estado de Pago:</strong> <?= htmlspecialchars($datos['estado_pago']) ?></p>
-            <p><i class="fa-solid fa-credit-card icon"></i><strong>Método de Pago:</strong> <?= htmlspecialchars($datos['nombre_metodo']) ?> (<?= htmlspecialchars($datos['numero_operacion']) ?>)</p>
+            <p><i class="fa-solid fa-credit-card icon"></i><strong>Método de Pago:</strong> <?= htmlspecialchars($datos['nombre_metodo']) ?></p>
         <?php else: ?>
             <p><i class="fa-solid fa-circle-exclamation icon"></i> No hay boleta generada para esta reserva.</p>
         <?php endif; ?>
     </div>
 
-    <div class="boleta-section">
-        <h2><i class="fa-solid fa-concierge-bell"></i> Servicios Incluidos</h2>
-        <?php if (pg_num_rows($servicios) > 0): ?>
-            <ul>
-                <?php while ($s = pg_fetch_assoc($servicios)): ?>
-                    <li>
-                        <i class="fa-solid fa-circle-check icon"></i> <?= ucfirst(htmlspecialchars($s['tipo_servicio'])) ?> - <?= htmlspecialchars($s['descripcion']) ?> ($<?= number_format($s['costo'], 3) ?>) - Atendido por: <?= htmlspecialchars($s['personal_encargado']) ?>
-                    </li>
-                <?php endwhile; ?>
-            </ul>
-        <?php else: ?>
-            <p><i class="fa-solid fa-ban icon"></i> No hay servicios adicionales registrados.</p>
-        <?php endif; ?>
-    </div>
+<div class="boleta-section">
+    <h2><i class="fa-solid fa-concierge-bell"></i> Servicios Incluidos</h2>
+    <?php if (count($lista_servicios) > 0): ?>
+        <ul>
+            <?php foreach ($lista_servicios as $s): ?>
+                <li>
+                    <i class="fa-solid fa-circle-check icon"></i>
+                    <?= ucfirst(htmlspecialchars($s['tipo_servicio'])) ?> - <?= htmlspecialchars($s['descripcion']) ?> ($<?= number_format($s['costo'], 3) ?>)
+                    - Atendido por: <?= htmlspecialchars($s['personal_encargado']) ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php else: ?>
+        <p><i class="fa-solid fa-ban icon"></i> No hay servicios adicionales registrados.</p>
+    <?php endif; ?>
+</div>
+
+<div class="boleta-section">
+<div class="boleta-section">
+    <h2><i class="fa-solid fa-calculator"></i> Resumen de Costos</h2>
+    <p><strong>Precio por noche:</strong> $<?= number_format($precio_noche, 3) ?></p>
+    <p><strong>Noches:</strong> <?= $noches ?></p>
+    <p><strong>Total Habitación:</strong> $<?= number_format($total_habitacion, 3) ?></p>
+    <p><strong>Total Servicios:</strong> $<?= number_format($total_servicios, 3) ?></p>
+    <p><strong>Total General:</strong> $<?= number_format($total_general, 3) ?></p>
+</div>
+
+</div>
+
 
     <div class="boleta-total">
         <p><i class="fa-solid fa-thumbs-up icon"></i> ¡Gracias por elegirnos! Esperamos verte pronto.</p>
