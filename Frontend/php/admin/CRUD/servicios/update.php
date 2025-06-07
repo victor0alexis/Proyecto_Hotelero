@@ -69,12 +69,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
     }
     
-    // Actualizar servicio_incluido
+    // Actualizar servicio_incluido 
     $update = pg_query($conn, "UPDATE servicio_incluido 
-                              SET personal_encargado = '$personal_encargado', 
-                                  id_habitacion = $id_habitacion, 
-                                  id_reserva = $id_reserva
-                              WHERE id_servicio_incluido = $id_servicio");
+                          SET personal_encargado = '$personal_encargado', 
+                              id_habitacion = $id_habitacion, 
+                              id_reserva = $id_reserva
+                          WHERE id_servicio_incluido = $id_servicio");
+if (!$update) {
+    $_SESSION['error'] = "Error al actualizar el servicio: " . pg_last_error($conn);
+    header("Location: index.php");
+    exit();
+}
     
     if ($update) {
         $_SESSION['mensaje'] = "Servicio actualizado correctamente";

@@ -171,12 +171,12 @@ INSERT INTO Hotel (nombre, direccion, Telefono) VALUES
 INSERT INTO Habitacion (Precio, Estado, Tipo, Descripcion, ID_Hotel, Imagen, Capacidad) VALUES
 (90.000, 'Disponible', 'Económica','Habitación económica equipada con cama individual, escritorio, ventilador de techo y baño privado. Ideal para viajeros solos.', 1, 'habitacion_economica.jpg', 1),
 (120.000, 'Disponible', 'Individual','Habitación individual con cama twin, aire acondicionado, televisión LED, baño privado y decoración tradicional.', 1, 'habitacion_individual_1.jpg', 1),
-(110.000, 'Disponible', 'Individual','Moderna habitación con cama queen, escritorio ergonómico, WiFi de alta velocidad y desayuno buffet incluido.', 2, 'habitacion_individual_2.jpg', 1),
+(110.000, 'Disponible', 'Individual','Habitación moderna con cama queen, escritorio ergonómico, WiFi de alta velocidad y desayuno buffet incluido.', 2, 'habitacion_individual_2.jpg', 1),
 (150.000, 'Disponible', 'Doble','Habitación doble con dos camas twin, iluminación ambiental, TV satelital, minibar y amplio armario.', 1, 'habitacion_doble.jpg', 2),
 (160.000, 'Disponible', 'Doble','Habitación doble estilo europeo, con cama king, zona de estar, calefacción, y vistas al jardín central.', 3, 'habitacion_doble_2.jpg', 2),
-(180.000, 'Disponible', 'Matrimonial','Elegante habitación matrimonial con cama king-size, jacuzzi privado, balcón con vista a los Alpes y atención personalizada.', 2, 'habitacion_matrimonial.jpg', 2),
-(200.000, 'Mantenimiento', 'Suite','Lujosa suite con sala de estar independiente, baño de mármol, cafetera Nespresso y mayordomo disponible las 24h.', 1, 'habitacion_suite.jpg', 4),
-(250.000, 'Ocupada', 'Suite Lujo','Suite de lujo con comedor privado, terraza panorámica, spa personal, bar exclusivo y decoración vanguardista.', 3, 'habitacion_suite_lujo.jpg', 5);
+(180.000, 'Disponible', 'Matrimonial','Habtiación matrimonial con cama king-size, jacuzzi privado, balcón con vista a los Alpes y atención personalizada.', 2, 'habitacion_matrimonial.jpg', 2),
+(200.000, 'Disponible', 'Suite','Lujosa Suite con sala de estar independiente, baño de mármol, cafetera Nespresso y mayordomo disponible las 24h.', 1, 'habitacion_suite.jpg', 4),
+(250.000, 'Disponible', 'Suite Lujo','Suite de lujo con comedor privado, terraza panorámica, spa personal, bar exclusivo y decoración vanguardista.', 3, 'habitacion_suite_lujo.jpg', 5);
 
 -- Reservas
 INSERT INTO Reserva (Fecha_Entrada, Fecha_Salida, Estado, ID_Huesped, ID_Habitacion) VALUES
