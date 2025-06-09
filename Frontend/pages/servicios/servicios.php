@@ -2,6 +2,9 @@
 session_start();
 include("../../php/conexion.php");
 
+echo '<pre>';
+print_r($_SESSION['servicios_temporales']);
+echo '</pre>';
 
 // Obtener el id_reserva
 $id_reserva = isset($_GET['id_reserva']) ? pg_escape_string($conn, $_GET['id_reserva']) : '';
@@ -149,9 +152,7 @@ if ($result) {
         <div class="user-dropdown">
             <button class="user-btn" onclick="toggleDropdown()">👤 <?= htmlspecialchars($_SESSION['username']) ?></button>
             <div id="userDropdown" class="dropdown-content">
-                <a href="../../php/huesped/datos_huesped.php">Datos</a>
                 <a href="../../php/huesped/reservas_hechas.php">Reservas hechas</a>
-                <a href="../../cambiar_password.php">Cambio de contraseña</a>
                 <a href="../../php/login/logout.php">Cerrar sesión</a>
             </div>
         </div>

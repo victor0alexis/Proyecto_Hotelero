@@ -59,17 +59,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if ($res && pg_num_rows($res) > 0) {
                             $id_huesped = pg_fetch_result($res, 0, 0);
                             $estado = 'pendiente';
-                            $insert = pg_query_params($conn, "
+                            $result_insert = pg_query_params($conn, "
                                 INSERT INTO reserva (fecha_entrada, fecha_salida, estado, id_huesped, id_habitacion)
-                                VALUES ($1, $2, $3, $4, $5)
+                                VALUES ($1, $2, $3, $4, $5) RETURNING id_reserva
                             ", [$fecha_inicio, $fecha_fin, $estado, $id_huesped, $id_habitacion]);
 
-                        if ($insert) {
-                            header("Location: reserva_confirmacion.php?exito=1");
-                        exit();
-                        } else {
-                            $errores = "Error al guardar la reserva.";
-}
+                            if ($result_insert && pg_num_rows($result_insert) > 0) {
+                                $new_id = pg_fetch_result($result_insert, 0, 'id_reserva');
+                                header("Location: reserva_confirmacion.php?id=$new_id&exito=1");
+                                exit();
+                            } else {
+                                $errores = "Error al guardar la reserva.";
+                            }
+
 
                         } else {
                             $errores = "No se pudo verificar al huésped.";

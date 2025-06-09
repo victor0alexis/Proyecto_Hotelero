@@ -2,6 +2,11 @@
 session_start();
 include("../../php/conexion.php");
 
+echo '<pre>';
+print_r($_SESSION['servicios_temporales']);
+echo '</pre>';
+
+
 if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'huesped') {
     header("Location: ../../php/login/login.php");
     exit();
@@ -73,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errores)) {
         pg_query($conn, "BEGIN");
 
-        foreach ($_SESSION['servicios_temporales'] ?? [] as $servicio) {
+        foreach ($_SESSION['servicios_temporales'][$id_reserva] ?? [] as $servicio) {
             $tipo = $servicio['tipo_servicio'];
             $id_original = $servicio['id_original'];
             $personal = $servicio['personal_encargado'];
@@ -162,8 +167,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <p><strong>Servicios incluidos:</strong></p>
     <ul>
         <?php
-        if (!empty($_SESSION['servicios_temporales'])) {
-            foreach ($_SESSION['servicios_temporales'] as $servicio) {
+        if (!empty($_SESSION['servicios_temporales'][$id_reserva] )) {
+            foreach ($_SESSION['servicios_temporales'][$id_reserva]  as $servicio) {
                 $tipo = ucfirst($servicio['tipo_servicio']);
                 $desc = htmlspecialchars($servicio['descripcion']);
                 $costo =number_format($servicio['costo'], 3);

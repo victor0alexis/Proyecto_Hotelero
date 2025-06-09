@@ -2,6 +2,9 @@
 session_start();
 include("../../php/conexion.php");
 
+echo '<pre>';
+print_r($_SESSION['servicios_temporales']);
+echo '</pre>';
 
 // Verifica si el usuario está autenticado
 $id_usuario = $_SESSION['id_usuario'] ?? null;
@@ -136,10 +139,13 @@ $url_anadir = '../reservas/reserva_confirmacion.php?' . http_build_query($params
     <p><i class="fa-solid fa-file-alt"></i> <strong>Descripción:</strong> <?= htmlspecialchars($servicio['descripcion']) ?></p>
     <p><i class="fa-solid fa-dollar-sign"></i> <strong>Costo:</strong> <?= number_format($servicio['costo'], 3) ?></p>
     
-    <!-- Botón para añadir servicio -->
+<!-- Botón para añadir servicio (solo si hay id_reserva) -->
+<?php if (!empty($id_reserva)): ?>
     <a href="<?= $url_anadir ?>" class="btn-volver">
         <i class="fa-solid fa-plus"></i> Añadir a la Reserva
     </a>
+<?php endif; ?>
+
     <!-- Botón para volver -->
     <a href="servicios.php?id_reserva=<?= urlencode($id_reserva) ?>" class="btn-volver">
         <i class="fa-solid fa-arrow-left"></i> Volver
