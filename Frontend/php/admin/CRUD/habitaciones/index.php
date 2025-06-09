@@ -10,7 +10,7 @@ if (!isset($_SESSION['username']) || $_SESSION['rol'] !== 'admin') {
 
 // Obtener lista de habitaciones
 $query = pg_query($conn, "
-    SELECT h.id_habitacion, h.precio, h.estado, h.tipo, h.descripcion, h.imagen, h.capacidad, ho.nombre AS hotel
+    SELECT h.id_habitacion, h.precio, h.estado, h.estado_actividad, h.tipo, h.descripcion, h.imagen, h.capacidad, ho.nombre AS hotel
     FROM habitacion h
     JOIN hotel ho ON h.id_hotel = ho.id_hotel
     ORDER BY h.id_habitacion
@@ -47,6 +47,7 @@ $query = pg_query($conn, "
                         <th>Imagen</th>
                         <th>Capacidad</th>
                         <th>Hotel</th>
+                        <th>Estado Actividad</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -67,6 +68,7 @@ $query = pg_query($conn, "
                             </td>
                             <td><?= $habitacion['capacidad'] ?></td>
                             <td><?= htmlspecialchars($habitacion['hotel']) ?></td>
+                            <td><?= htmlspecialchars($habitacion['estado_actividad']) ?></td>
                             <td>
                                 <a href="update.php?id=<?= $habitacion['id_habitacion'] ?>" class="btn btn-editar">Editar</a>
                                 <a href="delete.php?eliminar=<?= $habitacion['id_habitacion'] ?>" class="btn btn-eliminar" onclick="return confirm('¿Estás seguro de eliminar esta habitación?')">Eliminar</a>

@@ -2,7 +2,7 @@
 include("../../../conexion.php");
 session_start();
 
-// Verificar si hay sesión iniciada como administrador
+// Verificar sesión como admin
 if (!isset($_SESSION['username']) || $_SESSION['rol'] !== 'admin') {
     header("Location: ../../../login/login.php");
     exit();
@@ -10,7 +10,7 @@ if (!isset($_SESSION['username']) || $_SESSION['rol'] !== 'admin') {
 
 $mensaje = "";
 
-// Verifica que se haya pasado el parámetro id por URL.
+// Validar ID de reserva
 if (!isset($_GET['id'])) {
     header("Location: index.php");
     exit();
@@ -18,24 +18,19 @@ if (!isset($_GET['id'])) {
 
 $id_reserva = intval($_GET['id']);
 
-// Obtener datos actuales de la reserva
-$consulta = pg_query_params($conn, "
-    SELECT * FROM reserva WHERE id_reserva = $1
-", array($id_reserva));
-
+// Obtener datos actuales
+$consulta = pg_query_params($conn, "SELECT * FROM reserva WHERE id_reserva = $1", array($id_reserva));
 $reserva = pg_fetch_assoc($consulta);
-
-// Si no se encuentra la reserva, redirigir
 if (!$reserva) {
     header("Location: index.php");
     exit();
 }
 
-// Obtener lista de huéspedes y habitaciones para mostrar en el formulario
+// Listas para selects
 $huespedes = pg_query($conn, "SELECT id_huesped, nombre FROM huesped ORDER BY nombre");
-$habitaciones = pg_query($conn, "SELECT id_habitacion, tipo FROM habitacion ORDER BY tipo");
+$habitaciones = pg_query($conn, "SELECT id_habitacion, tipo FROM habitacion WHERE estado_actividad = 'activo' ORDER BY tipo");
 
-// Procesar el formulario
+// Procesar actualización
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fecha_entrada = $_POST["fecha_entrada"];
     $fecha_salida = $_POST["fecha_salida"];
@@ -49,16 +44,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($fecha_entrada > $fecha_salida) {
         $mensaje = "La fecha de entrada no puede ser posterior a la de salida.";
     } else {
-        $update = pg_query_params($conn, "
-            UPDATE reserva 
-            SET fecha_entrada = $1, fecha_salida = $2, estado = $3, estado_ocupacion=$4, id_huesped = $5, id_habitacion = $6 
-            WHERE id_reserva = $7
-        ", array($fecha_entrada, $fecha_salida, $estado, $estado_ocupacion, $id_huesped, $id_habitacion, $id_reserva));
-
-        if ($update) {
-            $mensaje = "Reserva actualizada correctamente.";
+        // Validar huésped
+        $verificar_huesped = pg_query_params($conn, "SELECT 1 FROM huesped WHERE id_huesped = $1", array($id_huesped));
+        if (pg_num_rows($verificar_huesped) === 0) {
+            $mensaje = "El huésped seleccionado no existe.";
         } else {
-            $mensaje = "Error al actualizar la reserva.";
+            // Validar habitación activa
+            $verificar_habitacion = pg_query_params($conn, "SELECT 1 FROM habitacion WHERE id_habitacion = $1 AND estado_actividad = 'activo'", array($id_habitacion));
+            if (pg_num_rows($verificar_habitacion) === 0) {
+                $mensaje = "La habitación seleccionada no está disponible.";
+            } else {
+                // Verificar solapamiento (excluyendo la reserva actual)
+                $conflicto = pg_query_params($conn, "
+                    SELECT 1 FROM reserva 
+                    WHERE id_habitacion = $1 
+                      AND id_reserva != $2
+                      AND estado != 'cancelada'
+                      AND fecha_entrada <= $3 
+                      AND fecha_salida >= $4
+                ", array($id_habitacion, $id_reserva, $fecha_salida, $fecha_entrada));
+
+                if (pg_num_rows($conflicto) > 0) {
+                    $mensaje = "Ya existe una reserva para esta habitación en las fechas seleccionadas.";
+                } else {
+                    // Actualizar reserva
+                    $update = pg_query_params($conn, "
+                        UPDATE reserva 
+                        SET fecha_entrada = $1, fecha_salida = $2, estado = $3, estado_ocupacion = $4, id_huesped = $5, id_habitacion = $6
+                        WHERE id_reserva = $7
+                    ", array($fecha_entrada, $fecha_salida, $estado, $estado_ocupacion, $id_huesped, $id_habitacion, $id_reserva));
+
+                    if ($update) {
+                        $mensaje = "Reserva actualizada correctamente.";
+                        // Recargar datos actualizados para mostrar en el formulario
+                        $consulta = pg_query_params($conn, "SELECT * FROM reserva WHERE id_reserva = $1", array($id_reserva));
+                        $reserva = pg_fetch_assoc($consulta);
+                    } else {
+                        $mensaje = "Error al actualizar la reserva.";
+                    }
+                }
+            }
         }
     }
 }
@@ -95,9 +120,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <select name="estado" required>
                 <?php
                 $estados = ["pendiente", "confirmada", "cancelada"];
-                foreach ($estados as $estado) {
-                    $selected = ($estado === $reserva['estado']) ? 'selected' : '';
-                    echo "<option value=\"$estado\" $selected>" . ucfirst($estado) . "</option>";
+                foreach ($estados as $estado_opcion) {
+                    $selected = ($estado_opcion === $reserva['estado']) ? 'selected' : '';
+                    echo "<option value=\"$estado_opcion\" $selected>" . ucfirst($estado_opcion) . "</option>";
                 }
                 ?>
             </select>
@@ -105,23 +130,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="form-group">
             <label for="estado_ocupacion">Estado Ocupación:</label>
-            <select name="estado_ocupacion" required> <!-- ← CORRECTO -->
+            <select name="estado_ocupacion" required>
                 <?php
                 $estados_ocupacion = ['reserva en espera', 'reserva en transcurso', 'reserva finalizada'];
-                foreach ($estados_ocupacion as $estado_ocupacion) {
-                    $selected = ($estado_ocupacion === $reserva['estado_ocupacion']) ? 'selected' : '';
-                    echo "<option value=\"$estado_ocupacion\" $selected>" . ucfirst($estado_ocupacion) . "</option>";
+                foreach ($estados_ocupacion as $estado_op) {
+                    $selected = ($estado_op === $reserva['estado_ocupacion']) ? 'selected' : '';
+                    echo "<option value=\"$estado_op\" $selected>" . ucfirst($estado_op) . "</option>";
                 }
                 ?>
             </select>
         </div>
 
-
         <div class="form-group">
             <label for="id_huesped">Huésped:</label>
             <select name="id_huesped" required>
                 <option value="">Seleccione un huésped</option>
-                <?php while ($h = pg_fetch_assoc($huespedes)): ?>
+                <?php
+                pg_result_seek($huespedes, 0);
+                while ($h = pg_fetch_assoc($huespedes)): ?>
                     <option value="<?= $h['id_huesped'] ?>" <?= $h['id_huesped'] == $reserva['id_huesped'] ? 'selected' : '' ?>>
                         <?= htmlspecialchars($h['nombre']) ?>
                     </option>
@@ -133,7 +159,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label for="id_habitacion">Habitación:</label>
             <select name="id_habitacion" required>
                 <option value="">Seleccione una habitación</option>
-                <?php while ($hab = pg_fetch_assoc($habitaciones)): ?>
+                <?php
+                pg_result_seek($habitaciones, 0);
+                while ($hab = pg_fetch_assoc($habitaciones)): ?>
                     <option value="<?= $hab['id_habitacion'] ?>" <?= $hab['id_habitacion'] == $reserva['id_habitacion'] ? 'selected' : '' ?>>
                         #<?= $hab['id_habitacion'] ?> - <?= htmlspecialchars($hab['tipo']) ?>
                     </option>

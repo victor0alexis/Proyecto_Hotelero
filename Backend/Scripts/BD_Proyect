@@ -109,7 +109,7 @@ CREATE TABLE Boleta_Servicio (
 -- Tabla: Metodo_Pago
 CREATE TABLE Metodo_Pago (
     ID_Metodo_Pago SERIAL PRIMARY KEY,
-    Nombre_Titular VARCHAR(50) NOT NULL,
+    Nombre_Titular VARCHAR(50),
     Nombre_Metodo VARCHAR(50) NOT NULL,
     Numero_Operacion VARCHAR(100),
     ID_Boleta INT NOT NULL,
@@ -181,9 +181,6 @@ INSERT INTO Habitacion (Precio, Estado, Tipo, Descripcion, ID_Hotel, Imagen, Cap
 (200.000, 'Disponible', 'Suite','Lujosa Suite con sala de estar independiente, baño de mármol, cafetera Nespresso y mayordomo disponible las 24h.', 1, 'habitacion_suite.jpg', 4),
 (250.000, 'Disponible', 'Suite Lujo','Suite de lujo con comedor privado, terraza panorámica, spa personal, bar exclusivo y decoración vanguardista.', 3, 'habitacion_suite_lujo.jpg', 5);
 
--- Reservas
-INSERT INTO Reserva (Fecha_Entrada, Fecha_Salida, Estado, ID_Huesped, ID_Habitacion) VALUES
-('2025-07-10', '2025-07-15', 'pendiente', 1, 1);
 
 --Servicio_Incluido: Transporte 
 INSERT INTO Servicio_Incluido (ID_Servicio, Tipo_Servicio, Personal_Encargado) VALUES
@@ -218,17 +215,6 @@ INSERT INTO Servicio_Incluido (ID_Servicio, Tipo_Servicio, Personal_Encargado) V
 (7, 'habitacion', 'Atención Elite'),
 (8, 'habitacion', 'Servicio VIP Suite');
 
--- Opiniones
-INSERT INTO Opinion (Comentario, Clasificacion, Fecha, ID_Reserva) VALUES
-('Una experiencia magnífica. La atención, limpieza y decoración fueron impecables.', 5, '2025-07-16', 1);
-
--- Boletas
-INSERT INTO Boleta (Monto, Fecha_Pago, Estado_Pago, ID_Reserva) VALUES
-(395000, '2025-07-15', 'pagado', 1);
-
--- Métodos de Pago
-INSERT INTO Metodo_Pago (Nombre_Metodo, Numero_Operacion, ID_Boleta) VALUES
-('Tarjeta de Crédito Visa', 'TXN789456', 1);
 
 -- Servicios Transporte
 INSERT INTO Servicio_Transporte (Descripcion, Costo) VALUES

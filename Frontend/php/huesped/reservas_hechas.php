@@ -160,7 +160,7 @@ if (!$reservas) {
                 <?= ucfirst(htmlspecialchars($row['estado'])) ?>
                 </span>
             </center>
-        <a href="../../pages/reservas/pago_reserva.php?id=<?= $row['id_reserva'] ?>" class="btn-boleta">Pagar Ahora</a>
+        <a href="../../pages/reservas/reserva_confirmacion.php?id=<?= $row['id_reserva'] ?>" class="btn-boleta">Pagar Ahora</a>
         <?php endif ?>
         
         <?php if ($row['estado'] === 'confirmada'): ?>

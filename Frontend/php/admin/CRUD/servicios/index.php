@@ -8,11 +8,15 @@ if (!isset($_SESSION['username']) || $_SESSION['rol'] !== 'admin') {
     exit();
 }
 
-// Obtener lista de servicios
+// Obtener lista de servicios con ID del servicio específico para ordenar
 $query = pg_query($conn, "
     SELECT 
         si.id_servicio_incluido,
         si.tipo_servicio,
+        si.personal_encargado,
+        si.id_habitacion,
+        si.id_reserva,
+        -- Obtener la descripción y costo según el tipo
         CASE 
             WHEN si.tipo_servicio = 'transporte' THEN st.descripcion
             WHEN si.tipo_servicio = 'lavanderia' THEN sl.descripcion
@@ -23,16 +27,17 @@ $query = pg_query($conn, "
             WHEN si.tipo_servicio = 'lavanderia' THEN sl.costo
             WHEN si.tipo_servicio = 'habitacion' THEN sh.costo
         END AS costo,
-        si.personal_encargado,
-        h.id_habitacion,
-        r.id_reserva
+        -- Capturar el ID real del servicio según tipo
+        CASE 
+            WHEN si.tipo_servicio = 'transporte' THEN st.id_servicio_transporte
+            WHEN si.tipo_servicio = 'lavanderia' THEN sl.id_servicio_lavanderia
+            WHEN si.tipo_servicio = 'habitacion' THEN sh.id_servicio_habitacion
+        END AS id_servicio_especifico
     FROM servicio_incluido si
     LEFT JOIN servicio_transporte st ON si.id_servicio = st.id_servicio_transporte AND si.tipo_servicio = 'transporte'
     LEFT JOIN servicio_lavanderia sl ON si.id_servicio = sl.id_servicio_lavanderia AND si.tipo_servicio = 'lavanderia'
     LEFT JOIN servicio_habitacion sh ON si.id_servicio = sh.id_servicio_habitacion AND si.tipo_servicio = 'habitacion'
-    LEFT JOIN habitacion h ON si.id_habitacion = h.id_habitacion
-    LEFT JOIN reserva r ON si.id_reserva = r.id_reserva
-    ORDER BY si.tipo_servicio, si.id_servicio_incluido
+    ORDER BY si.tipo_servicio, id_servicio_especifico ASC
 ");
 ?>
 
@@ -67,7 +72,7 @@ $query = pg_query($conn, "
                         <th>Tipo</th>
                         <th>Descripción</th>
                         <th>Costo</th>
-                        <th>Personal</th>
+                        <th>Encargado</th>
                         <th>Habitación</th>
                         <th>Reserva</th>
                         <th>Acciones</th>
