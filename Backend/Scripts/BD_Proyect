@@ -172,7 +172,7 @@ INSERT INTO Hotel (nombre, direccion, Telefono) VALUES
 
 -- Habitaciones
 INSERT INTO Habitacion (Precio, Estado, Tipo, Descripcion, ID_Hotel, Imagen, Capacidad) VALUES
-(90.000, 'Disponible', 'Económica','Habitación económica equipada con cama individual, escritorio, ventilador de techo y baño privado. Ideal para viajeros solos.', 1, 'habitacion_economica.jpg', 1),
+(90.000, 'Disponible', 'Economica','Habitación económica equipada con cama individual, escritorio, ventilador de techo y baño privado. Ideal para viajeros solos.', 1, 'habitacion_economica.jpg', 1),
 (120.000, 'Disponible', 'Individual','Habitación individual con cama twin, aire acondicionado, televisión LED, baño privado y decoración tradicional.', 1, 'habitacion_individual_1.jpg', 1),
 (110.000, 'Disponible', 'Individual','Habitación moderna con cama queen, escritorio ergonómico, WiFi de alta velocidad y desayuno buffet incluido.', 2, 'habitacion_individual_2.jpg', 1),
 (150.000, 'Disponible', 'Doble','Habitación doble con dos camas twin, iluminación ambiental, TV satelital, minibar y amplio armario.', 1, 'habitacion_doble.jpg', 2),

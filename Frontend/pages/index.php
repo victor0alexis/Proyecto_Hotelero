@@ -59,32 +59,7 @@ $result = pg_query($conn, $sql);
   </div>
 </section>
 
-<!-- ======= SECCIÓN HABITACIONES ======= -->
-<section class="habitaciones-section">
-  <div class="habitaciones-titulos">
-    <h2 class="habitaciones-title">HABITACIONES Y SUITES</h2>
-    <p class="habitaciones-subtitle">Descubra nuestras exclusivas habitaciones diseñadas para ofrecer confort, elegancia y una experiencia inolvidable.</p>
-  </div>
 
- 
-
-  <div class="habitaciones-grid">
-  <?php while ($row = pg_fetch_assoc($result)) : ?>
-    <div class="habitacion-card">
-        <img src="../img/habitaciones/<?= htmlspecialchars($row['imagen']) ?>" alt="<?= htmlspecialchars($row['tipo']) ?>">
-      <div class="habitacion-info">
-        <h3 style="color: white;"><?= strtoupper(htmlspecialchars($row['tipo'])) ?> </h3>
-
-        
-        <p><?= htmlspecialchars($row['descripcion']) ?></p>
-        <div class="btn-group">
-          <a href="habitacion/detalle_habitacion.php?id=<?= $row['id_habitacion'] ?>" class="btn-ver">VER HABITACIÓN</a>
-          <a href="habitacion/detalle_habitacion.php?id=<?= $row['id_habitacion'] ?>" class="btn-reservar destacado">RESERVAR AHORA</a>
-        </div>
-      </div>
-    </div>
-  <?php endwhile; ?>
-</div>
 
       </div>
     </div>
@@ -124,11 +99,11 @@ window.onclick = function(event) {
       <h3>Contacto</h3>
       <p>Dirección: Av. Principal 123, Ciudad</p>
       <p>Teléfono: (01) 234-5678</p>
-      <p>Email: contacto@hotelh.com</p>
+      <p>Email: contacto@hotel.com</p>
     </div>
     <div>
       <h3>Sobre Nosotros</h3>
-      <p>Hotel H ofrece una experiencia única combinando lujo, confort y elegancia en cada rincón.</p>
+      <p>Hotel  ofrece una experiencia única combinando lujo, confort y elegancia en cada rincón.</p>
     </div>
     <div>
       <h3>Redes Sociales</h3>
@@ -138,7 +113,7 @@ window.onclick = function(event) {
     </div>
   </div>
   <div class="footer-bottom">
-    © 2025 Hotel H. Todos los derechos reservados.
+    © 2025 Hotel. Todos los derechos reservados.
   </div>
 </footer>
 

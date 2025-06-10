@@ -87,26 +87,31 @@ $consulta = pg_query($conn, "
 </header>
 
 
-<!-- ======= LISTADO DE HABITACIONES ======= -->
 
-<section class="habitaciones">
+
+
+<!-- ======= SECCIÓN HABITACIONES ======= -->
+<section class="habitaciones-section">
+  <div class="habitaciones-titulos">
+    <h2 class="habitaciones-title">HABITACIONES Y SUITES</h2>
+    <p class="habitaciones-subtitle">Descubra nuestras exclusivas habitaciones diseñadas para ofrecer confort, elegancia y una experiencia inolvidable.</p>
+  </div>
+
+<div class="habitaciones-grid">
   <?php while ($habitacion = pg_fetch_assoc($consulta)) : ?>
-    <?php 
-      $imagen = !empty($habitacion['imagen']) ? $habitacion['imagen'] : 'default.jpg';
-      $id = $habitacion['id_habitacion'];
-    ?>
-    <a href="detalle_habitacion.php?id=<?= $id ?>" class="habitacion-link">
+    <a href="detalle_habitacion.php?id=<?= $habitacion['id_habitacion'] ?>" class="habitacion-link">
       <div class="habitacion-card">
-        <img src="../../img/habitaciones/<?= htmlspecialchars($imagen) ?>" alt="Habitación <?= htmlspecialchars($habitacion['tipo']) ?>" class="habitacion-imagen">
-        <h2><?= htmlspecialchars($habitacion['tipo']) ?></h2>
-        <p><strong>Precio:</strong> $<?= number_format($habitacion['precio'], 3) ?></p>
-        <p><strong>Estado:</strong> <?= htmlspecialchars($habitacion['estado']) ?></p>
-        <p><strong>Hotel:</strong> <?= htmlspecialchars($habitacion['nombre_hotel']) ?></p>
+        <img src="../../img/habitaciones/<?= htmlspecialchars($habitacion['imagen']) ?>" alt="Habitación <?= htmlspecialchars($habitacion['tipo']) ?>" class="habitacion-imagen">
+        <div class="habitacion-info">
+          <h3><?= strtoupper(htmlspecialchars($habitacion['tipo'])) ?></h3>
+          <p><strong>Precio:</strong> $<?= number_format($habitacion['precio'], 3) ?></p>
+          <p><strong>Estado:</strong> <?= htmlspecialchars($habitacion['estado']) ?></p>
+          <p><strong>Hotel:</strong> <?= htmlspecialchars($habitacion['nombre_hotel']) ?></p>
+        </div>
       </div>
     </a>
   <?php endwhile; ?>
-</section>
-
+</div>
 
 
 <!-- MOSTRAR/OCULTAR MENU DESPLEGABLE -->
@@ -128,7 +133,27 @@ window.onclick = function(event) {
 
 <!-- ======= PIE DE PÁGINA ======= -->
 <footer class="footer">
-  <p>&copy; 2025 Hotel H. Todos los derechos reservados.</p>
+  <div class="footer-container">
+    <div>
+      <h3>Contacto</h3>
+      <p>Dirección: Av. Principal 123, Ciudad</p>
+      <p>Teléfono: (01) 234-5678</p>
+      <p>Email: contacto@hotel.com</p>
+    </div>
+    <div>
+      <h3>Sobre Nosotros</h3>
+      <p>Hotel  ofrece una experiencia única combinando lujo, confort y elegancia en cada rincón.</p>
+    </div>
+    <div>
+      <h3>Redes Sociales</h3>
+      <p><a href="#">Facebook</a></p>
+      <p><a href="#">Instagram</a></p>
+      <p><a href="#">Twitter</a></p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2025 Hotel. Todos los derechos reservados.
+  </div>
 </footer>
 
 </body>
