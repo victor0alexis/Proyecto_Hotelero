@@ -83,6 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <link rel="stylesheet" href="../../../../css/CRUD/style_crud_insert.css">
 </head>
 <body>
+    
 <div class="form-container">
     <h2>Registrar Servicio</h2>
 

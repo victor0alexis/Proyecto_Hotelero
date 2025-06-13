@@ -251,5 +251,30 @@ INSERT INTO Servicio_Habitacion ( Descripcion, Costo) VALUES
 
 
 
+CREATE TABLE Opinion (
+    id_opinion SERIAL PRIMARY KEY,
+    id_huesped INT NOT NULL,
+    comentario TEXT NOT NULL,
+    calificacion INT CHECK (calificacion BETWEEN 1 AND 5),
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_huesped) REFERENCES Huesped(id_huesped) 
+	);
+	
+ALTER TABLE Opinion
+ADD COLUMN id_huesped INTEGER;
 
+ALTER TABLE Opinion
+ADD CONSTRAINT fk_opinion_huesped
+FOREIGN KEY (id_huesped)
+REFERENCES huesped(id_huesped)
+ON DELETE CASCADE;
 
+\d Opinion
+
+SELECT column_name, data_type, is_nullable
+FROM information_schema.columns
+WHERE table_name = 'opinion';
+
+ALTER TABLE opinion ALTER COLUMN fecha SET DEFAULT CURRENT_DATE;
+
+ALTER TABLE opinion ADD CONSTRAINT unica_opinion_por_reserva UNIQUE(id_reserva);

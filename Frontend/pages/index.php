@@ -3,8 +3,24 @@ include("../php/conexion.php");
 session_start();
 $sql = "SELECT * FROM Habitacion WHERE Estado = 'Disponible'";
 $result = pg_query($conn, $sql);
-?>
 
+// Obtener últimas opiniones
+$opiniones_query = pg_query($conn, "
+    SELECT  o.comentario,
+            o.clasificacion,
+            o.fecha         AS fecha_opinion,
+            h.nombre        AS huesped,
+            hab.tipo        AS habitacion,
+            r.fecha_entrada,
+            r.fecha_salida
+    FROM opinion o
+    JOIN huesped     h   ON o.id_huesped  = h.id_huesped
+    JOIN reserva     r   ON o.id_reserva  = r.id_reserva
+    JOIN habitacion  hab ON r.id_habitacion = hab.id_habitacion
+    ORDER BY o.fecha DESC
+    LIMIT 6
+");
+?>
   
 <!DOCTYPE html>
 <html lang="es">
@@ -27,6 +43,14 @@ $result = pg_query($conn, $sql);
     <li><a href="habitacion/habitaciones.php">Habitaciones</a></li>
     <li><a href="servicios/servicios.php">Servicios</a></li>
     <li><a href="contacto.php">Contacto</a></li>
+    <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'huesped'): ?>
+    <a href="../php/huesped/CRUD/opiniones/index.php" class="btn btn-opinar">
+        Opinar sobre el Hotel
+    </a>
+<?php else: ?>
+    <p>Para opinar, debes <a href="/Proyecto_Hotelero/Frontend/php/login/login.php">iniciar sesión</a>.</p>
+<?php endif; ?>
+
   </ul>
   <div class="right-nav">
     <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'huesped') : ?>
@@ -35,6 +59,7 @@ $result = pg_query($conn, $sql);
         <div id="userDropdown" class="dropdown-content">
           <a href="../php/huesped/reservas_hechas.php">Reservas Hechas</a>
           <a href="../php/login/logout.php">Cerrar Sesión</a>
+          
         </div>
       </div>
     <?php else : ?>
@@ -42,6 +67,7 @@ $result = pg_query($conn, $sql);
       <a href="../php/login/login.php?redirect=<?= urlencode($url_actual) ?>" class="btn-login">Login ➔</a>
     <?php endif; ?>
   </div>
+
 </header>
 
 <!-- ======= SECCION PRINCIPAL ======= -->
@@ -58,13 +84,6 @@ $result = pg_query($conn, $sql);
     </div>
   </div>
 </section>
-
-
-
-      </div>
-    </div>
-</section>
-
 
 <script>
 let slides = document.querySelectorAll('.slide');
@@ -92,6 +111,30 @@ window.onclick = function(event) {
   }
 }
 </script>
+
+<!-- ======= OPINIONES DE HUÉSPEDES ======= -->
+ 
+<section class="opiniones-section">
+  <h2>Reseñas</h2>
+
+  <div class="opiniones-grid">
+    <?php while ($op = pg_fetch_assoc($opiniones_query)): ?>
+      <div class="opinion-card">
+        <h3><?= htmlspecialchars($op['huesped']) ?></h3>
+        <p class="habitacion">
+          <strong>Habitación:</strong> <?= htmlspecialchars($op['habitacion']) ?><br>
+        <p class="comentario">
+          “<?= nl2br(htmlspecialchars($op['comentario'])) ?>”
+        </p>
+        <p class="clasificacion">
+          Calificación: <?= str_repeat('★', $op['clasificacion']) ?><?= str_repeat('☆', 5 - $op['clasificacion']) ?>
+        </p>
+        <small class="fecha"><?= date('d/m/Y', strtotime($op['fecha_opinion'])) ?></small>
+      </div>
+    <?php endwhile; ?>
+  </div>
+</section>
+
 <!-- ======= INFORMACIÓN DE CONTACTO ======= -->
 <footer class="footer">
   <div class="footer-container">
