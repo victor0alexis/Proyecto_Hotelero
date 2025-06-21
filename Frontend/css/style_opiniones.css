@@ -1,0 +1,154 @@
+/* ======== ESTILO PARA MIS OPINIONES (HUÉSPED) ======== */
+
+body {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  background-color: #0d1b2a;
+  color: #f0f0f0;
+}
+
+.crud-container {
+  padding: 120px 40px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ===== HEADER ===== */
+.crud-header {
+  background-color: #1a1a1a;
+  padding: 20px 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.crud-header h1 {
+  font-size: 2.5rem;
+  color: #d4af7f;
+  margin-bottom: 10px;
+}
+
+.crud-header p {
+  font-size: 1.1rem;
+  color: #ccc;
+}
+
+/* ===== BOTÓN NUEVA OPINIÓN ===== */
+.btn-crear {
+  display: inline-block;
+  margin-bottom: 20px;
+  background-color: #c8a97e;
+  color: #0d1b2a;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.btn-crear:hover {
+  background-color: #b8916a;
+}
+
+/* ===== TABLA ===== */
+.tabla-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+th, td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+th {
+  background-color: #0d1b2a;
+  color: #d4af7f;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+td {
+  font-size: 0.95rem;
+  color: #f0f0f0;
+}
+
+/* ===== BOTONES DE ACCIÓN ===== */
+.btn {
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.3s;
+  margin-right: 6px;
+}
+
+.btn-editar {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.btn-editar:hover {
+  background-color: #3e8e41;
+}
+
+.btn-eliminar {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.btn-eliminar:hover {
+  background-color: #c0392b;
+}
+
+/* ===== BOTÓN VOLVER ===== */
+.crud-footer {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.btn-volver {
+  display: inline-block;
+  background-color: transparent;
+  border: 2px solid #c8a97e;
+  color: #c8a97e;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-volver:hover {
+  background-color: #c8a97e;
+  color: #0d1b2a;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .crud-container {
+    padding: 100px 20px 20px;
+  }
+
+  table, th, td {
+    font-size: 0.85rem;
+  }
+
+  .btn {
+    margin-top: 5px;
+    display: inline-block;
+  }
+}

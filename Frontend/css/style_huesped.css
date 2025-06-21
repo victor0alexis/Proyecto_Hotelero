@@ -109,3 +109,19 @@ input:focus {
     text-decoration: underline;
     color: #1d4ed8;
 }
+
+.btn-crear, .btn-editar, .btn-eliminar, .btn-cancelar {
+    background-color: #0b2545;
+    color: #fff;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    margin-right: 6px;
+}
+
+.btn-crear:hover, .btn-editar:hover, .btn-eliminar:hover, .btn-cancelar:hover {
+    background-color: #c8a97e;
+    color: #0b2545;
+}

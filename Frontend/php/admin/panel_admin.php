@@ -42,6 +42,7 @@ $email = $_SESSION['email'] ?? 'No disponible';
             <li><a href="CRUD/reservas/index.php">Gestionar Reservas</a></li>
             <li><a href="CRUD/habitaciones/index.php">Gestionar Habitaciones</a></li>
             <li><a href="CRUD/servicios/index.php">Gestionar Servicios del Hotel</a></li>
+            <li><a href="CRUD/opiniones/index.php">Gestionar Opiniones</a></li>
             </center>
         </ul>
     </main>
