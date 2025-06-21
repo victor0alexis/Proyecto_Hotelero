@@ -2,9 +2,7 @@
 session_start();
 include("../../php/conexion.php");
 
-echo '<pre>';
-print_r($_SESSION['servicios_temporales']);
-echo '</pre>';
+
 
 // Obtener el id_reserva
 $id_reserva = isset($_GET['id_reserva']) ? pg_escape_string($conn, $_GET['id_reserva']) : '';
@@ -165,7 +163,7 @@ if ($result) {
 
 <!-- ======= SECCION PRINCIPAL ======= -->
 <main class="servicios-container">
-    <h1>Servicios Exclusivos para Tu Comodidad</h1>
+    <h1>Servicios Exclusivos Para Tu Comodidad</h1>
 
     <!-- Transporte -->
     <section class="servicio-categoria">

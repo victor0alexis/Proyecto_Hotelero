@@ -168,7 +168,10 @@ INSERT INTO Huesped (id_usuario, nombre, email, telefono, verificado, codigo_ver
 INSERT INTO Hotel (nombre, direccion, Telefono) VALUES
 ('Rambagh Palace', 'Bhawani Singh Rd, Jaipur 302005, India', '+54-55-3286-4040'),
 ('Hotel Colline de France', 'Rua Vigilante, 400, Gramado, Brasil', '+55-54-3286-3030'),
-('JW Marriott Marquis Hotel', 'Sheikh Zayed Rd, Business Bay, Dubai, UAE', '+56-56-3286-5050');
+('JW Marriott Marquis Hotel', 'Sheikh Zayed Rd, Business Bay, Dubai, UAE', '+56-56-3286-5050'),
+('The Ritz-Carlton Kyoto', 'Kamogawa Nijo-Ohashi Hotori, Kyoto, Japan', '+81-75-746-5555'),
+('Belmond Hotel Caruso', 'Piazza San Giovanni del Toro 2, Ravello, Italy', '+39-089-858-801'),
+('One&Only Palmilla', 'Carr. Transpeninsular Km 7.5, San José del Cabo, Mexico', '+52-624-146-7000');
 
 -- Habitaciones
 INSERT INTO Habitacion (Precio, Estado, Tipo, Descripcion, ID_Hotel, Imagen, Capacidad) VALUES
@@ -179,8 +182,15 @@ INSERT INTO Habitacion (Precio, Estado, Tipo, Descripcion, ID_Hotel, Imagen, Cap
 (160.000, 'Disponible', 'Doble','Habitación doble estilo europeo, con cama king, zona de estar, calefacción, y vistas al jardín central.', 3, 'habitacion_doble_2.jpg', 2),
 (180.000, 'Disponible', 'Matrimonial','Habtiación matrimonial con cama king-size, jacuzzi privado, balcón con vista a los Alpes y atención personalizada.', 2, 'habitacion_matrimonial.jpg', 2),
 (200.000, 'Disponible', 'Suite','Lujosa Suite con sala de estar independiente, baño de mármol, cafetera Nespresso y mayordomo disponible las 24h.', 1, 'habitacion_suite.jpg', 4),
-(250.000, 'Disponible', 'Suite Lujo','Suite de lujo con comedor privado, terraza panorámica, spa personal, bar exclusivo y decoración vanguardista.', 3, 'habitacion_suite_lujo.jpg', 5);
+(250.000, 'Disponible', 'Suite Lujo','Suite de lujo con comedor privado, terraza panorámica, spa personal, bar exclusivo y decoración vanguardista.', 3, 'habitacion_suite_lujo.jpg', 5),
 
+(100.000, 'Disponible', 'Individual', 'Habitación individual japonesa con tatami, futón, vista al río Kamo y servicio de té matcha incluido.', 4, 'habitacion_japonesa.jpg', 1),
+(130.000, 'Disponible', 'Doble', 'Habitación doble con frescos originales, cama king-size, baño de mármol y vista panorámica a la costa Amalfitana.', 5, 'habitacion_belmond.jpg', 2),
+(170.000, 'Disponible', 'Matrimonial', 'Suite romántica con terraza privada, jacuzzi, acceso a playa privada y atención personalizada 24h.', 6, 'habitacion_romantica.jpg', 2),
+(210.000, 'Disponible', 'Suite', 'Suite con alberca privada, jardín tropical, chef privado bajo solicitud y mayordomo personal.', 6, 'suite_alberca.jpg', 3),
+(240.000, 'Disponible', 'Suite Lujo', 'Suite imperial con domótica integrada, spa privado, cava de vinos y vista al océano Pacífico.', 6, 'suite_lujo_mexico.jpg', 4),
+(95.000, 'Disponible', 'Economica', 'Habitación compacta pero elegante con amenities japoneses, WiFi ultrarrápido y baño tipo ofuro.', 4, 'habitacion_economica_kyoto.jpg', 1),
+(155.000, 'Disponible', 'Doble', 'Doble deluxe con frescos restaurados del siglo XVIII, balcón al jardín y desayuno buffet italiano.', 5, 'doble_deluxe_italia.jpg', 2);
 
 --Servicio_Incluido: Transporte 
 INSERT INTO Servicio_Incluido (ID_Servicio, Tipo_Servicio, Personal_Encargado) VALUES
@@ -191,7 +201,11 @@ INSERT INTO Servicio_Incluido (ID_Servicio, Tipo_Servicio, Personal_Encargado) V
 (5, 'transporte', 'Transporte Premium'),
 (6, 'transporte', 'Limusina Ejecutiva'),
 (7, 'transporte', 'SUV Ejecutivo'),
-(8, 'transporte', 'Transporte VIP');
+(8, 'transporte', 'Transporte VIP'),
+(9, 'transporte', 'Guía Bilingüe en SUV'),
+(10, 'transporte', 'Chófer con Experiencia en Turismo'),
+(11, 'transporte', 'Piloto de Jet Privado'),
+(12, 'transporte', 'Conductor de Carruaje Histórico');
 
 --Servicio_Incluido: Lavandería 
 INSERT INTO Servicio_Incluido (ID_Servicio, Tipo_Servicio, Personal_Encargado) VALUES
@@ -202,7 +216,11 @@ INSERT INTO Servicio_Incluido (ID_Servicio, Tipo_Servicio, Personal_Encargado) V
 (5, 'lavanderia', 'Lavado Ejecutivo'),
 (6, 'lavanderia', 'Lavado y Planchado'),
 (7, 'lavanderia', 'Planchado Especial'),
-(8, 'lavanderia', 'Lavado Seda y Lino');
+(8, 'lavanderia', 'Lavado Seda y Lino'),
+(9, 'lavanderia', 'Especialista en Telas Finas'),
+(10, 'lavanderia', 'Maestro Planchador'),
+(11, 'lavanderia', 'Asistente de Viaje para Equipaje'),
+(12, 'lavanderia', 'Encargado de Fragancias');
 
 --Servicio_Incluido: Habitación 
 INSERT INTO Servicio_Incluido (ID_Servicio, Tipo_Servicio, Personal_Encargado) VALUES
@@ -213,7 +231,12 @@ INSERT INTO Servicio_Incluido (ID_Servicio, Tipo_Servicio, Personal_Encargado) V
 (5, 'habitacion', 'Room Service Especial'),
 (6, 'habitacion', 'Gourmet + Spa'),
 (7, 'habitacion', 'Atención Elite'),
-(8, 'habitacion', 'Servicio VIP Suite');
+(8, 'habitacion', 'Servicio VIP Suite'),
+(9, 'habitacion', 'Chef Privado'),
+(10, 'habitacion', 'Florista de Lujo'),
+(11, 'habitacion', 'Butler Multilingüe'),
+(12, 'habitacion', 'Encargado de Piscina Privada');
+
 
 
 -- Servicios Transporte
@@ -225,7 +248,11 @@ INSERT INTO Servicio_Transporte (Descripcion, Costo) VALUES
 ('Van grupal con guía turístico', 20.000),
 ('Taxi privado con aire acondicionado', 12.000),
 ('Transporte ecológico (eléctrico)', 18.000),
-('Servicio express puerta a puerta', 22.000);
+('Servicio express puerta a puerta', 22.000),
+('Chófer multilingüe con guía turística', 30.000),        -- ID 9
+('Auto eléctrico con tecnología AI', 22.000),              -- ID 10
+('Jet privado bajo solicitud (por tramo)', 150.000),       -- ID 11
+('Carruaje tradicional desde estación central', 26.000);   -- ID 12
 
 -- Servicios Lavandería
 INSERT INTO Servicio_Lavanderia ( Descripcion, Costo) VALUES
@@ -236,7 +263,11 @@ INSERT INTO Servicio_Lavanderia ( Descripcion, Costo) VALUES
 ('Limpieza de prendas delicadas', 19.000),
 ('Lavado a vapor y desinfección', 21.000),
 ('Servicio nocturno exprés', 25.000),
-('Lavandería ecológica', 17.000);
+('Lavandería ecológica', 17.000),
+('Tratamiento de lino belga premium', 24.000),                   -- ID 9
+('Servicio exclusivo para prendas de gala', 30.000),             -- ID 10
+('Empaque al vacío para viajes largos', 20.000),                 -- ID 11
+('Fragancia personalizada post-lavado', 19.000);
 
 -- Servicios Habitación
 INSERT INTO Servicio_Habitacion ( Descripcion, Costo) VALUES
@@ -247,7 +278,11 @@ INSERT INTO Servicio_Habitacion ( Descripcion, Costo) VALUES
 ('Almuerzo ejecutivo', 22.000),
 ('Cena internacional', 28.000),
 ('Servicio personalizado de café y té', 12.000),
-('Atención 24h multilingüe', 18.000);
+('Atención 24h multilingüe', 18.000),
+('Chef privado en suite', 55.000),                           -- ID 9
+('Servicio de flores frescas diarias en habitación', 18.000),-- ID 10
+('Atención multilingüe 24h personalizada', 25.000),          -- ID 11
+('Desayuno flotante en piscina privada', 36.000); 
 
 
 

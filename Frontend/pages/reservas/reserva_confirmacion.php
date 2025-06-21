@@ -2,9 +2,6 @@
 session_start();
 include("../../php/conexion.php");
 
-echo '<pre>';
-print_r($_SESSION['servicios_temporales']);
-echo '</pre>';
 
 // ============================
 // Autenticación y validación
