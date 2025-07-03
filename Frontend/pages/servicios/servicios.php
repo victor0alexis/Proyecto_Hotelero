@@ -185,7 +185,7 @@ if ($result) {
                     ?>
                 " class="servicio-card">
                     <h3><?= htmlspecialchars($t['descripcion']) ?></h3>
-                    <p><i class="fa-solid fa-dollar-sign"></i> <?= number_format($t['costo'], 3) ?></p>
+                    <p><i class="fa-solid fa-dollar-sign"></i> <?= number_format($t['costo']) ?></p>
                 </a>
             <?php endforeach; ?>
         </div>
@@ -210,7 +210,7 @@ if ($result) {
                     ?>
                 " class="servicio-card">
                     <h3><?= htmlspecialchars($l['descripcion']) ?></h3>
-                    <p><i class="fa-solid fa-dollar-sign"></i> <?= number_format($l['costo'], 3) ?></p>
+                    <p><i class="fa-solid fa-dollar-sign"></i> <?= number_format($l['costo']) ?></p>
                 </a>
             <?php endforeach; ?>
         </div>
@@ -235,7 +235,7 @@ if ($result) {
                     ?>
                 " class="servicio-card">
                     <h3><?= htmlspecialchars($h['descripcion']) ?></h3>
-                    <p><i class="fa-solid fa-dollar-sign"></i> <?= number_format($h['costo'], 3) ?></p>
+                    <p><i class="fa-solid fa-dollar-sign"></i> <?= number_format($h['costo']) ?></p>
                 </a>
             <?php endforeach; ?>
         </div>

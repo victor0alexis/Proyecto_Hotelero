@@ -25,13 +25,13 @@ $huespedes = pg_query($conn, "SELECT id_huesped, nombre FROM huesped ORDER BY no
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_huesped = $_POST['id_huesped'];
     $comentario = $_POST['comentario'];
-    $clasificacion = $_POST['clasificacion'];
+    $calificacion = $_POST['calificacion'];
 
     $query = pg_query($conn, "
         UPDATE opinion
         SET id_huesped = $id_huesped,
             comentario = '$comentario',
-            clasificacion = $clasificacion
+            calificacion = $calificacion
         WHERE id_opinion = $id
     ");
 
@@ -67,8 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <label for="comentario">Comentario:</label>
     <textarea name="comentario" required><?= htmlspecialchars($opinion['comentario']) ?></textarea>
 
-    <label for="clasificacion">Calificación (1 a 5):</label>
-    <input type="number" name="clasificacion" min="1" max="5" value="<?= $opinion['clasificacion'] ?>" required>
+    <label for="calificacion">Calificación (1 a 5):</label>
+    <input type="number" name="calificacion" min="1" max="5" value="<?= $opinion['calificacion'] ?>" required>
 
     <input type="submit" value="Actualizar Opinión">
 </form>

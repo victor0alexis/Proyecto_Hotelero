@@ -76,6 +76,7 @@ if (!$reservas) {
         <!-- opciones disponibles para el huesped-->
         <div id="userDropdown" class="dropdown-content">
         <a href="reservas_hechas.php">Reservas hechas</a>
+        <a href="opiniones/index.php">Mis Opiniones</a>
         <a href="../login/logout.php">Cerrar sesión</a>
         </div>
     </div>
@@ -147,7 +148,7 @@ if (!$reservas) {
                 <p class="reserva-info"><strong>Habitación:</strong> <?= htmlspecialchars($row['tipo_habitacion']) ?></p>
                 <p class="reserva-info"><strong>Entrada:</strong> <?= htmlspecialchars($row['fecha_entrada']) ?></p>
                 <p class="reserva-info"><strong>Salida:</strong> <?= htmlspecialchars($row['fecha_salida']) ?></p>
-                <p class="reserva-info"><strong>Monto pagado:</strong> <?= ($row['monto']) ? '$' . number_format($row['monto'], 3) : '-' ?></p>
+                <p class="reserva-info"><strong>Monto pagado:</strong> <?= ($row['monto']) ? '$' . number_format($row['monto']) : '-' ?></p>
             </div>
 
 

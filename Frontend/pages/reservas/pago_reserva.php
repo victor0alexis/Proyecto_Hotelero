@@ -2,8 +2,6 @@
 session_start();
 include("../../php/conexion.php");
 
-
-
 if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'huesped') {
     header("Location: ../../php/login/login.php");
     exit();
@@ -35,13 +33,14 @@ if (!$reserva || $reserva['estado'] !== 'pendiente') {
 $inicio = new DateTime($reserva['fecha_entrada']);
 $salida = new DateTime($reserva['fecha_salida']);
 $noches = $inicio->diff($salida)->days;
-$total_hab = (float)$reserva['precio'] * $noches;
+$total_hab = (int)$reserva['precio'] * $noches;
 
 $total_serv = 0;
 $fecha_actual = date('Y-m-d');
 $servicios_incluidos_ids = [];
 
-foreach ($_SESSION['servicios_temporales'] ?? [] as $servicio) {
+// ✅ Corregido: acceder correctamente al array indexado por id_reserva
+foreach ($_SESSION['servicios_temporales'][$id_reserva] ?? [] as $servicio) {
     if (!empty($servicio['costo']) && (float)$servicio['costo'] > 0) {
         $total_serv += (float)$servicio['costo'];
     }
@@ -134,16 +133,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             pg_query_params($conn, "UPDATE reserva SET estado = 'confirmada' WHERE id_reserva = $1", [$id_reserva]);
 
             pg_query($conn, "COMMIT");
-            unset($_SESSION['servicios_temporales']);
+            unset($_SESSION['servicios_temporales'][$id_reserva]);
             header("Location: reserva_confirmacion.php?id=$id_reserva");
             exit();
         }
     }
 }
 ?>
-
-
-
 
 <!DOCTYPE html>
 <html lang="es">
@@ -158,50 +154,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <p><strong>Reserva de:</strong> <?= htmlspecialchars($reserva['nombre']) ?></p>
     <p><strong>Habitación:</strong> <?= htmlspecialchars($reserva['tipo']) ?></p>
-    <p><strong>Estadía:</strong> <?= $noches ?> noches a $<?= number_format($reserva['precio'],3) ?>/noche</p>
-    <p><strong>Total habitación:</strong> $<?= number_format($total_hab,3) ?></p>
+    <p><strong>Estadía:</strong> <?= $noches ?> noches a $<?= number_format($reserva['precio']) ?>/noche</p>
+    <p><strong>Total habitación:</strong> $<?= number_format($total_hab) ?></p>
 
     <p><strong>Servicios incluidos:</strong></p>
     <ul>
         <?php
-        if (!empty($_SESSION['servicios_temporales'][$id_reserva] )) {
-            foreach ($_SESSION['servicios_temporales'][$id_reserva]  as $servicio) {
+        if (!empty($_SESSION['servicios_temporales'][$id_reserva])) {
+            foreach ($_SESSION['servicios_temporales'][$id_reserva] as $servicio) {
                 $tipo = ucfirst($servicio['tipo_servicio']);
                 $desc = htmlspecialchars($servicio['descripcion']);
-                $costo =number_format($servicio['costo'], 3);
-                echo "<li>$tipo - $desc: $" . number_format($costo, 3) . "</li>";
+                $costo = number_format((float)$servicio['costo']);
+                echo "<li>$tipo - $desc: $$costo</li>";
             }
         } else {
             echo "<li>No se han agregado servicios adicionales.</li>";
         }
         ?>
     </ul>
-    <p><strong>Total servicios:</strong> $<?= number_format($total_serv, 3) ?></p>
-    <p><strong>Total general:</strong> $<?= number_format($total_general,3) ?></p>
+    <p><strong>Total servicios:</strong> $<?= number_format($total_serv) ?></p>
+    <p><strong>Total general:</strong> $<?= number_format($total_general) ?></p>
 
-<form action="pago_reserva.php" method="POST">
-    <?php if (!empty($errores)): ?>
-        <div class="errores">
-            <ul>
-                <?php foreach ($errores as $e): ?>
-                    <li><?= htmlspecialchars($e) ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    <?php endif; ?>
+    <form action="pago_reserva.php" method="POST">
+        <?php if (!empty($errores)): ?>
+            <div class="errores">
+                <ul>
+                    <?php foreach ($errores as $e): ?>
+                        <li><?= htmlspecialchars($e) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
 
-    <input type="hidden" name="id_reserva" value="<?= htmlspecialchars($id_reserva) ?>">
-    <label>Número de Tarjeta</label>
-    <input type="text" name="tarjeta" maxlength="19" required>
-    <label>Nombre del Titular</label>
-    <input type="text" name="titular" required>
-    <label>Vencimiento</label>
-    <input type="month" name="vencimiento" required>
-    <label>CVV</label>
-    <input type="text" name="cvv" maxlength="4" required>
-    <button type="submit">Pagar Ahora</button>
-</form>
-
+        <input type="hidden" name="id_reserva" value="<?= htmlspecialchars($id_reserva) ?>">
+        <label>Número de Tarjeta</label>
+        <input type="text" name="tarjeta" maxlength="19" required>
+        <label>Nombre del Titular</label>
+        <input type="text" name="titular" required>
+        <label>Vencimiento</label>
+        <input type="month" name="vencimiento" required>
+        <label>CVV</label>
+        <input type="text" name="cvv" maxlength="4" required>
+        <button type="submit">Pagar Ahora</button>
+    </form>
 
     <a href="../index.php" class="btn">Volver a Página Principal</a>
 </div>

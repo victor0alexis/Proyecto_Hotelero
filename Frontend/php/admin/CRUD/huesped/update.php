@@ -1,83 +1,73 @@
 <?php
-include("../../../conexion.php");        //conexion BD.
-session_start();                        //Iniciamos session.
+include("../../../conexion.php");
+session_start();
 
-// Verificar si hay sesión iniciada como administrador
+// Verificar sesión de administrador
 if (!isset($_SESSION['username']) || $_SESSION['rol'] !== 'admin') {
     header("Location: ../../../login/login.php");
     exit();
 }
 
-//Variable para mensajes de error o éxito.
 $mensaje = "";
 
-// Verifica que se haya pasado el parámetro id por URL.
 if (!isset($_GET['id'])) {
-    //si no se proporciona, redirige a "index.php".
     header("Location: index.php");
     exit();
 }
-//Convierte valor "$_GET['id']" a entero, se almacena en "$id_usuario".
+
 $id_usuario = intval($_GET['id']);
 
-// Obtener datos actuales del huésped, en tablas "huesped", "usuario".
 $consulta = pg_query_params($conn, "
-    SELECT h.id_huesped, u.id_usuario, u.username, h.nombre, h.email, h.telefono, u.clave
+    SELECT h.id_huesped, u.id_usuario, u.username, h.nombre, h.email, h.telefono
     FROM huesped h
     JOIN usuario u ON h.id_usuario = u.id_usuario
     WHERE u.id_usuario = $1
 ", array($id_usuario));
 
-//Convierte el resultado en un array asociativo (clave => valor) para acceder fácilmente a los datos.
 $huesped = pg_fetch_assoc($consulta);
 
-//Si no se encuentra ningún huésped con el id_usuario proporcionado, redirige a la página principal.
 if (!$huesped) {
     header("Location: index.php");
     exit();
 }
 
-// Procesar formulario, metodo "POST", .
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    //Recoge datos del formulario.
     $username = trim($_POST['username']);
     $nombre = trim($_POST['nombre']);
     $email = trim($_POST['email']);
     $telefono = trim($_POST['telefono']);
 
-    // Verificar si el username ya está en uso por otro usuario
-    $verificar_username = pg_query_params($conn, "SELECT id_usuario FROM usuario WHERE username = $1 AND id_usuario != $2", array($username, $id_usuario));
-    
+    $verificar_username = pg_query_params($conn, "
+        SELECT id_usuario FROM usuario WHERE username = $1 AND id_usuario != $2
+    ", array($username, $id_usuario));
 
     if (pg_num_rows($verificar_username) > 0) {
-        $mensaje = "El nombre de usuario ya está en uso por otro usuario.";
+        $mensaje = "El nombre de usuario ya está en uso.";
+    } elseif (!preg_match('/^[a-zA-Z0-9_]{3,}$/', $username)) {
+        $mensaje = "El nombre de usuario debe tener al menos 3 caracteres y no contener espacios.";
+    } elseif (!preg_match('/^[a-zA-ZÁÉÍÓÚáéíóúñÑ\s]{3,}$/', $nombre)) {
+        $mensaje = "El nombre debe contener solo letras y al menos 3 caracteres.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $mensaje = "El formato del correo electrónico no es válido.";
-    } elseif (strlen($telefono) < 7 || strlen($telefono) > 10) {
-        $mensaje = "El número de teléfono debe tener entre 7 y 10 caracteres.";
+    } elseif (!preg_match('/^\d{9,11}$/', $telefono)) {
+        $mensaje = "El teléfono debe tener solo números y entre 9 y 11 dígitos.";
     } else {
-        // Actualizar usuario
         $update_usuario = pg_query_params($conn,
             "UPDATE usuario SET username = $1 WHERE id_usuario = $2",
             array($username, $id_usuario)
         );
 
-        // Actualizar huésped
         $update_huesped = pg_query_params($conn,
             "UPDATE huesped SET nombre = $1, email = $2, telefono = $3 WHERE id_usuario = $4",
             array($nombre, $email, $telefono, $id_usuario)
         );
 
-        if ($update_usuario && $update_huesped) {
-            $mensaje = "Datos actualizados correctamente.";
-        } else {
-            $mensaje = "Error al actualizar los datos.";
-        }
+        $mensaje = ($update_usuario && $update_huesped)
+            ? "Datos actualizados correctamente."
+            : "Error al actualizar los datos.";
     }
 }
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="es">
@@ -114,8 +104,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label for="telefono">Teléfono:</label>
             <input type="text" id="telefono" name="telefono" value="<?= htmlspecialchars($huesped['telefono']) ?>" required>
         </div>
-
-
 
         <div class="form-buttons">
             <button type="submit">Guardar Cambios</button>

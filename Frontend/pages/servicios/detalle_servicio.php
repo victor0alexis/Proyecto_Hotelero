@@ -134,7 +134,7 @@ $url_anadir = '../reservas/reserva_confirmacion.php?' . http_build_query($params
     <h1><i class="fa-solid fa-circle-info"></i> Detalle del Servicio</h1>
     <p><i class="fa-solid fa-tags"></i> <strong>Tipo:</strong> <?= ucfirst(htmlspecialchars($tipo)) ?></p>
     <p><i class="fa-solid fa-file-alt"></i> <strong>Descripción:</strong> <?= htmlspecialchars($servicio['descripcion']) ?></p>
-    <p><i class="fa-solid fa-dollar-sign"></i> <strong>Costo:</strong> <?= number_format($servicio['costo'], 3) ?></p>
+    <p><i class="fa-solid fa-dollar-sign"></i> <strong>Costo:</strong> <?= number_format($servicio['costo']) ?></p>
     
 <!-- Botón para añadir servicio (solo si hay id_reserva) -->
 <?php if (!empty($id_reserva)): ?>

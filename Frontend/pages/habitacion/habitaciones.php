@@ -104,7 +104,7 @@ $consulta = pg_query($conn, "
         <img src="../../img/habitaciones/<?= htmlspecialchars($habitacion['imagen']) ?>" alt="Habitación <?= htmlspecialchars($habitacion['tipo']) ?>" class="habitacion-imagen">
         <div class="habitacion-info">
           <h3><?= strtoupper(htmlspecialchars($habitacion['tipo'])) ?></h3>
-          <p><strong>Precio:</strong> $<?= number_format($habitacion['precio'], 3) ?></p>
+          <p><strong>Precio:</strong> $<?= number_format($habitacion['precio']) ?></p>
           <p><strong>Estado:</strong> <?= htmlspecialchars($habitacion['estado']) ?></p>
           <p><strong>Hotel:</strong> <?= htmlspecialchars($habitacion['nombre_hotel']) ?></p>
         </div>

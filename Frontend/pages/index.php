@@ -7,7 +7,7 @@ $result = pg_query($conn, $sql);
 // Obtener últimas opiniones
 $opiniones_query = pg_query($conn, "
     SELECT  o.comentario,
-            o.clasificacion,
+            o.calificacion,
             o.fecha         AS fecha_opinion,
             h.nombre        AS huesped,
             hab.tipo        AS habitacion,
@@ -43,21 +43,15 @@ $opiniones_query = pg_query($conn, "
     <li><a href="habitacion/habitaciones.php">Habitaciones</a></li>
     <li><a href="servicios/servicios.php">Servicios</a></li>
     <li><a href="contacto.php">Contacto</a></li>
-    <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'huesped'): ?>
-    <a href="../php/huesped/CRUD/opiniones/index.php" class="btn btn-opinar">
-        Opinar sobre el Hotel
-    </a>
-<?php else: ?>
-    <p>Para opinar, debes <a href="/Proyecto_Hotelero/Frontend/php/login/login.php">iniciar sesión</a>.</p>
-<?php endif; ?>
-
   </ul>
+
   <div class="right-nav">
     <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'huesped') : ?>
       <div class="user-dropdown">
         <button class="user-btn" onclick="toggleDropdown()">👤 <?= htmlspecialchars($_SESSION['username']) ?></button>
         <div id="userDropdown" class="dropdown-content">
           <a href="../php/huesped/reservas_hechas.php">Reservas Hechas</a>
+              <a href="../php/huesped/opiniones/index.php">Mis Opiniones</a>
           <a href="../php/login/logout.php">Cerrar Sesión</a>
           
         </div>
@@ -127,7 +121,7 @@ window.onclick = function(event) {
           “<?= nl2br(htmlspecialchars($op['comentario'])) ?>”
         </p>
         <p class="clasificacion">
-          Calificación: <?= str_repeat('★', $op['clasificacion']) ?><?= str_repeat('☆', 5 - $op['clasificacion']) ?>
+          Calificación: <?= str_repeat('★', $op['calificacion']) ?><?= str_repeat('☆', 5 - $op['calificacion']) ?>
         </p>
         <small class="fecha"><?= date('d/m/Y', strtotime($op['fecha_opinion'])) ?></small>
       </div>

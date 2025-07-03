@@ -131,7 +131,7 @@ $huesped = pg_fetch_assoc(pg_query_params($conn, "
             <img src="../../img/habitaciones/<?= htmlspecialchars($habitacion['imagen']) ?>" alt="Imagen habitación">
             <div>
                 <h2><?= htmlspecialchars($habitacion['tipo']) ?></h2>
-                <p><strong>Precio:</strong> $<?= number_format($habitacion['precio'], 3) ?></p>
+                <p><strong>Precio:</strong> $<?= number_format($habitacion['precio']) ?></p>
                 <p><strong>Capacidad:</strong> <?= $habitacion['capacidad'] ?> personas</p>
                 <p><?= htmlspecialchars($habitacion['descripcion']) ?></p>
             </div>

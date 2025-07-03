@@ -34,18 +34,35 @@ $email = $_SESSION['email'] ?? 'No disponible';
     <p>Email: <strong><?= htmlspecialchars($email) ?></strong></p>
 </header>
 
-    <main>
-        <div class="logo">Panel de Control</div>
-        <ul>
-            <center>
-            <li><a href="CRUD/huesped/index.php">Gestionar Huespedes</a></li>
-            <li><a href="CRUD/reservas/index.php">Gestionar Reservas</a></li>
-            <li><a href="CRUD/habitaciones/index.php">Gestionar Habitaciones</a></li>
-            <li><a href="CRUD/servicios/index.php">Gestionar Servicios del Hotel</a></li>
-            <li><a href="CRUD/opiniones/index.php">Gestionar Opiniones</a></li>
-            </center>
-        </ul>
-    </main>
+<main>
+    
+    <div class="logo">Panel de Control</div>
+
+        <div class="crud-grid">
+        <a href="CRUD/huesped/index.php" class="crud-card">
+            👤<br>Huéspedes
+        </a>
+        <a href="CRUD/reservas/index.php" class="crud-card">
+            🛎️<br>Reservas
+        </a>
+        <a href="CRUD/habitaciones/index.php" class="crud-card">
+            🏨<br>Habitaciones
+        </a>
+        <a href="CRUD/servicios/index.php" class="crud-card">
+            🛠️<br>Servicios
+        </a>
+        <a href="CRUD/opiniones/index.php" class="crud-card">
+            💬<br>Opiniones
+        </a>
+        <a href="CRUD/personal/index.php" class="crud-card">
+            🧑‍🔧<br>Personal Encargado
+        </a>
+            <a href="CRUD/hoteles/index.php" class="crud-card">
+            🗺️<br>Hoteles
+        </a>
+        </div>
+
+</main>
 
     <footer>
         <a href="../login/logout.php">Cerrar Sesión</a>

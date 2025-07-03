@@ -153,7 +153,7 @@ while ($row = pg_fetch_assoc($servicios_habitacion)) {
             <img src="../../img/habitaciones/<?= htmlspecialchars($habitacion['imagen']) ?: 'default.jpg' ?>" alt="Habitación <?= htmlspecialchars($habitacion['tipo']) ?>">
         </div>
         <div class="info">
-            <p><strong>Precio:</strong> $<?= number_format($habitacion['precio'], 3) ?> por noche</p>
+            <p><strong>Precio:</strong> $<?= number_format($habitacion['precio']) ?> por noche</p>
             <p><strong>Estado:</strong> <?= htmlspecialchars($habitacion['estado']) ?></p>
             <p><strong>Descripción:</strong> <?= htmlspecialchars($habitacion['descripcion']) ?: 'Sin descripción disponible.' ?></p>
 

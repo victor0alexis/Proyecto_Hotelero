@@ -195,7 +195,7 @@ function buildUrlWithoutService($tipoEliminar, $idEliminar) {
                  alt="Imagen de la habitación <?= htmlspecialchars($reserva['tipo']) ?>" 
                  class="habitacion-img">
             <h2><?= htmlspecialchars($reserva['tipo']) ?></h2>
-            <p><strong>Precio por noche:</strong> $<?= number_format($reserva['precio'], 3) ?></p>
+            <p><strong>Precio por noche:</strong> $<?= number_format($reserva['precio']) ?></p>
             <p><?= htmlspecialchars($reserva['descripcion']) ?></p>
         </div>
 
@@ -207,14 +207,14 @@ function buildUrlWithoutService($tipoEliminar, $idEliminar) {
             <?php foreach ($servicios_agregados as $serv): ?>
                 <li><strong><?= ucfirst(htmlspecialchars($serv['tipo_servicio'])) ?>:</strong>
                     <?= htmlspecialchars($serv['descripcion']) ?> —
-                    <span>Costo: $<?= number_format($serv['costo'], 3) ?></span>
+                    <span>Costo: $<?= number_format($serv['costo']) ?></span>
                 </li>
             <?php endforeach; ?>
 
             <?php foreach ($servicios_temporales as $serv): ?>
                 <li><strong><?= ucfirst(htmlspecialchars($serv['tipo_servicio'])) ?> (Temporal):</strong>
                     <?= htmlspecialchars($serv['descripcion']) ?> —
-                    <span>Costo: $<?= number_format($serv['costo'], 3) ?></span>
+                    <span>Costo: $<?= number_format($serv['costo']) ?></span>
                     <?php if (isset($serv['tipo_original'], $serv['id_original'])): ?>
                         <a href="<?= buildUrlWithoutService($serv['tipo_original'], $serv['id_original']) ?>" style="color: red; margin-left: 10px;">Eliminar</a>
                     <?php endif; ?>
@@ -222,7 +222,7 @@ function buildUrlWithoutService($tipoEliminar, $idEliminar) {
             <?php endforeach; ?>
         </ul>
 
-        <p><strong>Total Servicios:</strong> $<?= number_format($total_servicios, 3) ?></p>
+        <p><strong>Total Servicios:</strong> $<?= number_format($total_servicios) ?></p>
 
         <?php if ($reserva['estado'] === 'pendiente'): ?>
             <div class="botones">
@@ -252,9 +252,9 @@ function buildUrlWithoutService($tipoEliminar, $idEliminar) {
             <p><strong>Fecha de Entrada:</strong> <?= htmlspecialchars($reserva['fecha_entrada']) ?></p>
             <p><strong>Fecha de Salida:</strong> <?= htmlspecialchars($reserva['fecha_salida']) ?></p>
             <p><strong>Noches:</strong> <?= $noches ?></p>
-            <p><strong>Total por Noches:</strong> $<?= number_format($total_base, 3) ?></p>
-            <p><strong>Total Servicios:</strong> $<?= number_format($total_servicios, 3) ?></p>
-            <p><strong>Total a Pagar:</strong> $<?= number_format($total, 3) ?></p>
+            <p><strong>Total por Noches:</strong> $<?= number_format($total_base) ?></p>
+            <p><strong>Total Servicios:</strong> $<?= number_format($total_servicios) ?></p>
+            <p><strong>Total a Pagar:</strong> $<?= number_format($total) ?></p>
             <p><strong>Estado:</strong> <?= ucfirst(htmlspecialchars($reserva['estado'])) ?></p>
         </div>
     </div>

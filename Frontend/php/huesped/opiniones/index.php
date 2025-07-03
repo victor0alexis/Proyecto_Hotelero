@@ -1,23 +1,26 @@
 <?php
-include("../../../conexion.php");
+include("../../conexion.php");
 session_start();
 
-if (!isset($_SESSION['username']) || $_SESSION['rol'] !== 'huesped') {
+if (!isset($_SESSION['rol'], $_SESSION['username'], $_SESSION['id_huesped']) || $_SESSION['rol'] !== 'huesped') {
     header("Location: ../../../login/login.php");
     exit();
 }
 
-
-$id_huesped = $_SESSION['id_huesped']; // Asumo que guardas este ID en la sesión al loguear
+$id_huesped = $_SESSION['id_huesped'];
 
 // Obtener opiniones del huésped logueado
 $query = pg_query_params($conn, "
-    SELECT id_opinion, comentario, clasificacion, fecha
+    SELECT id_opinion, comentario, calificacion, fecha
     FROM opinion
     WHERE id_huesped = $1
     ORDER BY fecha DESC
 ", array($id_huesped));
 
+if (!$query) {
+    echo "<p>Error al cargar las opiniones.</p>";
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -25,7 +28,7 @@ $query = pg_query_params($conn, "
 <head>
     <meta charset="UTF-8" />
     <title>Mis Opiniones</title>
-    <link rel="stylesheet" href="../../../../css/style_opiniones.css" />
+    <link rel="stylesheet" href="../../../css/style_opiniones.css" />
 </head>
 <body>
 
@@ -33,13 +36,15 @@ $query = pg_query_params($conn, "
     <header class="crud-header">
         <h1>Mis Opiniones</h1>
         <p>Hola, <strong><?= htmlspecialchars($_SESSION['username']) ?></strong></p>
-        
     </header>
 
     <main>
         <a href="insert.php" class="btn btn-crear">+ Nueva Opinión</a>
 
         <div class="tabla-container">
+        <?php if (pg_num_rows($query) === 0): ?>
+            <p>No has dejado ninguna opinión aún.</p>
+        <?php else: ?>
             <table>
                 <thead>
                     <tr>
@@ -55,16 +60,18 @@ $query = pg_query_params($conn, "
                     <tr>
                         <td><?= $opinion['id_opinion'] ?></td>
                         <td><?= htmlspecialchars($opinion['comentario']) ?></td>
-                        <td><?= $opinion['clasificacion'] ?></td>
+                        <td><?= $opinion['calificacion'] ?></td>
                         <td><?= $opinion['fecha'] ?></td>
                         <td>
                             <a href="update.php?id=<?= $opinion['id_opinion'] ?>" class="btn btn-editar">Editar</a>
+                            <!-- Recomendado: eliminar con POST en producción -->
                             <a href="delete.php?id=<?= $opinion['id_opinion'] ?>" class="btn btn-eliminar" onclick="return confirm('¿Seguro que quieres eliminar esta opinión?')">Eliminar</a>
                         </td>
                     </tr>
                     <?php endwhile; ?>
                 </tbody>
             </table>
+        <?php endif; ?>
         </div>
     </main>
 

@@ -115,7 +115,7 @@ $total_general = $total_habitacion + $total_servicios;
         <p><i class="fa-solid fa-phone icon"></i><strong>Teléfono:</strong> <?= htmlspecialchars($datos['telefono']) ?></p>
         <p><i class="fa-solid fa-bed icon"></i><strong>Habitación:</strong> <?= htmlspecialchars($datos['tipo_habitacion']) ?> - <?= htmlspecialchars($datos['descripcion']) ?></p>
         <p><i class="fa-solid fa-users icon"></i><strong>Capacidad:</strong> <?= htmlspecialchars($datos['capacidad']) ?> persona(s)</p>
-        <p><i class="fa-solid fa-dollar-sign icon"></i><strong>Precio por noche:</strong> $<?= number_format($datos['precio'], 3) ?></p>
+        <p><i class="fa-solid fa-dollar-sign icon"></i><strong>Precio por noche:</strong> $<?= number_format($datos['precio']) ?></p>
         <p><i class="fa-solid fa-calendar-days icon"></i><strong>Entrada:</strong> <?= htmlspecialchars($datos['fecha_entrada']) ?></p>
         <p><i class="fa-solid fa-calendar-day icon"></i><strong>Salida:</strong> <?= htmlspecialchars($datos['fecha_salida']) ?></p>
         <p><i class="fa-solid fa-flag icon"></i><strong>Estado Reserva:</strong> <?= htmlspecialchars($datos['estado_reserva']) ?></p>
@@ -125,7 +125,7 @@ $total_general = $total_habitacion + $total_servicios;
         <h2><i class="fa-solid fa-file-invoice-dollar"></i> Detalles de Boleta</h2>
         <?php if ($datos['id_boleta']): ?>
             <p><i class="fa-solid fa-receipt icon"></i><strong>ID Boleta:</strong> <?= htmlspecialchars($datos['id_boleta']) ?></p>
-            <p><i class="fa-solid fa-money-bill-wave icon"></i><strong>Monto Total:</strong> $<?= number_format($datos['monto'], 3) ?></p>
+            <p><i class="fa-solid fa-money-bill-wave icon"></i><strong>Monto Total:</strong> $<?= number_format($datos['monto']) ?></p>
             <p><i class="fa-solid fa-calendar icon"></i><strong>Fecha de Pago:</strong> <?= htmlspecialchars($datos['fecha_pago']) ?></p>
             <p><i class="fa-solid fa-circle-check icon"></i><strong>Estado de Pago:</strong> <?= htmlspecialchars($datos['estado_pago']) ?></p>
             <p><i class="fa-solid fa-credit-card icon"></i><strong>Método de Pago:</strong> <?= htmlspecialchars($datos['nombre_metodo']) ?></p>
@@ -141,7 +141,7 @@ $total_general = $total_habitacion + $total_servicios;
             <?php foreach ($lista_servicios as $s): ?>
                 <li>
                     <i class="fa-solid fa-circle-check icon"></i>
-                    <?= ucfirst(htmlspecialchars($s['tipo_servicio'])) ?> - <?= htmlspecialchars($s['descripcion']) ?> ($<?= number_format($s['costo'], 3) ?>)
+                    <?= ucfirst(htmlspecialchars($s['tipo_servicio'])) ?> - <?= htmlspecialchars($s['descripcion']) ?> ($<?= number_format($s['costo']) ?>)
                     - Atendido por: <?= htmlspecialchars($s['personal_encargado']) ?>
                 </li>
             <?php endforeach; ?>
@@ -154,11 +154,11 @@ $total_general = $total_habitacion + $total_servicios;
 <div class="boleta-section">
 <div class="boleta-section">
     <h2><i class="fa-solid fa-calculator"></i> Resumen de Costos</h2>
-    <p><strong>Precio por noche:</strong> $<?= number_format($precio_noche, 3) ?></p>
+    <p><strong>Precio por noche:</strong> $<?= number_format($precio_noche) ?></p>
     <p><strong>Noches:</strong> <?= $noches ?></p>
-    <p><strong>Total Habitación:</strong> $<?= number_format($total_habitacion, 3) ?></p>
-    <p><strong>Total Servicios:</strong> $<?= number_format($total_servicios, 3) ?></p>
-    <p><strong>Total General:</strong> $<?= number_format($total_general, 3) ?></p>
+    <p><strong>Total Habitación:</strong> $<?= number_format($total_habitacion) ?></p>
+    <p><strong>Total Servicios:</strong> $<?= number_format($total_servicios) ?></p>
+    <p><strong>Total General:</strong> $<?= number_format($total_general) ?></p>
 </div>
 
 </div>

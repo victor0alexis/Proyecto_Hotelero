@@ -10,7 +10,7 @@ if (!isset($_SESSION['username']) || $_SESSION['rol'] !== 'admin') {
 
 // Consulta: obtener opiniones con nombre de huésped
 $query = pg_query($conn, "
-    SELECT o.id_opinion, o.comentario, o.clasificacion, o.fecha,
+    SELECT o.id_opinion, o.comentario, o.calificacion, o.fecha,
            h.nombre AS nombre_huesped
     FROM opinion o
     JOIN huesped h ON o.id_huesped = h.id_huesped
@@ -54,7 +54,7 @@ $query = pg_query($conn, "
                             <td><?= $op['id_opinion'] ?></td>
                             <td><?= htmlspecialchars($op['nombre_huesped']) ?></td>
                             <td><?= htmlspecialchars($op['comentario']) ?></td>
-                            <td><?= $op['clasificacion'] ?> ⭐</td>
+                            <td><?= $op['calificacion'] ?> ⭐</td>
                             <td><?= date('d/m/Y H:i', strtotime($op['fecha'])) ?></td>
                             <td>
                                 <a href="update.php?id=<?= $op['id_opinion'] ?>" class="btn btn-editar">Editar</a>

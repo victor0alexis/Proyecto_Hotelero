@@ -9,7 +9,7 @@ CREATE TABLE Hotel (
 -- Tabla: Habitacion
 CREATE TABLE Habitacion (
     ID_Habitacion SERIAL PRIMARY KEY,
-    Precio NUMERIC(10, 3) NOT NULL,
+    Precio INT,
     Estado VARCHAR(20) NOT NULL,
     Estado_Actividad VARCHAR(20) DEFAULT 'activo',
     Tipo VARCHAR(50) NOT NULL ,
@@ -17,7 +17,7 @@ CREATE TABLE Habitacion (
     Imagen VARCHAR(255),
     Capacidad INT NOT NULL DEFAULT 1,
     ID_Hotel INT NOT NULL,
-    FOREIGN KEY (ID_Hotel) REFERENCES Hotel(ID_Hotel)
+    FOREIGN KEY (ID_Hotel) REFERENCES Hotel(ID_Hotel) ON DELETE CASCADE
 );
 
 -- Tabla: Usuario
@@ -76,21 +76,12 @@ CREATE TABLE Servicio_Incluido (
     FOREIGN KEY (ID_Habitacion) REFERENCES Habitacion(ID_Habitacion) ON DELETE CASCADE
 );
 
--- Tabla: Opinion
-CREATE TABLE Opinion (
-    ID_Opinion SERIAL PRIMARY KEY,
-    Comentario TEXT NOT NULL,
-    Clasificacion INT CHECK (Clasificacion BETWEEN 1 AND 5),
-    Fecha DATE NOT NULL,
-    ID_Reserva INT NOT NULL,
-    FOREIGN KEY (ID_Reserva) REFERENCES Reserva(ID_Reserva) ON DELETE CASCADE
-);
 
 
 -- Tabla: Boleta
 CREATE TABLE Boleta (
     ID_Boleta SERIAL PRIMARY KEY,
-    Monto NUMERIC(10, 3) NOT NULL CHECK (Monto > 0),
+    Monto INT NOT NULL CHECK (Monto > 0),
     Fecha_Pago DATE NOT NULL,
     Estado_Pago VARCHAR(50) NOT NULL CHECK (Estado_Pago IN ('pagado', 'pendiente', 'cancelado')),
     ID_Reserva INT DEFAULT NULL,
@@ -116,13 +107,27 @@ CREATE TABLE Metodo_Pago (
     FOREIGN KEY (ID_Boleta) REFERENCES Boleta(ID_Boleta) ON DELETE CASCADE
 );
 
+-- Crear tabla Opinion
+CREATE TABLE Opinion (
+    id_opinion SERIAL PRIMARY KEY,
+    id_huesped INT NOT NULL,
+    id_reserva INT NOT NULL,
+    comentario TEXT NOT NULL,
+    calificacion INT CHECK (calificacion BETWEEN 1 AND 5),
+    fecha DATE DEFAULT CURRENT_DATE,
+    FOREIGN KEY (id_huesped) REFERENCES Huesped(id_huesped) ON DELETE CASCADE,
+    FOREIGN KEY (id_reserva) REFERENCES Reserva(id_reserva) ON DELETE CASCADE
+);
+
+-- Restricción: solo una opinión por reserva (por lógica del sistema)
+ALTER TABLE Opinion ADD CONSTRAINT unica_opinion_por_reserva UNIQUE(id_reserva);
 
 
 -- Tabla: Servicio_Transporte
 CREATE TABLE Servicio_Transporte (
     ID_Servicio_Transporte SERIAL NOT NULL,
     Descripcion VARCHAR(100) NOT NULL,
-    Costo NUMERIC(10, 3) NOT NULL,
+    Costo INT NOT NULL,
     Fecha_Servicio DATE DEFAULT NULL 
 );
 
@@ -130,7 +135,7 @@ CREATE TABLE Servicio_Transporte (
 CREATE TABLE Servicio_Lavanderia (
     ID_Servicio_Lavanderia SERIAL NOT NULL,
     Descripcion VARCHAR(100) NOT NULL,
-    Costo NUMERIC(10, 3) NOT NULL,
+    Costo INT NOT NULL,
     Fecha_Servicio DATE DEFAULT NULL
 );
 
@@ -138,7 +143,7 @@ CREATE TABLE Servicio_Lavanderia (
 CREATE TABLE Servicio_Habitacion (
     ID_Servicio_Habitacion  SERIAL NOT NULL,
     Descripcion VARCHAR(100) NOT NULL,
-    Costo NUMERIC(10, 3) NOT NULL,
+    Costo INT NOT NULL,
     Fecha_Servicio DATE DEFAULT NULL
 );
 
@@ -166,31 +171,31 @@ INSERT INTO Huesped (id_usuario, nombre, email, telefono, verificado, codigo_ver
 
 -- Hotel
 INSERT INTO Hotel (nombre, direccion, Telefono) VALUES
-('Rambagh Palace', 'Bhawani Singh Rd, Jaipur 302005, India', '+54-55-3286-4040'),
-('Hotel Colline de France', 'Rua Vigilante, 400, Gramado, Brasil', '+55-54-3286-3030'),
-('JW Marriott Marquis Hotel', 'Sheikh Zayed Rd, Business Bay, Dubai, UAE', '+56-56-3286-5050'),
-('The Ritz-Carlton Kyoto', 'Kamogawa Nijo-Ohashi Hotori, Kyoto, Japan', '+81-75-746-5555'),
-('Belmond Hotel Caruso', 'Piazza San Giovanni del Toro 2, Ravello, Italy', '+39-089-858-801'),
-('One&Only Palmilla', 'Carr. Transpeninsular Km 7.5, San José del Cabo, Mexico', '+52-624-146-7000');
+('Rambagh Palace', 'Bhawani Singh Rd, Jaipur 302005, India', '987654321'),
+('Hotel Colline de France', 'Rua Vigilante, 400, Gramado, Brasil', '943758916'),
+('JW Marriott Marquis Hotel', 'Sheikh Zayed Rd, Business Bay, Dubai, UAE', '987453289'),
+('The Ritz Carlton Kyoto', 'Kamogawa Nijo-Ohashi Hotori, Kyoto, Japan', '916728356'),
+('Belmond Hotel Caruso', 'Piazza San Giovanni del Toro 2, Ravello, Italy', '971827635'),
+('One&Only Palmilla', 'Carr. Transpeninsular Km 7.5, San José del Cabo, Mexico', '9182765354');
 
 -- Habitaciones
 INSERT INTO Habitacion (Precio, Estado, Tipo, Descripcion, ID_Hotel, Imagen, Capacidad) VALUES
-(90.000, 'Disponible', 'Economica','Habitación económica equipada con cama individual, escritorio, ventilador de techo y baño privado. Ideal para viajeros solos.', 1, 'habitacion_economica.jpg', 1),
-(120.000, 'Disponible', 'Individual','Habitación individual con cama twin, aire acondicionado, televisión LED, baño privado y decoración tradicional.', 1, 'habitacion_individual_1.jpg', 1),
-(110.000, 'Disponible', 'Individual','Habitación moderna con cama queen, escritorio ergonómico, WiFi de alta velocidad y desayuno buffet incluido.', 2, 'habitacion_individual_2.jpg', 1),
-(150.000, 'Disponible', 'Doble','Habitación doble con dos camas twin, iluminación ambiental, TV satelital, minibar y amplio armario.', 1, 'habitacion_doble.jpg', 2),
-(160.000, 'Disponible', 'Doble','Habitación doble estilo europeo, con cama king, zona de estar, calefacción, y vistas al jardín central.', 3, 'habitacion_doble_2.jpg', 2),
-(180.000, 'Disponible', 'Matrimonial','Habtiación matrimonial con cama king-size, jacuzzi privado, balcón con vista a los Alpes y atención personalizada.', 2, 'habitacion_matrimonial.jpg', 2),
-(200.000, 'Disponible', 'Suite','Lujosa Suite con sala de estar independiente, baño de mármol, cafetera Nespresso y mayordomo disponible las 24h.', 1, 'habitacion_suite.jpg', 4),
-(250.000, 'Disponible', 'Suite Lujo','Suite de lujo con comedor privado, terraza panorámica, spa personal, bar exclusivo y decoración vanguardista.', 3, 'habitacion_suite_lujo.jpg', 5),
+(90000, 'Disponible', 'Economica','Habitación económica equipada con cama individual, escritorio, ventilador de techo y baño privado. Ideal para viajeros solos.', 1, 'habitacion_economica.jpg', 1),
+(120000, 'Disponible', 'Individual','Habitación individual con cama twin, aire acondicionado, televisión LED, baño privado y decoración tradicional.', 1, 'habitacion_individual_1.jpg', 1),
+(110000, 'Disponible', 'Individual','Habitación moderna con cama queen, escritorio ergonómico, WiFi de alta velocidad y desayuno buffet incluido.', 2, 'habitacion_individual_2.jpg', 1),
+(150000, 'Disponible', 'Doble','Habitación doble con dos camas twin, iluminación ambiental, TV satelital, minibar y amplio armario.', 1, 'habitacion_doble.jpg', 2),
+(160000, 'Disponible', 'Doble','Habitación doble estilo europeo, con cama king, zona de estar, calefacción, y vistas al jardín central.', 3, 'habitacion_doble_2.jpg', 2),
+(180000, 'Disponible', 'Matrimonial','Habtiación matrimonial con cama king-size, jacuzzi privado, balcón con vista a los Alpes y atención personalizada.', 2, 'habitacion_matrimonial.jpg', 2),
+(200000, 'Disponible', 'Suite','Lujosa Suite con sala de estar independiente, baño de mármol, cafetera Nespresso y mayordomo disponible las 24h.', 1, 'habitacion_suite.jpg', 4),
+(250000, 'Disponible', 'Suite Lujo','Suite de lujo con comedor privado, terraza panorámica, spa personal, bar exclusivo y decoración vanguardista.', 3, 'habitacion_suite_lujo.jpg', 5),
 
-(100.000, 'Disponible', 'Individual', 'Habitación individual japonesa con tatami, futón, vista al río Kamo y servicio de té matcha incluido.', 4, 'habitacion_japonesa.jpg', 1),
-(130.000, 'Disponible', 'Doble', 'Habitación doble con frescos originales, cama king-size, baño de mármol y vista panorámica a la costa Amalfitana.', 5, 'habitacion_belmond.jpg', 2),
-(170.000, 'Disponible', 'Matrimonial', 'Suite romántica con terraza privada, jacuzzi, acceso a playa privada y atención personalizada 24h.', 6, 'habitacion_romantica.jpg', 2),
-(210.000, 'Disponible', 'Suite', 'Suite con alberca privada, jardín tropical, chef privado bajo solicitud y mayordomo personal.', 6, 'suite_alberca.jpg', 3),
-(240.000, 'Disponible', 'Suite Lujo', 'Suite imperial con domótica integrada, spa privado, cava de vinos y vista al océano Pacífico.', 6, 'suite_lujo_mexico.jpg', 4),
-(95.000, 'Disponible', 'Economica', 'Habitación compacta pero elegante con amenities japoneses, WiFi ultrarrápido y baño tipo ofuro.', 4, 'habitacion_economica_kyoto.jpg', 1),
-(155.000, 'Disponible', 'Doble', 'Doble deluxe con frescos restaurados del siglo XVIII, balcón al jardín y desayuno buffet italiano.', 5, 'doble_deluxe_italia.jpg', 2);
+(100000, 'Disponible', 'Individual', 'Habitación individual japonesa con tatami, futón, vista al río Kamo y servicio de té matcha incluido.', 4, 'habitacion_japonesa.jpg', 1),
+(130000, 'Disponible', 'Doble', 'Habitación doble con frescos originales, cama king-size, baño de mármol y vista panorámica a la costa Amalfitana.', 5, 'habitacion_belmond.jpg', 2),
+(170000, 'Disponible', 'Matrimonial', 'Suite romántica con terraza privada, jacuzzi, acceso a playa privada y atención personalizada 24h.', 6, 'habitacion_romantica.jpg', 2),
+(210000, 'Disponible', 'Suite', 'Suite con alberca privada, jardín tropical, chef privado bajo solicitud y mayordomo personal.', 6, 'suite_alberca.jpg', 3),
+(240000, 'Disponible', 'Suite Lujo', 'Suite imperial con domótica integrada, spa privado, cava de vinos y vista al océano Pacífico.', 6, 'suite_lujo_mexico.jpg', 4),
+(95000, 'Disponible', 'Economica', 'Habitación compacta pero elegante con amenities japoneses, WiFi ultrarrápido y baño tipo ofuro.', 4, 'habitacion_economica_kyoto.jpg', 1),
+(155000, 'Disponible', 'Doble', 'Doble deluxe con frescos restaurados del siglo XVIII, balcón al jardín y desayuno buffet italiano.', 5, 'doble_deluxe_italia.jpg', 2);
 
 --Servicio_Incluido: Transporte 
 INSERT INTO Servicio_Incluido (ID_Servicio, Tipo_Servicio, Personal_Encargado) VALUES
@@ -241,75 +246,48 @@ INSERT INTO Servicio_Incluido (ID_Servicio, Tipo_Servicio, Personal_Encargado) V
 
 -- Servicios Transporte
 INSERT INTO Servicio_Transporte (Descripcion, Costo) VALUES
-('Traslado privado desde aeropuerto', 25.000),
-('Transporte al centro histórico', 15.000),
-('Servicio de limusina ejecutiva', 50.000),
-('Traslado VIP desde terminal de lujo', 40.000),
-('Van grupal con guía turístico', 20.000),
-('Taxi privado con aire acondicionado', 12.000),
-('Transporte ecológico (eléctrico)', 18.000),
-('Servicio express puerta a puerta', 22.000),
-('Chófer multilingüe con guía turística', 30.000),        -- ID 9
-('Auto eléctrico con tecnología AI', 22.000),              -- ID 10
-('Jet privado bajo solicitud (por tramo)', 150.000),       -- ID 11
-('Carruaje tradicional desde estación central', 26.000);   -- ID 12
+('Traslado privado desde aeropuerto', 25000),
+('Transporte al centro histórico', 15000),
+('Servicio de limusina ejecutiva', 50000),
+('Traslado VIP desde terminal de lujo', 40000),
+('Van grupal con guía turístico', 20000),
+('Taxi privado con aire acondicionado', 12000),
+('Transporte ecológico (eléctrico)', 18000),
+('Servicio express puerta a puerta', 22000),
+('Chófer multilingüe con guía turística', 30000),        -- ID 9
+('Auto eléctrico con tecnología AI', 22000),              -- ID 10
+('Jet privado bajo solicitud (por tramo)', 150000),       -- ID 11
+('Carruaje tradicional desde estación central', 26000);   -- ID 12
 
 -- Servicios Lavandería
 INSERT INTO Servicio_Lavanderia ( Descripcion, Costo) VALUES
-('Lavado y planchado express', 18.000),
-('Lavado delicado para seda y lino', 20.000),
-('Planchado profesional de trajes', 22.000),
-('Lavado estándar con fragancia premium', 15.000),
-('Limpieza de prendas delicadas', 19.000),
-('Lavado a vapor y desinfección', 21.000),
-('Servicio nocturno exprés', 25.000),
-('Lavandería ecológica', 17.000),
-('Tratamiento de lino belga premium', 24.000),                   -- ID 9
-('Servicio exclusivo para prendas de gala', 30.000),             -- ID 10
-('Empaque al vacío para viajes largos', 20.000),                 -- ID 11
-('Fragancia personalizada post-lavado', 19.000);
+('Lavado y planchado express', 18000),
+('Lavado delicado para seda y lino', 20000),
+('Planchado profesional de trajes', 22000),
+('Lavado estándar con fragancia premium', 15000),
+('Limpieza de prendas delicadas', 19000),
+('Lavado a vapor y desinfección', 21000),
+('Servicio nocturno exprés', 25000),
+('Lavandería ecológica', 17000),
+('Tratamiento de lino belga premium', 24000),                   -- ID 9
+('Servicio exclusivo para prendas de gala', 30000),             -- ID 10
+('Empaque al vacío para viajes largos', 20000),                 -- ID 11
+('Fragancia personalizada post-lavado', 19000);
 
 -- Servicios Habitación
 INSERT INTO Servicio_Habitacion ( Descripcion, Costo) VALUES
-('Cena romántica privada', 40.000),
-('Desayuno gourmet en la habitación', 30.000),
+('Cena romántica privada', 40000),
+('Desayuno gourmet en la habitación', 30000),
 ('Minibar surtido', 15.000),
-('Decoración especial por aniversario', 35.000),
-('Almuerzo ejecutivo', 22.000),
-('Cena internacional', 28.000),
-('Servicio personalizado de café y té', 12.000),
-('Atención 24h multilingüe', 18.000),
-('Chef privado en suite', 55.000),                           -- ID 9
-('Servicio de flores frescas diarias en habitación', 18.000),-- ID 10
-('Atención multilingüe 24h personalizada', 25.000),          -- ID 11
-('Desayuno flotante en piscina privada', 36.000); 
+('Decoración especial por aniversario', 35000),
+('Almuerzo ejecutivo', 22000),
+('Cena internacional', 28000),
+('Servicio personalizado de café y té', 12000),
+('Atención 24h multilingüe', 18000),
+('Chef privado en suite', 55000),                           -- ID 9
+('Servicio de flores frescas diarias en habitación', 18000),-- ID 10
+('Atención multilingüe 24h personalizada', 25000),          -- ID 11
+('Desayuno flotante en piscina privada', 36000); 
 
 
 
-CREATE TABLE Opinion (
-    id_opinion SERIAL PRIMARY KEY,
-    id_huesped INT NOT NULL,
-    comentario TEXT NOT NULL,
-    calificacion INT CHECK (calificacion BETWEEN 1 AND 5),
-    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_huesped) REFERENCES Huesped(id_huesped) 
-	);
-	
-ALTER TABLE Opinion
-ADD COLUMN id_huesped INTEGER;
-
-ALTER TABLE Opinion
-ADD CONSTRAINT fk_opinion_huesped
-FOREIGN KEY (id_huesped)
-REFERENCES huesped(id_huesped)
-ON DELETE CASCADE;
-
-\d Opinion
-
-SELECT column_name, data_type, is_nullable
-FROM information_schema.columns
-WHERE table_name = 'opinion';
-
-ALTER TABLE opinion ALTER COLUMN fecha SET DEFAULT CURRENT_DATE;
-
-ALTER TABLE opinion ADD CONSTRAINT unica_opinion_por_reserva UNIQUE(id_reserva);
