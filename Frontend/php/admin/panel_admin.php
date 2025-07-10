@@ -42,6 +42,9 @@ $email = $_SESSION['email'] ?? 'No disponible';
         <a href="CRUD/huesped/index.php" class="crud-card">
             👤<br>Huéspedes
         </a>
+        <a href="CRUD/administradores/index.php" class="crud-card">
+            🧑‍🔧<br>Administradores
+        </a>
         <a href="CRUD/reservas/index.php" class="crud-card">
             🛎️<br>Reservas
         </a>
@@ -53,9 +56,6 @@ $email = $_SESSION['email'] ?? 'No disponible';
         </a>
         <a href="CRUD/opiniones/index.php" class="crud-card">
             💬<br>Opiniones
-        </a>
-        <a href="CRUD/personal/index.php" class="crud-card">
-            🧑‍🔧<br>Personal Encargado
         </a>
             <a href="CRUD/hoteles/index.php" class="crud-card">
             🗺️<br>Hoteles

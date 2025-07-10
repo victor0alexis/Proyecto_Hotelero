@@ -55,7 +55,7 @@ $query = pg_query($conn, "
                     <?php while ($habitacion = pg_fetch_assoc($query)): ?>
                         <tr>
                             <td><?= $habitacion['id_habitacion'] ?></td>
-                            <td>$<?= number_format($habitacion['precio'], 3) ?></td>
+                            <td>$<?= number_format($habitacion['precio'],) ?></td>
                             <td><?= htmlspecialchars($habitacion['estado']) ?></td>
                             <td><?= htmlspecialchars($habitacion['tipo']) ?></td>
                             <td><?= htmlspecialchars($habitacion['descripcion']) ?></td>

@@ -18,24 +18,23 @@ $id_usuario = intval($_GET['id']);
 
 // Obtener datos actuales
 $consulta = pg_query_params($conn, "
-    SELECT h.id_huesped, u.id_usuario, u.username, h.nombre, h.email, h.telefono
-    FROM huesped h
-    JOIN usuario u ON h.id_usuario = u.id_usuario
+    SELECT a.id_admin, u.id_usuario, u.username, a.nombre, a.email
+    FROM administrador a
+    JOIN usuario u ON a.id_usuario = u.id_usuario
     WHERE u.id_usuario = $1
 ", array($id_usuario));
 
-$huesped = pg_fetch_assoc($consulta);
+$admin = pg_fetch_assoc($consulta);
 
-if (!$huesped) {
+if (!$admin) {
     header("Location: index.php");
     exit();
 }
 
-// Valores actuales
-$username = $huesped['username'];
-$nombre = $huesped['nombre'];
-$email = $huesped['email'];
-$telefono = $huesped['telefono'];
+// Variables actuales
+$username = $admin['username'];
+$nombre = $admin['nombre'];
+$email = $admin['email'];
 
 $errores = [];
 
@@ -43,9 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $nombre = trim($_POST['nombre']);
     $email = trim($_POST['email']);
-    $telefono = trim($_POST['telefono']);
 
-    // Validaciones obligatorias
+    // Validaciones
     if (empty($username)) {
         $errores[] = "El nombre de usuario es obligatorio.";
     } elseif (!preg_match('/^[a-zA-Z0-9_]{3,50}$/', $username)) {
@@ -58,39 +56,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errores[] = "El nombre solo debe contener letras y espacios.";
     }
 
-    if (empty($email)) {
-        $errores[] = "El correo electrónico es obligatorio.";
-    } elseif (!preg_match('/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', $email)) {
+    if (!empty($email) && !preg_match('/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', $email)) {
         $errores[] = "Formato de correo electrónico inválido.";
-    }
-
-    if (empty($telefono)) {
-        $errores[] = "El teléfono es obligatorio.";
-    } elseif (!preg_match('/^[0-9]{7,10}$/', $telefono)) {
-        $errores[] = "El teléfono debe tener entre 7 y 10 dígitos numéricos.";
     }
 
     // Verificar duplicado de usuario
     $verificar = pg_query_params($conn, "
         SELECT id_usuario FROM usuario WHERE username = $1 AND id_usuario != $2
     ", array($username, $id_usuario));
+
     if (pg_num_rows($verificar) > 0) {
         $errores[] = "El nombre de usuario ya está en uso por otro usuario.";
     }
 
+    // Actualizar si no hay errores
     if (empty($errores)) {
         $update_usuario = pg_query_params($conn,
             "UPDATE usuario SET username = $1 WHERE id_usuario = $2",
             array($username, $id_usuario)
         );
 
-        $update_huesped = pg_query_params($conn,
-            "UPDATE huesped SET nombre = $1, email = $2, telefono = $3 WHERE id_usuario = $4",
-            array($nombre, $email, $telefono, $id_usuario)
+        $update_admin = pg_query_params($conn,
+            "UPDATE administrador SET nombre = $1, email = $2 WHERE id_usuario = $3",
+            array($nombre, $email, $id_usuario)
         );
 
-        if ($update_usuario && $update_huesped) {
-            header("Location: index.php?mensaje=Huésped+actualizado+correctamente");
+        if ($update_usuario && $update_admin) {
+            header("Location: index.php?mensaje=Administrador+actualizado+correctamente");
             exit();
         } else {
             $errores[] = "Error al actualizar los datos en la base de datos.";
@@ -103,12 +95,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Editar Huésped</title>
+    <title>Editar Administrador</title>
     <link rel="stylesheet" href="../../../../css/CRUD/style_crud_update.css">
 </head>
 <body>
 <div class="form-container">
-    <h2>Editar Huésped</h2>
+    <h2>Editar Administrador</h2>
 
     <?php if (!empty($errores)): ?>
         <div class="mensaje">
@@ -133,12 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="form-group">
             <label for="email">Correo electrónico:</label>
-            <input type="email" id="email" name="email" value="<?= htmlspecialchars($email) ?>" required>
-        </div>
-
-        <div class="form-group">
-            <label for="telefono">Teléfono:</label>
-            <input type="text" id="telefono" name="telefono" value="<?= htmlspecialchars($telefono) ?>" required>
+            <input type="email" id="email" name="email" value="<?= htmlspecialchars($email) ?>">
         </div>
 
         <div class="form-buttons">

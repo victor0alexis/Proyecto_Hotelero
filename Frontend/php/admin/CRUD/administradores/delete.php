@@ -1,4 +1,4 @@
-<?php 
+<?php
 include("../../../conexion.php");
 session_start();
 
@@ -9,23 +9,23 @@ if (!isset($_SESSION["username"]) || $_SESSION["rol"] !== "admin") {
 }
 
 // Verifica que se haya pasado el parámetro id por URL.
-$id_habitacion = isset($_GET["eliminar"]) ? intval($_GET["eliminar"]) : null;
+$id_usuario = $_GET["eliminar"] ?? null;
 
-if (!$id_habitacion) {
+if (!$id_usuario) {
     header("Location: index.php");
     exit();
 }
 
-// Eliminación física
+// Procesar eliminación del usuario (elimina también al administrador por ON DELETE CASCADE)
 $eliminar = pg_query_params($conn,
-    "DELETE FROM habitacion WHERE id_habitacion = $1",
-    array($id_habitacion)
+    "DELETE FROM usuario WHERE id_usuario = $1",
+    array($id_usuario)
 );
 
 if ($eliminar) {
     header("Location: index.php?eliminado=1");
     exit();
 } else {
-    echo "Error al eliminar la habitación: " . pg_last_error($conn);
+    echo "Error al eliminar el administrador.";
 }
 ?>

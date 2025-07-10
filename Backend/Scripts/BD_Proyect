@@ -23,22 +23,25 @@ CREATE TABLE Habitacion (
 -- Tabla: Usuario
 CREATE TABLE Usuario (
     ID_Usuario SERIAL PRIMARY KEY,
-    Username VARCHAR(50) UNIQUE NOT NULL,
-    Clave TEXT NOT NULL,
+    Username VARCHAR(50) UNIQUE NOT NULL CHECK (char_length(Username) > 0),
+    Clave TEXT NOT NULL CHECK (char_length(Clave) >= 6),
     Rol VARCHAR(20) NOT NULL CHECK (Rol IN ('admin', 'huesped'))
 );
+
+
 
 -- Tabla: Huesped
 CREATE TABLE Huesped (
     ID_Huesped SERIAL PRIMARY KEY,
-    ID_Usuario INTEGER NOT NULL UNIQUE,
-    Nombre VARCHAR(100) NOT NULL,
-    Email VARCHAR(100),
-    Telefono VARCHAR(20),
-    Verificado BOOLEAN DEFAULT FALSE,
-    Codigo_Verificacion VARCHAR(10),
-    FOREIGN KEY (ID_Usuario) REFERENCES Usuario(ID_Usuario) ON DELETE CASCADE
+    ID_Usuario INTEGER NOT NULL UNIQUE REFERENCES Usuario(ID_Usuario) ON DELETE CASCADE,
+    Nombre VARCHAR(100) NOT NULL CHECK (Nombre ~* '^[[:alpha:] ]+$'),
+    Email VARCHAR(100) CHECK (Email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+    Telefono VARCHAR(20) CHECK (Telefono ~ '^[0-9]{7,10}$'),
+    Verificado BOOLEAN DEFAULT False,
+    Codigo_Verificacion VARCHAR(10)
 );
+
+
 
 -- Tabla: Administrador
 CREATE TABLE Administrador (
@@ -166,8 +169,8 @@ INSERT INTO Administrador (id_usuario, nombre, email, verificado, codigo_verific
 
 -- Huéspedes
 INSERT INTO Huesped (id_usuario, nombre, email, telefono, verificado, codigo_verificacion) VALUES 
-(3, 'huesped1', 'huesped1@huesped.com', '900123001', TRUE, '0000'),
-(4, 'huesped2', 'huesped2@huesped.com', '900123002', TRUE, '0000');
+(3, 'huespedone', 'huesped1@huesped.com', '900123001', TRUE, '0000'),
+(4, 'huespedtwo', 'huesped2@huesped.com', '900123002', TRUE, '0000');
 
 -- Hotel
 INSERT INTO Hotel (nombre, direccion, Telefono) VALUES

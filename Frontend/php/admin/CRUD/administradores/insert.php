@@ -10,36 +10,34 @@ if (!isset($_SESSION['username']) || $_SESSION['rol'] !== 'admin') {
 
 $mensaje = "";
 
-// Inicializar variables para preservar datos del formulario
-$username = $clave = $nombre = $email = $telefono = "";
+// Inicializar variables
+$username = $clave = $nombre = $email = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $username = trim($_POST["username"]);
     $clave = $_POST["clave"];
     $nombre = trim($_POST["nombre"]);
     $email = trim($_POST["email"]);
-    $telefono = trim($_POST["telefono"]);
 
     // Validaciones
-    if (empty($username) || empty($clave) || empty($nombre)) {
-        $mensaje = "Los campos 'Usuario', 'Contraseña' y 'Nombre' son obligatorios.";
+    if (empty($username) || empty($clave) || empty($nombre) || empty($email)) {
+        $mensaje = "Todos los campos son obligatorios.";
     } elseif (!preg_match('/^[\p{L} ]+$/u', $nombre)) {
         $mensaje = "El nombre solo debe contener letras y espacios.";
     } elseif (strlen($clave) < 6) {
         $mensaje = "La contraseña debe tener al menos 6 caracteres.";
-    } elseif (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $mensaje = "El correo electrónico no tiene un formato válido.";
-    } elseif (!empty($telefono) && !preg_match('/^\d{7,10}$/', $telefono)) {
-        $mensaje = "El número de teléfono debe contener solo dígitos y tener entre 7 y 10 caracteres.";
     } else {
         // Verificar si el usuario ya existe
-        $verificar = pg_query_params($conn, "SELECT * FROM usuario WHERE username = $1", array($username));
+        $verificar = pg_query_params($conn, "SELECT 1 FROM usuario WHERE username = $1", array($username));
 
         if (pg_num_rows($verificar) > 0) {
             $mensaje = "El nombre de usuario ya está en uso.";
         } else {
-            $rol = 'huesped';
-            $clave_hash = password_hash($clave, PASSWORD_BCRYPT);
+            $rol = 'admin';
+            $clave_hash = md5($clave);
+            $codigo_verificacion = strval(rand(100000, 999999));
 
             // Insertar en tabla Usuario
             $insert_usuario = pg_query_params(
@@ -50,21 +48,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             if ($insert_usuario && $row = pg_fetch_assoc($insert_usuario)) {
                 $id_usuario = $row['id_usuario'];
-                $codigo_verificacion = strval(rand(100000, 999999));
 
-                // Insertar en tabla Huesped
-                $insert_huesped = pg_query_params(
+                // Insertar en tabla Administrador
+                $insert_admin = pg_query_params(
                     $conn,
-                    "INSERT INTO huesped (id_usuario, nombre, email, telefono, verificado, codigo_verificacion)
-                     VALUES ($1, $2, $3, $4, false, $5)",
-                    array($id_usuario, $nombre, $email, $telefono, $codigo_verificacion)
+                    "INSERT INTO administrador (id_usuario, nombre, email, verificado, codigo_verificacion)
+                     VALUES ($1, $2, $3, false, $4)",
+                    array($id_usuario, $nombre, $email, $codigo_verificacion)
                 );
 
-                if ($insert_huesped) {
-                    header("Location: index.php?mensaje=Huésped+registrado+correctamente");
+                if ($insert_admin) {
+                    header("Location: index.php?mensaje=Administrador+registrado+correctamente");
                     exit();
                 } else {
-                    $mensaje = "Error al registrar en la tabla huésped.";
+                    $mensaje = "Error al registrar en la tabla administrador.";
                 }
             } else {
                 $mensaje = "Error al registrar usuario.";
@@ -78,12 +75,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registrar Huésped</title>
+    <title>Registrar Administrador</title>
     <link rel="stylesheet" href="../../../../css/CRUD/style_crud_insert.css">
 </head>
 <body>
 <div class="form-container">
-    <h2>Registrar Huésped</h2>
+    <h2>Registrar Administrador</h2>
 
     <?php if ($mensaje): ?>
         <div class="mensaje"><?= htmlspecialchars($mensaje) ?></div>
@@ -107,12 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         <div class="form-group">
             <label for="email">Correo Electrónico:</label>
-            <input type="email" name="email" value="<?= htmlspecialchars($email) ?>">
-        </div>
-
-        <div class="form-group">
-            <label for="telefono">Teléfono:</label>
-            <input type="text" name="telefono" value="<?= htmlspecialchars($telefono) ?>">
+            <input type="email" name="email" required value="<?= htmlspecialchars($email) ?>">
         </div>
 
         <div class="form-buttons">

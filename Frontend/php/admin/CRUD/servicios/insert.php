@@ -9,17 +9,23 @@ if (!isset($_SESSION['username']) || $_SESSION['rol'] !== 'admin') {
 
 $mensaje = "";
 
+$tipo_servicio = $descripcion = $costo = $personal = "";
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $tipo_servicio = $_POST["tipo_servicio"];
+    $tipo_servicio = trim($_POST["tipo_servicio"]);
     $descripcion = trim($_POST["descripcion"]);
-    $costo = $_POST["costo"];
+    $costo = trim($_POST["costo"]);
     $personal = trim($_POST["personal"]);
 
     // Validaciones
     if (empty($tipo_servicio) || empty($descripcion) || empty($costo) || empty($personal)) {
         $mensaje = "Todos los campos son obligatorios.";
-    } elseif (!is_numeric($costo) || $costo < 0) {
-        $mensaje = "El costo debe ser un número positivo.";
+    } elseif (!ctype_digit($costo) || intval($costo) < 0) {
+        $mensaje = "El costo debe ser un número entero positivo.";
+    } elseif (strlen($descripcion) > 200 || !preg_match('/^[\w\s.,-]+$/u', $descripcion)) {
+        $mensaje = "La descripción contiene caracteres no permitidos o es demasiado larga.";
+    } elseif (strlen($personal) > 200 || !preg_match('/^[\w\s.,-]+$/u', $personal)) {
+        $mensaje = "El nombre del personal contiene caracteres no permitidos o es demasiado largo.";
     } else {
         // Determinar tabla e ID según tipo
         $tabla_servicio = "";
@@ -43,7 +49,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
         if (!$mensaje) {
-            // Insertar en tabla correspondiente
             $insert_servicio = pg_query_params(
                 $conn,
                 "INSERT INTO $tabla_servicio (Descripcion, Costo) VALUES ($1, $2) RETURNING $campo_id AS id_servicio",
@@ -53,7 +58,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if ($insert_servicio && $row = pg_fetch_assoc($insert_servicio)) {
                 $id_servicio = $row['id_servicio'];
 
-                // Insertar en servicio_incluido
                 $insert_incluido = pg_query_params(
                     $conn,
                     "INSERT INTO servicio_incluido (id_servicio, tipo_servicio, personal_encargado)
@@ -83,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <link rel="stylesheet" href="../../../../css/CRUD/style_crud_insert.css">
 </head>
 <body>
-    
+
 <div class="form-container">
     <h2>Registrar Servicio</h2>
 
@@ -96,25 +100,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <label for="tipo_servicio">Tipo de Servicio:</label>
             <select name="tipo_servicio" required>
                 <option value="">Seleccione</option>
-                <option value="transporte">Transporte</option>
-                <option value="lavanderia">Lavandería</option>
-                <option value="habitacion">Habitación</option>
+                <option value="transporte" <?= $tipo_servicio === 'transporte' ? 'selected' : '' ?>>Transporte</option>
+                <option value="lavanderia" <?= $tipo_servicio === 'lavanderia' ? 'selected' : '' ?>>Lavandería</option>
+                <option value="habitacion" <?= $tipo_servicio === 'habitacion' ? 'selected' : '' ?>>Habitación</option>
             </select>
         </div>
 
         <div class="form-group">
             <label for="descripcion">Descripción:</label>
-            <input type="text" name="descripcion" required>
+            <input type="text" name="descripcion" required maxlength="200" value="<?= htmlspecialchars($descripcion) ?>">
         </div>
 
         <div class="form-group">
-            <label for="costo">Costo (formato: 0.000):</label>
-            <input type="text" name="costo" required pattern="^\d+(\.\d{1,3})?$" title="Ej: 123.456">
+            <label for="costo">Costo:</label>
+            <input type="text" name="costo" required value="<?= htmlspecialchars($costo) ?>">
         </div>
 
         <div class="form-group">
             <label for="personal">Personal Encargado:</label>
-            <input type="text" name="personal" required>
+            <input type="text" name="personal" required maxlength="200" value="<?= htmlspecialchars($personal) ?>">
         </div>
 
         <div class="form-buttons">
