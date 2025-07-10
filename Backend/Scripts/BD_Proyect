@@ -150,16 +150,6 @@ CREATE TABLE Servicio_Habitacion (
     Fecha_Servicio DATE DEFAULT NULL
 );
 
-CREATE TABLE Promocion (
-    ID_Promocion SERIAL PRIMARY KEY,
-    Titulo VARCHAR(100) NOT NULL,
-    Descripcion TEXT NOT NULL,
-    Descuento INT CHECK (Descuento BETWEEN 1 AND 100), -- % de descuento
-    Fecha_Inicio DATE NOT NULL,
-    Fecha_Fin DATE NOT NULL,
-    Estado VARCHAR(20) DEFAULT 'activa' CHECK (Estado IN ('activa', 'inactiva')),
-    Imagen VARCHAR(255) -- para banner si deseas mostrarlo gráficamente
-);
 
 
 -- ===================
@@ -168,15 +158,15 @@ CREATE TABLE Promocion (
 
 -- Usuarios
 INSERT INTO Usuario (username, clave, rol) VALUES 
-('usuario_admin1', md5('admin'), 'admin'),
-('usuario_admin2', md5('admin'), 'admin'),
-('usuario_huesped1', md5('huesped'), 'huesped'),
-('usuario_huesped2', md5('huesped'), 'huesped');
+('usuario_adminone', md5('admin'), 'admin'),
+('usuario_admintwo', md5('admin'), 'admin'),
+('usuario_huespedone', md5('huesped'), 'huesped'),
+('usuario_huespedtwo', md5('huesped'), 'huesped');
 
 -- Administradores
 INSERT INTO Administrador (id_usuario, nombre, email, verificado, codigo_verificacion) VALUES 
-(1, 'admin1', 'admin1@admin.com', TRUE, '0000'),
-(2, 'admin2', 'admin2@admin.com', TRUE, '0000');
+(1, 'adminone', 'admin1@admin.com', TRUE, '0000'),
+(2, 'admintwo', 'admin2@admin.com', TRUE, '0000');
 
 -- Huéspedes
 INSERT INTO Huesped (id_usuario, nombre, email, telefono, verificado, codigo_verificacion) VALUES 
@@ -292,7 +282,7 @@ INSERT INTO Servicio_Lavanderia ( Descripcion, Costo) VALUES
 INSERT INTO Servicio_Habitacion ( Descripcion, Costo) VALUES
 ('Cena romántica privada', 40000),
 ('Desayuno gourmet en la habitación', 30000),
-('Minibar surtido', 15.000),
+('Minibar surtido', 15000),
 ('Decoración especial por aniversario', 35000),
 ('Almuerzo ejecutivo', 22000),
 ('Cena internacional', 28000),

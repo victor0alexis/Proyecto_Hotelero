@@ -39,7 +39,6 @@ $total_serv = 0;
 $fecha_actual = date('Y-m-d');
 $servicios_incluidos_ids = [];
 
-// ✅ Corregido: acceder correctamente al array indexado por id_reserva
 foreach ($_SESSION['servicios_temporales'][$id_reserva] ?? [] as $servicio) {
     if (!empty($servicio['costo']) && (float)$servicio['costo'] > 0) {
         $total_serv += (float)$servicio['costo'];
@@ -118,10 +117,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $id_boleta = pg_fetch_result($boleta, 0, 'id_boleta');
 
+            // ✅ Se incluye nombre_titular en la inserción de metodo_pago
             pg_query_params($conn, "
-                INSERT INTO metodo_pago (nombre_metodo, numero_operacion, id_boleta)
-                VALUES ($1, $2, $3)
-            ", ['Tarjeta de Crédito', $tarjeta, $id_boleta]);
+                INSERT INTO metodo_pago (nombre_titular, nombre_metodo, numero_operacion, id_boleta)
+                VALUES ($1, $2, $3, $4)
+            ", [$titular, 'Tarjeta de Crédito', $tarjeta, $id_boleta]);
 
             foreach ($servicios_incluidos_ids as $id_si) {
                 pg_query_params($conn, "
@@ -140,6 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="es">
