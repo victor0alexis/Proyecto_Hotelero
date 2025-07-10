@@ -1,13 +1,14 @@
-/* ====== ESTILOS GENERALES ====== */
+/* Basado en tu estilo general con colores oscuros y dorados */
+
 body {
   margin: 0;
   font-family: 'Montserrat', sans-serif;
   background-color: #0d1b2a;
   color: #f0f0f0;
-  padding-top: 80px; /* para header fijo */
+  padding-top: 80px; /* para el header fijo */
 }
 
-/* === HEADER === */
+/* Header igual que el tuyo */
 .header {
   display: flex;
   justify-content: space-between;
@@ -144,105 +145,59 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ====== SECCION PRINCIPAL SERVICIOS ====== */
-.servicios-container {
+/* Promociones sección */
+.promociones-section {
   max-width: 1100px;
-  margin: 0 auto 4rem;
-  padding: 2rem 1rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 5rem;
 }
 
-.servicios-container h1 {
+.promociones-title {
   font-size: 2.5rem;
   font-weight: 700;
   color: #d4af7f;
-  margin-bottom: 2rem;
   text-align: center;
+  margin-bottom: 2rem;
 }
 
-/* Cada categoría de servicio */
-.servicio-categoria {
-  margin-bottom: 3rem;
-}
-
-.servicio-categoria h2 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #d4af7f;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Grid para tarjetas */
-.servicios-grid {
+.promociones-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
 }
 
-/* Tarjeta de servicio */
-.servicio-card {
+.promocion-card {
   background-color: #111;
   border-radius: 18px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-  padding: 1.5rem 1.8rem;
-  color: #f0e6d2;
-  text-decoration: none;
+  padding: 1.5rem;
   transition: transform 0.3s, box-shadow 0.3s;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  color: #f0e6d2;
 }
 
-.servicio-card:hover {
+.promocion-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 12px 30px rgba(212, 175, 127, 0.8);
 }
 
-.servicio-card h3 {
+.promocion-card h3 {
+  color: #d4af7f;
+  margin-bottom: 0.5rem;
   font-weight: 700;
-  font-size: 1.3rem;
-  color: #d4af7f;
-  margin-bottom: 0.6rem;
 }
 
-.servicio-card p {
+.promocion-card .descripcion {
   font-size: 1rem;
-  font-weight: 600;
+  margin-bottom: 1rem;
   color: #ccc;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+  line-height: 1.5;
 }
 
-/* Iconos dentro de p */
-.servicio-card p i {
+.promocion-card .fechas,
+.promocion-card .descuento {
+  font-size: 0.9rem;
+  font-weight: 600;
   color: #d4af7f;
-  font-size: 1.2rem;
-}
-
-/* Footer simple */
-.footer {
-  background: #0c0c0c;
-  color: #f0f0f0;
-  padding: 40px 20px;
-  border-top: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: 30px 30px 0 0;
-  text-align: center;
-  margin-top: 4rem;
-  box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.4);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .nav-links {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .servicios-grid {
-    grid-template-columns: 1fr;
-  }
+  margin-bottom: 0.3rem;
 }

@@ -150,6 +150,17 @@ CREATE TABLE Servicio_Habitacion (
     Fecha_Servicio DATE DEFAULT NULL
 );
 
+CREATE TABLE Promocion (
+    ID_Promocion SERIAL PRIMARY KEY,
+    Titulo VARCHAR(100) NOT NULL,
+    Descripcion TEXT NOT NULL,
+    Descuento INT CHECK (Descuento BETWEEN 1 AND 100), -- % de descuento
+    Fecha_Inicio DATE NOT NULL,
+    Fecha_Fin DATE NOT NULL,
+    Estado VARCHAR(20) DEFAULT 'activa' CHECK (Estado IN ('activa', 'inactiva')),
+    Imagen VARCHAR(255) -- para banner si deseas mostrarlo gráficamente
+);
+
 
 -- ===================
 -- INSERCION DE DATOS

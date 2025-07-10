@@ -136,13 +136,13 @@ if ($result) {
 
 <!-- ======= HEADER ======= -->
 <header class="header">
-    <div class="logo"><span>Hotel</span></div>
+    <div class="logo"><span>HOTEL</span></div>
 
     <ul class="nav-links">
         <li><a href="../index.php">Inicio</a></li>
         <li><a href="../habitacion/habitaciones.php">Habitaciones</a></li>
         <li><a href="servicios.php?id_reserva=<?= urlencode($id_reserva) ?>">Servicios</a></li>
-        <li><a href="../contacto.php">Contacto</a></li>
+        <li><a href="../promociones/promociones.php">Promociones</a></li>
     </ul>
 
     <div class="right-nav">

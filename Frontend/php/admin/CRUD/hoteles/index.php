@@ -24,7 +24,7 @@ $consulta = pg_query($conn, "SELECT * FROM hotel ORDER BY id_hotel ASC");
 
     <header class="crud-header">
 
-    <h1>Gestión de Opiniones</h1>
+    <h1>Gestión de Hoteles</h1>
     <p>Bienvenido, <strong><?= htmlspecialchars($_SESSION['username']) ?></strong></p>
 
     </header>

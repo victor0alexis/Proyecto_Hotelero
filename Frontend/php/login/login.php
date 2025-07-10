@@ -1,4 +1,6 @@
 <?php
+include("../conexion.php");
+session_start();
 
 $mensaje = "";
 $redirect_url = $_GET['redirect'] ?? '';
