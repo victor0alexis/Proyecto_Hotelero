@@ -1,12 +1,4 @@
 <?php
-include("../conexion.php");
-session_start();
-echo "<pre>";
-var_dump($datos['verificado']);
-var_dump(gettype($datos['verificado']));
-echo "</pre>";
-exit();
-
 
 $mensaje = "";
 $redirect_url = $_GET['redirect'] ?? '';
