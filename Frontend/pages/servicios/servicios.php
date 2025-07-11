@@ -142,7 +142,6 @@ if ($result) {
         <li><a href="../index.php">Inicio</a></li>
         <li><a href="../habitacion/habitaciones.php">Habitaciones</a></li>
         <li><a href="servicios.php?id_reserva=<?= urlencode($id_reserva) ?>">Servicios</a></li>
-        <li><a href="../promociones/promociones.php">Promociones</a></li>
     </ul>
 
     <div class="right-nav">

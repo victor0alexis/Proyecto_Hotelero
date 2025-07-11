@@ -60,8 +60,8 @@ $email = $_SESSION['email'] ?? 'No disponible';
             <a href="CRUD/hoteles/index.php" class="crud-card">
             🗺️<br>Hoteles
         </a>
-        <a href="CRUD/promociones/index.php" class="crud-card">
-            🎁<br>Promociones
+        <a href="CRUD/metodode/index.php" class="crud-card">
+            💸<br>Métodos de pago
         </a>
     </div>
 

@@ -117,7 +117,6 @@ if (!empty($_POST["btningresar"])) {
       <li><a href="../../pages/index.php">INICIO</a></li>
       <li><a href="../../pages/habitacion/habitaciones.php">HABITACIONES</a></li>
       <li><a href="../../pages/servicios/servicios.php">SERVICIOS</a></li>
-      <li><a href="../../pages/contacto.html">CONTACTO</a></li>
     </ul>
   </nav>
   <div class="right-nav"></div>

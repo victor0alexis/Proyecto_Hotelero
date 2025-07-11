@@ -53,7 +53,6 @@ $consulta = pg_query($conn, "
         <li><a href="../index.php" class="active">Inicio</a></li>
         <li><a href="habitaciones.php" class="active">Habitaciones</a></li>
         <li><a href="../servicios/servicios.php">Servicios</a></li>
-        <li><a href="../promociones/promociones.php">Promociones</a></li>
         </ul>
     </nav>
 
