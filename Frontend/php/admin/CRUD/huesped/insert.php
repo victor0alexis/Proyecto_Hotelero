@@ -21,13 +21,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $telefono = trim($_POST["telefono"]);
 
     // Validaciones
-    if (empty($username) || empty($clave) || empty($nombre)) {
-        $mensaje = "Los campos 'Usuario', 'Contraseña' y 'Nombre' son obligatorios.";
+    if (empty($username) || empty($clave) || empty($nombre) || empty($email) || empty($telefono)) {
+        $mensaje = "Todos los campos son obligatorios.";
     } elseif (!preg_match('/^[\p{L} ]+$/u', $nombre)) {
         $mensaje = "El nombre solo debe contener letras y espacios.";
     } elseif (strlen($clave) < 6) {
         $mensaje = "La contraseña debe tener al menos 6 caracteres.";
-    } elseif (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $mensaje = "El correo electrónico no tiene un formato válido.";
     } elseif (!empty($telefono) && !preg_match('/^\d{7,10}$/', $telefono)) {
         $mensaje = "El número de teléfono debe contener solo dígitos y tener entre 7 y 10 caracteres.";
@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $mensaje = "El nombre de usuario ya está en uso.";
         } else {
             $rol = 'huesped';
-            $clave_hash = password_hash($clave, PASSWORD_BCRYPT);
+            $clave_hash = md5($clave);
 
             // Insertar en tabla Usuario
             $insert_usuario = pg_query_params(
@@ -107,7 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         <div class="form-group">
             <label for="email">Correo Electrónico:</label>
-            <input type="email" name="email" value="<?= htmlspecialchars($email) ?>">
+            <input type="email" name="email" required value="<?= htmlspecialchars($email) ?>">
         </div>
 
         <div class="form-group">

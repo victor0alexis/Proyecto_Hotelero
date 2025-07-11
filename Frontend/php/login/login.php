@@ -1,3 +1,4 @@
+
 <?php
 include("../conexion.php");
 session_start();
@@ -6,90 +7,82 @@ $mensaje = "";
 $redirect_url = $_GET['redirect'] ?? '';
 
 if (!empty($_POST["btningresar"])) {
-    $nombre = trim($_POST["user"] ?? '');
+    $username = trim($_POST["user"] ?? '');
     $pass = $_POST["pass"] ?? '';
 
-    if (empty($nombre) || empty($pass)) {
+    if (empty($username) || empty($pass)) {
         $mensaje = "Todos los campos son obligatorios.";
     } else {
-        // Buscar en administrador
-        $query_admin = pg_query_params($conn, "SELECT id_usuario FROM administrador WHERE nombre = $1", array($nombre));
-        if (pg_num_rows($query_admin) > 0) {
-            $admin = pg_fetch_assoc($query_admin);
-            $id_usuario = $admin["id_usuario"];
-            $rol = "admin";
-        } else {
-            // Buscar en huesped
-            $query_huesped = pg_query_params($conn, "SELECT id_usuario FROM huesped WHERE nombre = $1", array($nombre));
-            if (pg_num_rows($query_huesped) > 0) {
-                $huesped = pg_fetch_assoc($query_huesped);
-                $id_usuario = $huesped["id_usuario"];
-                $rol = "huesped";
-            } else {
-                $mensaje = "El nombre no está registrado.";
-                $id_usuario = null;
-            }
-        }
+        // Buscar al usuario por username
+        $query_usuario_base = pg_query_params($conn, "SELECT * FROM usuario WHERE username = $1", array($username));
 
-        if ($id_usuario) {
-            $query_usuario = pg_query_params($conn, "SELECT * FROM usuario WHERE id_usuario = $1 AND clave = md5($2)", array($id_usuario, $pass));
-            if (pg_num_rows($query_usuario) > 0) {
+        if (pg_num_rows($query_usuario_base) > 0) {
+            $usuario = pg_fetch_assoc($query_usuario_base);
+            $id_usuario = $usuario["id_usuario"];
 
-                // Consultar datos de verificación desde la tabla según el rol
-                $check_verif = pg_query_params($conn, "SELECT email, verificado, codigo_verificacion FROM " . $rol . " WHERE id_usuario = $1", array($id_usuario));
+            // Verificar contraseña con md5
+            $query_credenciales = pg_query_params($conn, "SELECT * FROM usuario WHERE id_usuario = $1 AND clave = md5($2)", array($id_usuario, $pass));
 
-                if ($check_verif && $datos = pg_fetch_assoc($check_verif)) {
-                    // Convertir el valor devuelto por PostgreSQL en booleano confiable
+            if (pg_num_rows($query_credenciales) > 0) {
+                // Determinar si es admin o huesped
+                $query_admin = pg_query_params($conn, "SELECT email, verificado, codigo_verificacion, nombre FROM administrador WHERE id_usuario = $1", array($id_usuario));
+                $query_huesped = pg_query_params($conn, "SELECT id_huesped, email, verificado, codigo_verificacion, nombre FROM huesped WHERE id_usuario = $1", array($id_usuario));
+
+                if (pg_num_rows($query_admin) > 0) {
+                    $datos = pg_fetch_assoc($query_admin);
+                    $rol = "admin";
+                    $_SESSION["nombre"] = $datos["nombre"];
+                    $_SESSION["email"] = $datos["email"];
+                } elseif (pg_num_rows($query_huesped) > 0) {
+                    $datos = pg_fetch_assoc($query_huesped);
+                    $rol = "huesped";
+                    $_SESSION["id_huesped"] = $datos["id_huesped"];
+                    $_SESSION["username"] = $datos["nombre"];
+                } else {
+                    $mensaje = "Usuario no asociado a ningún rol válido.";
+                    $rol = null;
+                }
+
+                if (!empty($rol)) {
+                    // Verificación de cuenta
                     $is_verified = ($datos['verificado'] === true || $datos['verificado'] === 't');
-
                     if (!$is_verified) {
                         include("mail/enviar_codigo.php");
                         enviarCodigoVerificacion($datos['email'], $datos['codigo_verificacion']);
                         echo "<script>
-                                alert('Tu cuenta aún no está verificada. Se ha reenviado el código a tu correo.');
-                                window.location.href = 'mail/verificar.php?rol=$rol&email=" . urlencode($datos['email']) . "';
-                              </script>";
+                            alert('Tu cuenta aún no está verificada. Se ha reenviado el código a tu correo.');
+                            window.location.href = 'mail/verificar.php?rol=$rol&email=" . urlencode($datos['email']) . "';
+                        </script>";
                         exit();
                     }
-                }
 
-                $usuario = pg_fetch_assoc($query_usuario);
+                    // Asignar datos comunes
+                    $_SESSION["id_usuario"] = $id_usuario;
+                    $_SESSION["rol"] = $rol;
+                    $_SESSION["username"] = $usuario["username"];
 
-                // Datos generales
-                $_SESSION["id_usuario"] = $usuario["id_usuario"];
-                $_SESSION["rol"] = $rol;
-                $_SESSION["username"] = $usuario["username"];
-
-                // Cargar datos específicos según el rol
-                if ($rol === "huesped") {
-                    $datos_huesped = pg_fetch_assoc(pg_query_params($conn, "SELECT id_huesped, nombre FROM huesped WHERE id_usuario = $1", [$usuario["id_usuario"]]));
-                    $_SESSION["id_huesped"] = $datos_huesped["id_huesped"];
-                    $_SESSION["username"] = $datos_huesped["nombre"];
-                } elseif ($rol === "admin") {
-                    $datos_admin = pg_fetch_assoc(pg_query_params($conn, "SELECT nombre, email FROM administrador WHERE id_usuario = $1", [$usuario["id_usuario"]]));
-                    $_SESSION["nombre"] = $datos_admin["nombre"];
-                    $_SESSION["email"] = $datos_admin["email"];
-                }
-
-                // Redirección según rol
-                if ($rol === "admin") {
-                    header("Location: ../admin/panel_admin.php");
-                    exit();
-                } elseif ($rol === "huesped") {
-                    if ($redirect_url && strpos($redirect_url, 'http://') === false && strpos($redirect_url, 'https://') === false) {
-                        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
-                        $host = $_SERVER['HTTP_HOST'];
-                        $redirect_path = ltrim($redirect_url, '/');
-                        header("Location: $protocol://$host/$redirect_path");
+                    // Redirección
+                    if ($rol === "admin") {
+                        header("Location: ../admin/panel_admin.php");
                         exit();
-                    } else {
-                        header("Location: ../../pages/index.php");
-                        exit();
+                    } elseif ($rol === "huesped") {
+                        if ($redirect_url && strpos($redirect_url, 'http://') === false && strpos($redirect_url, 'https://') === false) {
+                            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
+                            $host = $_SERVER['HTTP_HOST'];
+                            $redirect_path = ltrim($redirect_url, '/');
+                            header("Location: $protocol://$host/$redirect_path");
+                            exit();
+                        } else {
+                            header("Location: ../../pages/index.php");
+                            exit();
+                        }
                     }
                 }
             } else {
                 $mensaje = "Contraseña incorrecta.";
             }
+        } else {
+            $mensaje = "El nombre de usuario no está registrado.";
         }
     }
 }
@@ -129,20 +122,21 @@ if (!empty($_POST["btningresar"])) {
       <div class="alert"><?= htmlspecialchars($mensaje) ?></div>
     <?php endif; ?>
 
-    <form method="post">
-      <div class="input-group">
-        <input type="text" name="user" required>
-        <label>Nombre</label>
-      </div>
-      <div class="input-group">
-        <input type="password" name="pass" required>
-        <label>Contraseña</label>
-      </div>
-      <input name="btningresar" type="submit" value="Iniciar Sesión">
-      <div class="registrarse">
-        ¿No tienes cuenta? <a href="registro.php">Regístrate aquí</a>
-      </div>
-    </form>
+<form method="post">
+  <div class="input-group">
+    <input type="text" name="user" required>
+    <label>Nombre de usuario</label>
+  </div>
+  <div class="input-group">
+    <input type="password" name="pass" required>
+    <label>Contraseña</label>
+  </div>
+  <input name="btningresar" type="submit" value="Iniciar Sesión">
+  <div class="registrarse">
+    ¿No tienes cuenta? <a href="registro.php">Regístrate aquí</a>
+  </div>
+</form>
+
   </div>
 </section>
 

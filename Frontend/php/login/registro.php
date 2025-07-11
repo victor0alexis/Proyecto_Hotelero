@@ -7,39 +7,44 @@ $mensaje_exito = "";
 $rol = $_GET['rol'] ?? null;
 
 // Inicializar valores del formulario para persistencia
-$nombre = $_POST["nombre"] ?? "";
-$email = $_POST["email"] ?? "";
-$telefono = $_POST["telefono"] ?? "";
+$username = trim($_POST["username"] ?? "");
 $clave = $_POST["clave"] ?? "";
+$nombre = trim($_POST["nombre"] ?? "");
+$email = trim($_POST["email"] ?? "");
+$telefono = trim($_POST["telefono"] ?? "");
 
 if (!empty($_POST["btnregistrar"])) {
-    if (empty($nombre) || empty($email) || empty($clave)) {
-        $mensaje = "Error: Todos los campos son obligatorios.";
+    if (empty($username) || empty($clave) || empty($nombre) || empty($email)) {
+        $mensaje = "Error: Todos los campos obligatorios deben completarse.";
     } else {
         $rol = $_POST["rol"];
 
         // Validaciones
-        if (!preg_match('/^[[:alpha:] ]+$/u', $nombre)) {
+        if (!preg_match('/^[a-zA-Z0-9_]{3,50}$/', $username)) {
+            $mensaje = "Error: El nombre de usuario debe contener entre 3 y 50 caracteres alfanuméricos o guion bajo.";
+        } elseif (strlen($clave) < 6) {
+            $mensaje = "Error: La contraseña debe tener al menos 6 caracteres.";
+        } elseif (!preg_match('/^[[:alpha:] ]+$/u', $nombre)) {
             $mensaje = "Error: El nombre solo debe contener letras y espacios.";
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $mensaje = "Error: La dirección de correo no es válida.";
+            $mensaje = "Error: El email no es válido.";
         } elseif ($rol === 'huesped' && !preg_match('/^[0-9]{7,10}$/', $telefono)) {
             $mensaje = "Error: El teléfono debe tener entre 7 y 10 dígitos numéricos.";
         } else {
             // Verificar si el username ya existe
-            $check_user = pg_query_params($conn, "SELECT 1 FROM usuario WHERE username = $1", [$nombre]);
+            $check_user = pg_query_params($conn, "SELECT 1 FROM usuario WHERE username = $1", [$username]);
             if (pg_num_rows($check_user) > 0) {
                 $mensaje = "Error: El nombre de usuario ya está registrado.";
             } else {
-                // Insertar en tabla usuario
+                // Insertar en Usuario
                 $insert_usuario = pg_query_params($conn,
                     "INSERT INTO usuario (username, clave, rol) VALUES ($1, md5($2), $3) RETURNING id_usuario",
-                    [$nombre, $clave, $rol]
+                    [$username, $clave, $rol]
                 );
 
                 if ($insert_usuario && $row = pg_fetch_assoc($insert_usuario)) {
                     $id_usuario = $row["id_usuario"];
-                    $codigo = rand(100000, 999999);
+                    $codigo = strval(rand(100000, 999999));
 
                     if ($rol === 'huesped') {
                         pg_query_params($conn,
@@ -91,6 +96,9 @@ if (!empty($_POST["btnregistrar"])) {
                 <a href="registro.php?rol=huesped" class="role-button">Registrarse como Huésped</a>
                 <a href="registro.php?rol=admin" class="role-button">Registrarse como Admin</a>
             </div>
+                <div class="registrarse">
+                    <a href="login.php">Volver</a>
+                </div>
         <?php else: ?>
             <h1>Registro</h1>
 
@@ -104,24 +112,29 @@ if (!empty($_POST["btnregistrar"])) {
                 <input type="hidden" name="rol" value="<?= htmlspecialchars($rol) ?>">
 
                 <div class="input-group">
-                    <input type="text" name="nombre" value="<?= htmlspecialchars($nombre) ?>" pattern=".*\S.*" required>
+                    <input type="text" name="username" value="<?= htmlspecialchars($username) ?>" required pattern="^[a-zA-Z0-9_]{3,50}$">
                     <label>Nombre de Usuario</label>
                 </div>
 
                 <div class="input-group">
-                    <input type="email" name="email" value="<?= htmlspecialchars($email) ?>" pattern=".*\S.*" required>
+                    <input type="text" name="nombre" value="<?= htmlspecialchars($nombre) ?>">
+                    <label>Nombre Completo</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="email" name="email" value="<?= htmlspecialchars($email) ?>" required>
                     <label>Email</label>
                 </div>
 
                 <?php if ($rol === "huesped"): ?>
                     <div class="input-group">
-                        <input type="text" name="telefono" value="<?= htmlspecialchars($telefono) ?>" pattern=".*\S.*" required>
+                        <input type="text" name="telefono" value="<?= htmlspecialchars($telefono) ?>" pattern="^[0-9]{7,10}$" required>
                         <label>Teléfono</label>
                     </div>
                 <?php endif; ?>
 
                 <div class="input-group">
-                    <input type="password" name="clave" pattern=".*\S.*" required>
+                    <input type="password" name="clave" required pattern=".{6,}">
                     <label>Contraseña</label>
                 </div>
 

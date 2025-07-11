@@ -158,10 +158,10 @@ CREATE TABLE Servicio_Habitacion (
 
 -- Usuarios
 INSERT INTO Usuario (username, clave, rol) VALUES 
-('usuario_adminone', md5('admin'), 'admin'),
-('usuario_admintwo', md5('admin'), 'admin'),
-('usuario_huespedone', md5('huesped'), 'huesped'),
-('usuario_huespedtwo', md5('huesped'), 'huesped');
+('admin1', md5('admin'), 'admin'),
+('admin2', md5('admin'), 'admin'),
+('huesped1', md5('huesped'), 'huesped'),
+('huesped2', md5('huesped'), 'huesped');
 
 -- Administradores
 INSERT INTO Administrador (id_usuario, nombre, email, verificado, codigo_verificacion) VALUES 

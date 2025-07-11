@@ -61,7 +61,6 @@ if (!$reservas) {
     <li><a href="../../pages/index.php">Inicio</a></li>
     <li><a href="../../pages/habitacion/habitaciones.php">Habitaciones</a></li>
     <li><a href="../../pages/servicios/servicios.php">Servicios</a></li>
-    <li><a href="../../pages/contacto.php">Contacto</a></li>
 </ul>
 
 

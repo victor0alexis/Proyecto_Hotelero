@@ -24,8 +24,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $mensaje = "Todos los campos son obligatorios.";
     } elseif (!preg_match('/^[\p{L} ]+$/u', $nombre)) {
         $mensaje = "El nombre solo debe contener letras y espacios.";
-    } elseif (strlen($clave) < 6) {
-        $mensaje = "La contraseña debe tener al menos 6 caracteres.";
+    } elseif (strlen($clave) < 5) {
+        $mensaje = "La contraseña debe tener al menos 5 caracteres.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $mensaje = "El correo electrónico no tiene un formato válido.";
     } else {

@@ -23,6 +23,7 @@ $consulta = pg_query($conn, "
         h.Precio AS precio, 
         h.Estado AS estado, 
         h.Tipo AS tipo, 
+        h.estado_actividad AS actividad,
         ht.Nombre AS nombre_hotel,
         h.Imagen AS imagen
     FROM Habitacion h 
@@ -98,19 +99,34 @@ $consulta = pg_query($conn, "
 
 <div class="habitaciones-grid">
   <?php while ($habitacion = pg_fetch_assoc($consulta)) : ?>
-    <a href="detalle_habitacion.php?id=<?= $habitacion['id_habitacion'] ?>" class="habitacion-link">
-      <div class="habitacion-card">
-        <img src="../../img/habitaciones/<?= htmlspecialchars($habitacion['imagen']) ?>" alt="Habitación <?= htmlspecialchars($habitacion['tipo']) ?>" class="habitacion-imagen">
+    <?php if ($habitacion['actividad'] === 'activo') : ?>
+      <a href="detalle_habitacion.php?id=<?= $habitacion['id_habitacion'] ?>" class="habitacion-link">
+        <div class="habitacion-card">
+          <img src="../../img/habitaciones/<?= htmlspecialchars($habitacion['imagen']) ?>" alt="Habitación <?= htmlspecialchars($habitacion['tipo']) ?>" class="habitacion-imagen">
+          <div class="habitacion-info">
+            <h3><?= strtoupper(htmlspecialchars($habitacion['tipo'])) ?></h3>
+            <p><strong>Precio:</strong> $<?= number_format($habitacion['precio']) ?></p>
+            <p><strong>Estado:</strong> <?= htmlspecialchars($habitacion['estado']) ?></p>
+            <p><strong>Hotel:</strong> <?= htmlspecialchars($habitacion['nombre_hotel']) ?></p>
+          </div>
+        </div>
+      </a>
+    <?php else : ?>
+      <div class="habitacion-card inactiva">
+        <img src="../../img/habitaciones/<?= htmlspecialchars($habitacion['imagen']) ?>" alt="Habitación Inactiva" class="habitacion-imagen">
         <div class="habitacion-info">
           <h3><?= strtoupper(htmlspecialchars($habitacion['tipo'])) ?></h3>
           <p><strong>Precio:</strong> $<?= number_format($habitacion['precio']) ?></p>
-          <p><strong>Estado:</strong> <?= htmlspecialchars($habitacion['estado']) ?></p>
           <p><strong>Hotel:</strong> <?= htmlspecialchars($habitacion['nombre_hotel']) ?></p>
+          <p style="color: red; font-weight: bold;">Habitación no disponible</p>
         </div>
       </div>
-    </a>
+    <?php endif; ?>
   <?php endwhile; ?>
 </div>
+
+
+
 
 
 <!-- MOSTRAR/OCULTAR MENU DESPLEGABLE -->

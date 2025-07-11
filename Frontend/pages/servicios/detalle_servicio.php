@@ -106,7 +106,6 @@ $url_anadir = '../reservas/reserva_confirmacion.php?' . http_build_query($params
     <li><a href="../index.php">Inicio</a></li>
     <li><a href="../habitacion/habitaciones.php">Habitaciones</a></li>
     <li><a href="servicios.php">Servicios</a></li>
-    <li><a href="../contacto.php">Contacto</a></li>
 </ul>
 
 <div class="right-nav">
