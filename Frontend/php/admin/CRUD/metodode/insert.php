@@ -23,26 +23,48 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if (empty($nombre_titular) || empty($nombre_metodo) || empty($id_boleta)) {
         $mensaje = "Todos los campos marcados con * son obligatorios.";
+    } elseif (!preg_match("/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/", $nombre_titular)) {
+        $mensaje = "El nombre del titular solo debe contener letras, sin espacios ni símbolos.";
     } elseif (!in_array($nombre_metodo, $metodos_validos)) {
         $mensaje = "Método de pago inválido. Elija una opción válida.";
     } elseif (!is_numeric($id_boleta)) {
         $mensaje = "ID de boleta inválido.";
+    } elseif (!empty($numero_operacion) && (!ctype_digit($numero_operacion) || strlen($numero_operacion) !== 16)) {
+        $mensaje = "El número de operación debe tener exactamente 16 dígitos numéricos.";
     } else {
-        $query = pg_query_params($conn, "
-            INSERT INTO Metodo_Pago (nombre_titular, nombre_metodo, numero_operacion, id_boleta)
-            VALUES ($1, $2, $3, $4)
-        ", [$nombre_titular, $nombre_metodo, $numero_operacion ?: null, $id_boleta]);
+        // Validar si la boleta ya tiene método de pago
+        $validar = pg_query_params($conn, "SELECT 1 FROM Metodo_Pago WHERE id_boleta = $1", [$id_boleta]);
+        if (pg_num_rows($validar) > 0) {
+            $mensaje = "Esta boleta ya tiene un método de pago asociado.";
 
-        if ($query) {
-            header("Location: index.php");
-            exit();
         } else {
-            $mensaje = "Error al insertar el método de pago. Verifique los datos.";
+
+            $query = pg_query_params($conn, "
+                INSERT INTO Metodo_Pago (nombre_titular, nombre_metodo, numero_operacion, id_boleta)
+                VALUES ($1, $2, $3, $4)
+            ", [$nombre_titular, $nombre_metodo, $numero_operacion ?: null, $id_boleta]);
+
+            if ($query) {
+                header("Location: index.php");
+                exit();
+            } else {
+                $mensaje = "Error al insertar el método de pago. Verifique los datos.";
+            }
         }
     }
 }
 
-$boletas = pg_query($conn, "SELECT id_boleta, monto FROM Boleta ORDER BY id_boleta");
+$boletas = pg_query($conn, "
+    SELECT b.id_boleta, b.monto, b.id_reserva, r.estado
+    FROM Boleta b
+    JOIN Reserva r ON b.id_reserva = r.id_reserva
+    WHERE TRIM(b.estado_pago) = 'pendiente'
+      AND TRIM(r.estado) = 'pendiente'
+      AND NOT EXISTS (
+          SELECT 1 FROM Metodo_Pago m WHERE m.id_boleta = b.id_boleta
+      )
+    ORDER BY b.id_boleta
+");
 ?>
 
 <!DOCTYPE html>
@@ -83,7 +105,7 @@ $boletas = pg_query($conn, "SELECT id_boleta, monto FROM Boleta ORDER BY id_bole
             <option value="">Seleccione una boleta</option>
             <?php while ($b = pg_fetch_assoc($boletas)): ?>
                 <option value="<?= $b['id_boleta'] ?>" <?= $id_boleta == $b['id_boleta'] ? 'selected' : '' ?>>
-                    ID <?= $b['id_boleta'] ?> - $<?= $b['monto'] ?>
+                    Boleta <?= $b['id_boleta'] ?> | Reserva <?= $b['id_reserva'] ?> | Estado: <?= $b['estado'] ?> | $<?= $b['monto'] ?>
                 </option>
             <?php endwhile; ?>
         </select>

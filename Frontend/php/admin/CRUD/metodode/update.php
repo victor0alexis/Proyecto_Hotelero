@@ -13,7 +13,7 @@ if (!$id) {
     exit();
 }
 
-// Obtener datos actuales del método de pago
+// Obtener datos actuales
 $query = pg_query_params($conn, "SELECT * FROM Metodo_Pago WHERE id_metodo_pago = $1", [$id]);
 $actual = pg_fetch_assoc($query);
 
@@ -36,50 +36,60 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $nuevo_operacion = trim($_POST["numero_operacion"] ?? '');
     $nuevo_boleta = trim($_POST["id_boleta"] ?? '');
 
-    // Validación de campos vacíos
     if (empty($nuevo_titular) || empty($nuevo_metodo) || empty($nuevo_boleta)) {
         $mensaje = "Todos los campos marcados con * son obligatorios.";
+    } elseif (!preg_match("/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/", $nuevo_titular)) {
+        $mensaje = "El nombre del titular solo debe contener letras, sin espacios ni símbolos.";
     } elseif (!in_array($nuevo_metodo, $metodos_validos)) {
-        $mensaje = "Método de pago inválido. Elija una opción válida.";
+        $mensaje = "Método de pago inválido.";
     } elseif (!is_numeric($nuevo_boleta)) {
         $mensaje = "ID de boleta inválido.";
-    } else {
-        // Verificar si hay cambios
-        if (
-            $nuevo_titular === $actual['nombre_titular'] &&
-            $nuevo_metodo === $actual['nombre_metodo'] &&
-            $nuevo_operacion === ($actual['numero_operacion'] ?? '') &&
-            intval($nuevo_boleta) === intval($actual['id_boleta'])
-        ) {
-            $mensaje = "No se han realizado cambios.";
-        } else {
-            // Actualizar
-            $update = pg_query_params($conn, "
-                UPDATE Metodo_Pago
-                SET nombre_titular = $1,
-                    nombre_metodo = $2,
-                    numero_operacion = $3,
-                    id_boleta = $4
-                WHERE id_metodo_pago = $5
-            ", [$nuevo_titular, $nuevo_metodo, $nuevo_operacion ?: null, $nuevo_boleta, $id]);
-
-            if ($update) {
-                header("Location: index.php");
-                exit();
-            } else {
-                $mensaje = "Error al actualizar el método de pago.";
-            }
+    } elseif (!empty($nuevo_operacion) && (!ctype_digit($nuevo_operacion) || strlen($nuevo_operacion) !== 16)) {
+        $mensaje = "Número de operación debe tener 16 dígitos.";
+    } elseif ($nuevo_boleta != $id_boleta) {
+        // Validar que la nueva boleta no esté ya usada
+        $verificar = pg_query_params($conn, "
+            SELECT 1 FROM Metodo_Pago WHERE id_boleta = $1 AND id_metodo_pago != $2
+        ", [$nuevo_boleta, $id]);
+        if (pg_num_rows($verificar) > 0) {
+            $mensaje = "La nueva boleta ya tiene un método de pago.";
         }
     }
 
-    // Persistir en caso de error
+    if (!$mensaje) {
+        $update = pg_query_params($conn, "
+            UPDATE Metodo_Pago
+            SET nombre_titular = $1,
+                nombre_metodo = $2,
+                numero_operacion = $3,
+                id_boleta = $4
+            WHERE id_metodo_pago = $5
+        ", [$nuevo_titular, $nuevo_metodo, $nuevo_operacion ?: null, $nuevo_boleta, $id]);
+
+        if ($update) {
+            header("Location: index.php");
+            exit();
+        } else {
+            $mensaje = "Error al actualizar.";
+        }
+    }
+
+    // Persistencia
     $nombre_titular = $nuevo_titular;
     $nombre_metodo = $nuevo_metodo;
     $numero_operacion = $nuevo_operacion;
     $id_boleta = $nuevo_boleta;
 }
 
-$boletas = pg_query($conn, "SELECT id_boleta, monto FROM Boleta ORDER BY id_boleta");
+// ✅ CORRECCIÓN AQUÍ: usamos pg_query_params con los 2 argumentos correctos
+$boletas = pg_query_params($conn, "
+    SELECT b.id_boleta, b.monto
+    FROM Boleta b
+    WHERE NOT EXISTS (
+        SELECT 1 FROM Metodo_Pago m WHERE m.id_boleta = b.id_boleta AND m.id_metodo_pago != $1
+    ) OR b.id_boleta = $2
+    ORDER BY b.id_boleta
+", [$id, $id_boleta]);
 ?>
 
 <!DOCTYPE html>
@@ -120,7 +130,7 @@ $boletas = pg_query($conn, "SELECT id_boleta, monto FROM Boleta ORDER BY id_bole
             <option value="">Seleccione una boleta</option>
             <?php while ($b = pg_fetch_assoc($boletas)): ?>
                 <option value="<?= $b['id_boleta'] ?>" <?= $b['id_boleta'] == $id_boleta ? 'selected' : '' ?>>
-                    ID <?= $b['id_boleta'] ?> - $<?= $b['monto'] ?>
+                    ID <?= $b['id_boleta'] ?> - $<?= number_format($b['monto'], 0, ',', '.') ?>
                 </option>
             <?php endwhile; ?>
         </select>
